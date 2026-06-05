@@ -96,16 +96,22 @@ AJ.SmokeTest = (function () {
       }
     });
 
+    // ¿Este pueblo tiene NPCs? (FASE D: la Colonia no.) Algunos checks de NPC
+    // sólo aplican donde hay vecinos.
+    const conNPCs = !AJ.Mapa.meta || AJ.Mapa.meta.conNPCs !== false;
+
     // 8. FASE 2: NPCs y diálogo (si el flag está activo)
     if (AJ.CONFIG.npcsDialogo) {
-      check('NPCs creados', () => {
-        const n = escena.npcManager && escena.npcManager.npcs.length;
-        return n >= 5 ? true : 'Hay ' + (n || 0) + ' NPCs';
-      });
       check('Diálogo disponible', () => escena.dialogo && typeof escena.dialogo.mostrar === 'function');
-      check('NPCs colisionan (no se atraviesan)', () =>
-        escena.npcManager && escena.npcManager.npcs.length > 0 &&
-        escena.esColisionExtra(escena.npcManager.npcs[0].tx, escena.npcManager.npcs[0].ty) === true);
+      if (conNPCs) {
+        check('NPCs creados', () => {
+          const n = escena.npcManager && escena.npcManager.npcs.length;
+          return n >= 5 ? true : 'Hay ' + (n || 0) + ' NPCs';
+        });
+        check('NPCs colisionan (no se atraviesan)', () =>
+          escena.npcManager && escena.npcManager.npcs.length > 0 &&
+          escena.esColisionExtra(escena.npcManager.npcs[0].tx, escena.npcManager.npcs[0].ty) === true);
+      }
     }
 
     // 9. FASE 2: misiones
@@ -113,7 +119,7 @@ AJ.SmokeTest = (function () {
       check('Misiones definidas (>=4)', () => AJ.MISIONES && AJ.MISIONES.length >= 4
         ? true : 'Hay ' + (AJ.MISIONES ? AJ.MISIONES.length : 0));
       check('Sistema de misiones vivo', () => escena.misiones && escena.misiones.hud);
-      check('Cadena de misiones consistente', () => {
+      if (conNPCs) check('Cadena de misiones consistente', () => {
         // Cada misión referencia NPCs que existen.
         if (!escena.npcManager) return 'sin npcManager';
         const ids = escena.npcManager.npcs.map((n) => n.id);
@@ -163,8 +169,8 @@ AJ.SmokeTest = (function () {
       });
     }
 
-    // 12. FASE A: rutinas + afinidad
-    if (AJ.CONFIG.rutinas) {
+    // 12. FASE A: rutinas + afinidad (sólo donde hay NPCs)
+    if (AJ.CONFIG.rutinas && conNPCs) {
       check('Rutinas y afinidad vivas', () =>
         escena.rutinas && escena.afinidad && Object.keys(escena.rutinas.def).length > 0
           ? true : 'sin sistema');
@@ -281,6 +287,24 @@ AJ.SmokeTest = (function () {
         const rec = AJ.RECETAS.find((r) => r.id === 'fardo'); // 4 leña
         return c.craftear(rec) === false ? true : 'crafteó sin leña';
       });
+    }
+
+    // 15. FASE D: viaje entre pueblos (sin llamar cargar: no corromper la escena)
+    if (AJ.CONFIG.viaje) {
+      check('Multi-pueblo disponible', () => typeof AJ.Mapa.cargar === 'function' &&
+        typeof AJ.Mapa.salidaEn === 'function' ? true : 'sin API de viaje');
+      check('El pueblo activo coincide con el estado', () =>
+        AJ.Mapa.actual === escena.estado.mapaActual
+          ? true : 'mapa ' + AJ.Mapa.actual + ' != estado ' + escena.estado.mapaActual);
+      check('Salidas con destino y llegada definidos', () => {
+        const sal = AJ.Mapa.meta.salidas || [];
+        if (sal.length === 0) return 'sin salidas';
+        const malas = sal.filter((s) => !s.destino || !s.llegada ||
+          typeof s.llegada.x !== 'number' || typeof s.llegada.y !== 'number');
+        return malas.length === 0 ? true : 'salida mal definida';
+      });
+      check('mapaActual se guarda', () =>
+        typeof escena.estado.mapaActual === 'number' ? true : 'sin mapaActual');
     }
 
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.

@@ -27,8 +27,10 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **FASE C — Crafteo simple** (`CONFIG.crafteo`)
       _(mesa de oficios + 5 recetas que combinan verdura (cosecha) y leña
       (caldenes); ítems persistentes. Smoke 38/38. Commiteada.)_
-- [ ] **FASE D — Varios pueblos / viaje** (`CONFIG.viaje`) — riesgo ALTO; sólo si
-      A+B+C pasan el smoke completo.
+- [x] **FASE D — Varios pueblos / viaje** (`CONFIG.viaje`) — riesgo ALTO, hecha.
+      _(2º pueblo "Colonia La Esperanza" + viaje ida y vuelta por tiles de salida;
+      el guardado recuerda el pueblo. Pueblo 1 smoke 42/42, Colonia 35/35.
+      Commiteada.)_
 
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.

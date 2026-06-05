@@ -14,10 +14,18 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
 
   init(data) {
     this.nuevo = data && data.nuevo;
+    this._viajando = false;
     // Cargar estado o crear uno nuevo.
     let est = null;
     if (!this.nuevo) { try { est = AJ.Guardado.cargar(); } catch (e) { est = null; } }
+    // FASE D: asegurar el pueblo correcto ANTES de armar el estado nuevo
+    // (así un juego nuevo toma el spawn del pueblo 1).
+    if (AJ.CONFIG.viaje && AJ.Mapa.cargar) {
+      const id = (est && est.mapaActual) ? est.mapaActual : 1;
+      try { AJ.Mapa.cargar(id); } catch (e) { console.warn('[Pueblo] cargar mapa', e); }
+    }
     this.estado = est || AJ.Guardado.estadoNuevo();
+    if (this.estado.mapaActual == null) this.estado.mapaActual = 1;
     // Registro de sistemas activos (para el smoke-test y el HUD).
     this.sistemas = {};
   }
@@ -180,6 +188,14 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }
       catch (e) { console.warn('[Pueblo] update jugador', e); }
+      // FASE D: ¿el jugador pisó una salida? -> viajar de pueblo.
+      if (AJ.CONFIG.viaje && !this._viajando) {
+        try {
+          const p = this.jugador.tilePos();
+          const sal = AJ.Mapa.salidaEn ? AJ.Mapa.salidaEn(p.x, p.y) : null;
+          if (sal) this._viajar(sal);
+        } catch (e) { console.warn('[Pueblo] viaje', e); }
+      }
     }
 
     // Acción (espacio/E/botón)
@@ -210,6 +226,19 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (this.granja && this.granja.intentarInteractuar(frente.x, frente.y)) return;
     // Mesa de crafteo / juntar leña de caldenes.
     if (this.crafteo && this.crafteo.intentarInteractuar(frente.x, frente.y)) return;
+  }
+
+  // FASE D: viaja al pueblo destino, llegando al punto indicado.
+  _viajar(sal) {
+    this._viajando = true;
+    try {
+      this.estado.mapaActual = sal.destino;
+      this.estado.jugador = { x: sal.llegada.x, y: sal.llegada.y, dir: 'abajo' };
+      AJ.Guardado.guardar(this.estado);
+    } catch (e) { console.warn('[Pueblo] guardar viaje', e); }
+    // Reiniciar la escena cargando el estado recién guardado (NO un juego
+    // nuevo): init recargará el mapa destino y la posición de llegada.
+    this.scene.restart({ nuevo: false });
   }
 
   _hablarCon(npc) {

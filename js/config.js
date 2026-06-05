@@ -22,7 +22,7 @@ AJ.CONFIG = {
   rutinas:     true,   // FASE A: NPCs con rutinas diarias + afinidad
   estaciones:  true,   // FASE B: 4 estaciones (paleta + ritmo de cultivos)
   crafteo:     true,   // FASE C: mesa de crafteo con recetas
-  viaje:       false,  // FASE D: varios pueblos + viaje entre ellos
+  viaje:       true,   // FASE D: varios pueblos + viaje entre ellos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

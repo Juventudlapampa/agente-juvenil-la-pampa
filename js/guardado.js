@@ -31,6 +31,7 @@ AJ.Guardado = (function () {
     return {
       version: 1,
       jugador: { x: AJ.Mapa.SPAWN.x, y: AJ.Mapa.SPAWN.y, dir: 'abajo' },
+      mapaActual: 1,       // id del pueblo donde está el jugador (FASE D)
       misiones: {},        // id -> 'activa' | 'completada'
       misionActiva: null,  // id de la misión a mostrar en pantalla
       inventario: { monedas: 0, logros: [], items: {} }, // items: ingredientes/objetos (FASE C)
@@ -74,6 +75,7 @@ AJ.Guardado = (function () {
         granja: est.granja || {},
         misiones: est.misiones || {},
         afinidad: est.afinidad || {},
+        mapaActual: est.mapaActual || 1,
       });
     } catch (e) {
       console.warn('[Guardado] Save corrupto, ignoro:', e);

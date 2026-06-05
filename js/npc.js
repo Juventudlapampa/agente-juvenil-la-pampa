@@ -55,6 +55,9 @@ AJ.NPCManager = class {
   }
 
   crearTodos() {
+    // FASE D: pueblos sin NPCs (p. ej. la Colonia) se quedan vacíos. El
+    // sistema igual queda "iniciado" (sin vecinos), sin romper nada.
+    if (AJ.Mapa.meta && AJ.Mapa.meta.conNPCs === false) return;
     const spots = AJ.Mapa.meta.npcSpots || {};
     // Punto en la plaza para la abuela (banco al sol).
     const plazaSpot = { x: 17, y: 17 };

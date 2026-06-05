@@ -66,7 +66,14 @@ AJ.Crafteo = class {
 
   _ubicarMesa() {
     // Validar/ajustar el tile de la mesa a uno walkable cerca de la huerta.
-    const cand = [this.mesaTile, { x: 22, y: 25 }, { x: 21, y: 24 }, { x: 28, y: 24 }, { x: 19, y: 22 }];
+    // FASE D: priorizar tiles pegados a la parcela del pueblo ACTUAL.
+    const cand = [];
+    const g = AJ.Mapa.meta.granja;
+    if (g) {
+      cand.push({ x: g.x - 1, y: g.y + g.h - 1 }, { x: g.x + g.w, y: g.y + g.h - 1 },
+        { x: g.x, y: g.y + g.h }, { x: g.x - 1, y: g.y });
+    }
+    cand.push(this.mesaTile, { x: 22, y: 25 }, { x: 21, y: 24 }, { x: 28, y: 24 }, { x: 19, y: 22 });
     let elegido = null;
     for (const c of cand) {
       if (!AJ.Mapa.esColision(c.x, c.y)) { elegido = c; break; }

@@ -28,7 +28,8 @@ AJ.Rutinas = class {
   }
 
   init() {
-    if (!this.mgr || !this.mgr.npcs.length) throw new Error('sin NPCs para rutinas');
+    // FASE D: en un pueblo sin NPCs (Colonia) el sistema se inicia vacío.
+    if (!this.mgr || !this.mgr.npcs.length) return;
     // Puntos sociales en la plaza (evitando el monumento 19,15).
     const plaza = [
       { x: 16, y: 13 }, { x: 22, y: 13 }, { x: 16, y: 17 },

@@ -57,6 +57,28 @@ Cada decisión tomada sin frenar a preguntar queda anotada acá, con su porqué.
   criollo, canasta, adorno. Determinístico, sin azar ni plata real.
 - Smoke **38/38 PASS**; crafteo y persistencia de ítems verificados.
 
+### D14 — FASE D: multi-pueblo mutando AJ.Mapa in-place (cero refactor de refs)
+**Por qué:** `CONFIG.viaje` agrega un 2º pueblo y viaje, que es riesgo ALTO porque
+`AJ.Mapa` es un singleton referenciado por todos los sistemas (jugador, rutinas,
+granja, crafteo, Pueblo).
+- **Clave anti-rotura:** en vez de cambiar todas esas referencias, `AJ.Mapa.cargar(id)`
+  **reconstruye el mismo objeto** `AJ.Mapa` (muta tex/col/meta/SPAWN). Como cada
+  escena lee `AJ.Mapa` al crearse, viajar = guardar, `cargar(destino)`,
+  `scene.restart({nuevo:false})`. Ningún sistema cambió. Pueblo 1 quedó idéntico
+  (smoke 42/42 antes y después del refactor).
+- **Bug atrapado y corregido:** `scene.restart()` sin datos reusa el `{nuevo:true}`
+  del start original → init rearmaba un juego nuevo y perdía el viaje. Fix:
+  `restart({nuevo:false})` para forzar la carga del estado recién guardado.
+- **2º pueblo "Colonia La Esperanza"** sin NPCs (`meta.conNPCs=false`): chacra para
+  farmear/craftear/juntar leña. Los sistemas que dependen de NPCs se inician vacíos
+  sin romper; el smoke es "consciente del pueblo" (saltea los checks de NPC donde no
+  hay vecinos). Misiones siguen en el Pueblo 1; el Cuaderno avisa "Buscá a alguien
+  del pueblo" cuando el NPC objetivo está en el otro mapa.
+- **Salidas** = tiles de borde; pisar uno dispara el viaje. `estado.mapaActual`
+  persiste; un juego nuevo siempre arranca en el Pueblo 1.
+- Verificado: viaje ida y vuelta, persistencia, sin errores de consola. Smoke
+  Pueblo 1 42/42, Colonia 35/35.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
