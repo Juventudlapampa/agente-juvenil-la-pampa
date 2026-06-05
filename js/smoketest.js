@@ -122,10 +122,11 @@ AJ.SmokeTest = (function () {
         ? true : 'Hay ' + (AJ.MISIONES ? AJ.MISIONES.length : 0));
       check('Sistema de misiones vivo', () => escena.misiones && escena.misiones.hud);
       if (conNPCs) check('Cadena de misiones consistente', () => {
-        // Cada misión referencia NPCs que existen.
+        // Cada misión DEL PUEBLO ACTUAL referencia NPCs que existen acá.
         if (!escena.npcManager) return 'sin npcManager';
         const ids = escena.npcManager.npcs.map((n) => n.id);
-        const malas = AJ.MISIONES.filter((m) =>
+        const delPueblo = AJ.MISIONES.filter((m) => (m.pueblo || 1) === AJ.Mapa.actual);
+        const malas = delPueblo.filter((m) =>
           ids.indexOf(m.npcInicio) < 0 || ids.indexOf(m.objetivoNpc) < 0 || ids.indexOf(m.npcFin) < 0);
         return malas.length === 0 ? true : 'NPC inexistente en: ' + malas.map((m) => m.id).join(',');
       });
@@ -190,18 +191,26 @@ AJ.SmokeTest = (function () {
         const n = escena.npcManager.npcs[0];
         const rec = escena.rutinas.rec[n.id];
         if (!rec) return 'sin rec';
-        const px0 = rec.px, py0 = rec.py, tx0 = n.tx, ty0 = n.ty;
-        // Forzar destino lejano (esquina de plaza) y tickear varias veces.
+        // Snapshot de TODOS los NPCs (el override de _target los mueve a todos;
+        // hay que restaurarlos a todos para no ensuciar la escena).
+        const snapN = escena.npcManager.npcs.map((m) => {
+          const r = escena.rutinas.rec[m.id] || {};
+          return { m, px: r.px, py: r.py, tx: m.tx, ty: m.ty, ruta: r.ruta, idx: r.idx, goal: r.goal };
+        });
+        const px0 = rec.px, py0 = rec.py;
         const destino = { x: 19, y: 17 };
         const orig = escena.rutinas._target;
         escena.rutinas._target = () => destino;
         for (let i = 0; i < 40; i++) { escena.rutinas.acc = 1; escena.rutinas.update(0.05); }
         escena.rutinas._target = orig;
         const movio = Math.abs(rec.px - px0) > 1 || Math.abs(rec.py - py0) > 1;
-        // restaurar posición del NPC para no dejarlo corrido
-        rec.px = px0; rec.py = py0;
-        n.sprite.x = px0; n.sprite.y = py0;
-        if (n.tx !== tx0 || n.ty !== ty0) escena.npcManager.reubicar(n, tx0, ty0);
+        // Restaurar a TODOS.
+        snapN.forEach((s) => {
+          const r = escena.rutinas.rec[s.m.id];
+          if (r) { r.px = s.px; r.py = s.py; r.ruta = s.ruta; r.idx = s.idx; r.goal = s.goal; }
+          s.m.sprite.x = s.px; s.m.sprite.y = s.py;
+          if (s.m.tx !== s.tx || s.m.ty !== s.ty) escena.npcManager.reubicar(s.m, s.tx, s.ty);
+        });
         return movio ? true : 'no se movió';
       });
       check('Hablar sube la afinidad (capeada, 1/día)', () => {
@@ -209,11 +218,16 @@ AJ.SmokeTest = (function () {
         if (!af) return 'sin afinidad';
         const n = escena.npcManager.npcs[0];
         const v0 = af.nivel(n.id);
+        const charlaPrev = af.ultimaCharlaDia[n.id]; // para restaurar luego
         af.ultimaCharlaDia[n.id] = -1; // permitir bump
         af.alHablar(n);
         const v1 = af.nivel(n.id);
         af.alHablar(n); // segunda charla mismo día: no debe subir
         const v2 = af.nivel(n.id);
+        // Restaurar: estado.afinidad lo restaura el snapshot global; acá
+        // devolvemos ultimaCharlaDia para no "gastar" la charla del día.
+        if (charlaPrev === undefined) delete af.ultimaCharlaDia[n.id];
+        else af.ultimaCharlaDia[n.id] = charlaPrev;
         return (v1 === Math.min(af.MAX, v0 + af.BUMP_HABLAR) && v2 === v1)
           ? true : 'bump raro (' + v0 + '->' + v1 + '->' + v2 + ')';
       });

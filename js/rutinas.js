@@ -30,8 +30,12 @@ AJ.Rutinas = class {
   init() {
     // FASE D: en un pueblo sin NPCs (Colonia) el sistema se inicia vacío.
     if (!this.mgr || !this.mgr.npcs.length) return;
-    // Puntos sociales en la plaza (evitando el monumento 19,15).
-    const plaza = [
+    // Puntos de encuentro a la tarde. Pueblo 1: la plaza. C1.1 Colonia: junto
+    // al camino central (no hay plaza). BFS resuelve el camino desde cada spot.
+    const plaza = (AJ.Mapa.actual === 2) ? [
+      { x: 16, y: 13 }, { x: 22, y: 13 }, { x: 17, y: 16 },
+      { x: 21, y: 16 }, { x: 18, y: 14 }, { x: 20, y: 14 },
+    ] : [
       { x: 16, y: 13 }, { x: 22, y: 13 }, { x: 16, y: 17 },
       { x: 22, y: 17 }, { x: 17, y: 14 }, { x: 21, y: 16 },
     ];

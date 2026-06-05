@@ -14,6 +14,11 @@ Verificado, no asumido:
   diaNoche, granja, rutinas, estaciones, crafteo, viaje`.
 - No existía `CLAUDE.md` (se crea en esta capa).
 
+## Estado de partida que encontró C1/C2 (segunda noche)
+
+Verificado: smoke **55/55 PASS** (Pueblo 1), árbol limpio, las 11 fases previas en
+`true`. La Colonia estaba sin NPCs ni misiones propias (objetivo de C1).
+
 ## Capas construidas
 
 ### Capa 0 — Base (FASES 1–4 + Final)

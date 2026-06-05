@@ -329,6 +329,11 @@ AJ.Art = (function () {
     npc(scene, 'npc_maestra', 0x4aa86a, 0x6a4a30);
     npc(scene, 'npc_abuela', 0x9a6aa8, 0xcccccc);
     npc(scene, 'npc_chacarero', 0xa85a3a, 0x3a2a1a);
+    // C1.1: NPCs propios de la Colonia (texturas nuevas, no tocan las de arriba).
+    npc(scene, 'npc_puestero', 0x6a8a4a, 0x4a3525);
+    npc(scene, 'npc_pulpero', 0xc4b86a, 0x888888);
+    npc(scene, 'npc_maestrarural', 0x4a7ab8, 0x5a3a28);
+    npc(scene, 'npc_partera', 0xb86a8f, 0xdddddd);
     iconos(scene);
   }
 

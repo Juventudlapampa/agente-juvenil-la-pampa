@@ -55,17 +55,21 @@ AJ.NPCManager = class {
   }
 
   crearTodos() {
-    // FASE D: pueblos sin NPCs (p. ej. la Colonia) se quedan vacíos. El
-    // sistema igual queda "iniciado" (sin vecinos), sin romper nada.
+    // FASE D: pueblos sin NPCs se quedan vacíos. El sistema igual queda
+    // "iniciado" (sin vecinos), sin romper nada.
     if (AJ.Mapa.meta && AJ.Mapa.meta.conNPCs === false) return;
+    // C1.1: cada pueblo trae su propio elenco. Pueblo 1 queda idéntico.
+    const defs = (AJ.Mapa.actual === 2) ? this._defsColonia() : this._defsPueblo1();
+    this._instanciar(defs);
+  }
+
+  // Pueblo 1 — el elenco original (sin cambios respecto de FASE 2).
+  _defsPueblo1() {
     const spots = AJ.Mapa.meta.npcSpots || {};
-    // Punto en la plaza para la abuela (banco al sol).
     const plazaSpot = { x: 17, y: 17 };
-    // Punto frente a la huerta para el chacarero.
     const g = AJ.Mapa.meta.granja;
     const huertaSpot = g ? { x: g.x, y: g.y + g.h } : { x: 24, y: 27 };
-
-    const defs = [
+    return [
       { id: 'intendenta', nombre: 'Intendenta Beba', tex: 'npc_intendenta',
         spot: spots.muni, dir: 'abajo',
         saludo: ['La Municipalidad siempre tiene la puerta abierta, che.'] },
@@ -85,7 +89,33 @@ AJ.NPCManager = class {
         spot: huertaSpot, dir: 'arriba',
         saludo: ['La tierra da si la cuidás. Así de simple.'] },
     ];
+  }
 
+  // C1.1 — Colonia La Esperanza: su propio elenco rural.
+  _defsColonia() {
+    const spots = AJ.Mapa.meta.npcSpots || {};
+    const g = AJ.Mapa.meta.granja;
+    const huertaSpot = g ? { x: g.x, y: g.y + g.h } : { x: 22, y: 12 };
+    return [
+      { id: 'puestero', nombre: 'Don Ramón el Puestero', tex: 'npc_puestero',
+        spot: spots.chacraA || { x: 9, y: 10 }, dir: 'abajo',
+        saludo: ['Acá en la Colonia el día empieza con la primera luz.'] },
+      { id: 'pulpero', nombre: 'El Gallego', tex: 'npc_pulpero',
+        spot: spots.chacraB || { x: 28, y: 24 }, dir: 'abajo',
+        saludo: ['La pulpería tiene yerba, clavos y chismes. ¿Qué te doy?'] },
+      { id: 'maestra_rural', nombre: 'La Seño Marta', tex: 'npc_maestrarural',
+        spot: { x: 16, y: 14 }, dir: 'abajo',
+        saludo: ['La escuelita rural es chica pero no le falta corazón.'] },
+      { id: 'tractorista', nombre: 'El Colorado', tex: 'npc_chacarero',
+        spot: huertaSpot, dir: 'arriba',
+        saludo: ['Con el tractor andando, la chacra es otra cosa.'] },
+      { id: 'partera', nombre: 'Doña Anunciación', tex: 'npc_partera',
+        spot: { x: 10, y: 20 }, dir: 'abajo',
+        saludo: ['Traje al mundo a media Colonia, m\'hijo.'] },
+    ];
+  }
+
+  _instanciar(defs) {
     defs.forEach((d) => {
       try {
         const spot = d.spot || { x: 20, y: 20 };

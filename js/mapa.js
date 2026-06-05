@@ -187,7 +187,8 @@ AJ.Mapa = (function () {
     // FASE D: salida al oeste de vuelta al pueblo.
     poner(2, 15, T.TIERRA);
     meta.salidas = [{ x: 2, y: 15, destino: 1, llegada: { x: 35, y: 20 } }];
-    meta.conNPCs = false; // colonia tranquila: sin NPCs ni misiones
+    // C1.1: la Colonia tiene NPCs sólo si el flag npcsColonia está en true.
+    meta.conNPCs = !!(window.AJ && AJ.CONFIG && AJ.CONFIG.npcsColonia);
     meta.nombre = 'Colonia La Esperanza';
     SPAWN.x = 4; SPAWN.y = 15;
   }

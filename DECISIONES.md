@@ -139,6 +139,24 @@ y recompensas de misión siguen como **datos** (AJ.RECETAS / AJ.MISIONES), edita
 sin tocar lógica. Se dejó EXPLÍCITO en `PLAYTEST.md` y en los comentarios que estos
 son defaults razonables y que el balance fino **necesita playtest humano**. Smoke 55/55.
 
+### D20 — C1.1: NPCs propios de la Colonia (reusando rutinas/afinidad)
+**Por qué:** `CONFIG.npcsColonia` da vida al 2º pueblo con 5 vecinos rurales (Don
+Ramón el Puestero, El Gallego, La Seño Marta, El Colorado, Doña Anunciación), al
+mismo nivel que el principal, **sin sistemas nuevos**: usan los de FASE A/2.
+- `npc.js`: `crearTodos` ahora despacha por pueblo (`_defsPueblo1` idéntico /
+  `_defsColonia` nuevo). `mapa.js` Pueblo 2 setea `meta.conNPCs = !!CONFIG.npcsColonia`,
+  así con el flag off la Colonia sigue vacía (FASE D intacta).
+- `art.js`: 4 texturas nuevas (additivas). `rutinas.js`: punto de encuentro propio
+  de la Colonia (Pueblo 1 sin cambios).
+- **2 bugs de no-destructividad del smoke encontrados y corregidos** (sólo se notaban
+  con NPCs en ambos pueblos): el check "El NPC camina" sobreescribía `_target` global
+  y movía a TODOS los NPCs restaurando sólo el primero → ahora restaura a todos; y el
+  check de afinidad "gastaba" la charla del día del primer NPC (no restauraba
+  `ultimaCharlaDia`) → ahora lo restaura. Esto también dejó a los NPCs del Pueblo 1 en
+  su lugar tras el auto-smoke.
+- Verificado: Pueblo 1 y Colonia **55/55** cada uno; diálogo y afinidad andan en la
+  Colonia; sin errores de consola.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
