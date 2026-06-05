@@ -70,6 +70,21 @@ recién cuando el smoke-test del sistema da PASS.
     UI legible por encima del tinte).
   - Un día de juego = 240 s reales (configurable en CONFIG.SEGUNDOS_POR_DIA).
 
+- **FASE 4 (verificada en navegador):** Smoke-test **23/23 PASS**.
+  - Huerta comunitaria: plantar (gratis) → crecer en 4 etapas con el tiempo →
+    cosechar (+10 monedas). Cultivos renderizados en todas las etapas (semilla,
+    brote, planta, trigo dorado). Texto flotante de feedback.
+  - **Persistencia integral verificada:** se guardó posición, misión activa,
+    cultivo, hora y monedas; tras recargar y "Continuar" se recuperó todo idéntico.
+  - **PROHIBIDO respetado:** nada de azar/apuestas. La economía es plantar y
+    cosechar, 100% determinística.
+
+### D10 — Crecimiento por acumulador de segundos por cultivo
+**Por qué:** cada cultivo guarda `{etapa, seg}` y `seg` acumula segundos reales en
+`update(dt)`. Es robusto frente a recargas (se persiste) y no depende de relojes
+absolutos ni de que el día/noche esté activo. Plantar es gratis (huerta
+comunitaria, tono costumbrista); cosechar paga. Sin azar.
+
 ### D9 — Tinte como una sola capa de color (no shaders)
 **Por qué:** un rectángulo a pantalla completa con color+alpha fijado a la cámara
 (depth 8000, debajo de la UI) es lo más liviano y compatible. Se interpola entre

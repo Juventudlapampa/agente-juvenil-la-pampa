@@ -120,6 +120,34 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 11. FASE 4: granja
+    if (AJ.CONFIG.granja) {
+      check('Parcela y cultivos listos', () => {
+        const g = escena.granja;
+        return g && AJ.Mapa.meta.granja && Object.keys(g.cropSprites).length > 0
+          ? true : 'sin parcela';
+      });
+      check('Plantar → crecer → cosechar paga monedas', () => {
+        const g = escena.granja;
+        if (!g) return 'sin granja';
+        const p = AJ.Mapa.meta.granja;
+        const tx = p.x, ty = p.y, key = tx + ',' + ty;
+        const monedas0 = escena.estado.inventario.monedas || 0;
+        // limpiar ese tile por si había algo
+        delete escena.estado.granja[key];
+        const plantado = g.intentarInteractuar(tx, ty); // planta
+        if (!plantado || !escena.estado.granja[key]) return 'no plantó';
+        // forzar crecimiento a maduro
+        const paso = AJ.CONFIG.SEG_CRECIMIENTO_CULTIVO;
+        g.update(paso * 3 + 1);
+        if (escena.estado.granja[key].etapa < g.ETAPA_MADURO) return 'no maduró';
+        const cosechado = g.intentarInteractuar(tx, ty); // cosecha
+        const monedas1 = escena.estado.inventario.monedas || 0;
+        return (cosechado && monedas1 === monedas0 + g.MONEDAS_COSECHA && !escena.estado.granja[key])
+          ? true : 'cosecha no pagó (' + monedas0 + '->' + monedas1 + ')';
+      });
+    }
+
     // --- Reporte ---
     const pasados = r.filter((x) => x.ok).length;
     const total = r.length;

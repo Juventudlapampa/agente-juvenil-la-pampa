@@ -10,9 +10,10 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
       _(NPCs, diálogo RPG, 5 misiones cívicas, HUD cuaderno, Final. Commiteada.)_
 - [x] **FASE 3 — Tiempo vivo / día-noche** (`CONFIG.diaNoche`)
       _(reloj + tinte horario interpolado. Commiteada.)_
-- [ ] **FASE 4 — Granja** (`CONFIG.granja`)
-- [ ] **FASE FINAL** — pantalla de cierre al completar misiones (escena lista,
-      falta el gatillo desde misiones).
+- [x] **FASE 4 — Granja** (`CONFIG.granja`)
+      _(plantar/crecer/cosechar + monedas, persistente. Commiteada.)_
+- [x] **FASE FINAL** — pantalla de cierre al completar las 5 misiones.
+      _(gatillo desde misiones.js verificado: llega al Final con resumen.)_
 
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.
