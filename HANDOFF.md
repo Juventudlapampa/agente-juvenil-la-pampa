@@ -38,7 +38,7 @@ economía); pantalla final. Todo commiteado y verificado.
 | P2 Sonido procedural | `sonido` | **hecho** (true) — smoke 44/44 |
 | P3 UX y táctil | `uiPulida` | **hecho** (true) — smoke 47/47 |
 | P4 Robustez y bordes | (sin flag) | **hecho** — 7 casos de borde, smoke 54/54 |
-| P5 Balance con defaults | (sin flag) | pendiente |
+| P5 Balance con defaults | (sin flag) | **hecho** — `CONFIG.BALANCE`, smoke 55/55 |
 
 ## Push
 No hay remote git configurado. **El `git push` lo hace el humano** (crear repo en

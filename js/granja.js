@@ -22,7 +22,9 @@ AJ.Granja = class {
     if (!this.estado.granja) this.estado.granja = {};
     this.parcela = AJ.Mapa.meta.granja || { x: 23, y: 23, w: 5, h: 4 };
     this.cropSprites = {}; // "x,y" -> sprite del cultivo
-    this.MONEDAS_COSECHA = 10;
+    // P5: balance leído de CONFIG.BALANCE (con fallback).
+    this.MONEDAS_COSECHA = AJ.bal ? AJ.bal('cosechaMonedas', 10) : 10;
+    this.VERDURAS_COSECHA = AJ.bal ? AJ.bal('cosechaVerduras', 1) : 1;
     this.ETAPA_MADURO = 3;
   }
 
@@ -84,7 +86,7 @@ AJ.Granja = class {
         // FASE C (opcional): además de monedas, la cosecha da 1 'verdura' para
         // craftear. Guardado: si el crafteo está apagado igual no molesta.
         if (!inv.items) inv.items = {};
-        inv.items.verdura = (inv.items.verdura || 0) + 1;
+        inv.items.verdura = (inv.items.verdura || 0) + this.VERDURAS_COSECHA;
       } catch (e) {}
       if (AJ.Sonido) { try { AJ.Sonido.cosecha(); } catch (e) {} }
       this._flotante('+' + this.MONEDAS_COSECHA + ' ¢  +1 🥕', tx, ty, '#f5d020');
@@ -112,7 +114,7 @@ AJ.Granja = class {
   }
 
   update(dt) {
-    const paso = Math.max(1, AJ.CONFIG.SEG_CRECIMIENTO_CULTIVO);
+    const paso = Math.max(1, AJ.bal ? AJ.bal('segCrecimientoEtapa', AJ.CONFIG.SEG_CRECIMIENTO_CULTIVO) : AJ.CONFIG.SEG_CRECIMIENTO_CULTIVO);
     // FASE B (opcional): la estación acelera/frena el crecimiento. Si no hay
     // sistema de estaciones, el factor es 1 y el comportamiento es el de FASE 4.
     let factor = 1;

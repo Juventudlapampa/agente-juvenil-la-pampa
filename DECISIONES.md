@@ -129,6 +129,16 @@ dos veces al mismo NPC, cargar sin guardado → null. Todos los tests mutadores 
 el guardado defensivo (migración por campos + fallback a memoria). Smoke 54/54 (Pueblo),
 47/47 (Colonia).
 
+### D19 — Capa de pulido P5 (balance): un solo lugar + caveat de playtest
+**Por qué:** los números que afectan el ritmo se juntaron en `AJ.CONFIG.BALANCE`
+(monedas/verduras de cosecha, ritmo de crecimiento, afinidad por charla, factor de
+precio de crafteo) con comentarios. Los sistemas leen con `AJ.bal(clave, fallback)`,
+así borrar un valor no rompe nada (verificado: cambiar `cosechaMonedas` a 50 y
+`afinidadPorCharla` a 8 y reiniciar → la granja y la afinidad lo toman). Las recetas
+y recompensas de misión siguen como **datos** (AJ.RECETAS / AJ.MISIONES), editables
+sin tocar lógica. Se dejó EXPLÍCITO en `PLAYTEST.md` y en los comentarios que estos
+son defaults razonables y que el balance fino **necesita playtest humano**. Smoke 55/55.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

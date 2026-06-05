@@ -246,7 +246,8 @@ AJ.Afinidad = class {
     this.estado = estado;
     if (!this.estado.afinidad) this.estado.afinidad = {};
     this.MAX = 100;
-    this.BUMP_HABLAR = 20;     // sube un "corazón" por charla nueva del día
+    // P5: balance de afinidad leído de CONFIG.BALANCE (con fallback).
+    this.BUMP_HABLAR = AJ.bal ? AJ.bal('afinidadPorCharla', 20) : 20;
     this.ultimaCharlaDia = {}; // id -> día en que ya charló (anti-farmeo)
     this.abierto = false;
   }

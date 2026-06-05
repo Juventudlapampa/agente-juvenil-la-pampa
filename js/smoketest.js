@@ -354,6 +354,20 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 18b. P5: balance centralizado
+    check('Balance centralizado y leído por los sistemas', () => {
+      if (!AJ.CONFIG.BALANCE || typeof AJ.bal !== 'function') return 'sin BALANCE/AJ.bal';
+      if (AJ.bal('cosechaMonedas', -1) !== AJ.CONFIG.BALANCE.cosechaMonedas) return 'AJ.bal no lee';
+      if (AJ.bal('inexistente_zzz', 42) !== 42) return 'fallback no anda';
+      // la granja debe usar el valor de balance
+      if (escena.granja && escena.granja.MONEDAS_COSECHA !== AJ.CONFIG.BALANCE.cosechaMonedas)
+        return 'granja no usa balance';
+      // la afinidad también
+      if (escena.afinidad && escena.afinidad.BUMP_HABLAR !== AJ.CONFIG.BALANCE.afinidadPorCharla)
+        return 'afinidad no usa balance';
+      return true;
+    });
+
     // 19. P4: casos de borde (siempre, sin flag)
     check('B1: guardar a mitad de misión y recargar', () => {
       const orig = AJ.SAVE_KEY;

@@ -48,5 +48,50 @@ AJ.CONFIG = {
   DIAS_POR_ESTACION: 3,        // días de juego por estación
 };
 
+/* =====================================================================
+ * BALANCE (P5) — Todos los números que afectan el "ritmo" del juego, en
+ * UN SOLO LUGAR para tunear fácil. Los sistemas leen de acá con fallback
+ * a su default, así si borrás un valor el juego igual anda.
+ *
+ * ⚠️ IMPORTANTE: estos son defaults RAZONABLES, NO finos. El balance que
+ * "se siente bien" (que no aburra ni frustre) SÓLO se ajusta JUGANDO.
+ * La corrida nocturna no puede validar feel. Ver PLAYTEST.md.
+ * ===================================================================== */
+AJ.CONFIG.BALANCE = {
+  // --- Movimiento y tiempo (espejo de los de arriba, documentados) ---
+  // velocidadJugador: < 120 se siente lento; > 190 se siente incómodo. Default 150.
+  // segundosPorDia: 240 = un día cada 4 min reales. Subilo si el día/noche marea.
+  // diasPorEstacion: 3 = estaciones rápidas para ver el sistema; subí a 7+ para realismo.
+
+  // --- Granja / economía ---
+  segCrecimientoEtapa: 30,   // seg reales por etapa (4 etapas = ~2 min a maduro).
+  cosechaMonedas: 10,        // monedas por cosechar un cultivo maduro.
+  cosechaVerduras: 1,        // verduras (ingrediente de crafteo) por cosecha.
+
+  // --- Afinidad (amistad) ---
+  // Sube al hablar, 1 vez por día de juego. 5 charlas (5 días) = 100 = máximo.
+  // Bajalo (p. ej. 10) si querés que la amistad cueste más.
+  afinidadPorCharla: 20,
+
+  // --- Crafteo ---
+  // Escala las recompensas de MONEDAS de las recetas (1 = como en AJ.RECETAS).
+  // Las recetas concretas (qué cuesta y qué da) viven en js/crafteo.js → AJ.RECETAS.
+  factorPrecioCrafteo: 1.0,
+
+  // --- Misiones ---
+  // El ritmo es una cadena lineal de 5 misiones (ofrecer → objetivo → volver).
+  // No hay timers: avanza al hablar con el NPC correcto. Las recompensas por
+  // misión (10/15/15/20/30 monedas + logro) están en js/misiones.js → AJ.MISIONES.
+  // Para cambiar el "ritmo" se editan esas plantillas (son datos, sin tocar lógica).
+};
+
+// Helper: leer un valor de BALANCE con fallback (no rompe si falta).
+AJ.bal = function (clave, porDefecto) {
+  try {
+    const v = AJ.CONFIG.BALANCE[clave];
+    return (v === undefined || v === null) ? porDefecto : v;
+  } catch (e) { return porDefecto; }
+};
+
 // Clave de guardado en localStorage.
 AJ.SAVE_KEY = 'agente_juvenil_la_pampa_save_v1';

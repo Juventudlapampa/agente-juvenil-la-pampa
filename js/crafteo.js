@@ -148,7 +148,11 @@ AJ.Crafteo = class {
     if (!this._alcanza(receta.cuesta)) { this._avisoMenu('Te faltan ingredientes'); return false; }
     for (const k in receta.cuesta) this._agregar(k, -receta.cuesta[k]);
     const inv = this.estado.inventario;
-    if (receta.da.monedas) inv.monedas = (inv.monedas || 0) + receta.da.monedas;
+    if (receta.da.monedas) {
+      // P5: factor de precio de crafteo (balance, con fallback a 1).
+      const factor = AJ.bal ? AJ.bal('factorPrecioCrafteo', 1) : 1;
+      inv.monedas = (inv.monedas || 0) + Math.round(receta.da.monedas * factor);
+    }
     if (receta.da.item) this._agregar(receta.da.item, 1);
     if (receta.logro && inv.logros.indexOf(receta.logro) < 0) inv.logros.push(receta.logro);
     if (AJ.Sonido) { try { AJ.Sonido.craft(); } catch (e) {} }
