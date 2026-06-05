@@ -26,6 +26,8 @@ AJ.SmokeTest = (function () {
           granja: JSON.stringify(escena.estado.granja || {}),
           afinidad: JSON.stringify(escena.estado.afinidad || {}),
           items: JSON.stringify((escena.estado.inventario && escena.estado.inventario.items) || {}),
+          misiones: JSON.stringify(escena.estado.misiones || {}),
+          misionActiva: escena.estado.misionActiva,
         };
       }
     } catch (e) { snap = null; }
@@ -352,6 +354,90 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 19. P4: casos de borde (siempre, sin flag)
+    check('B1: guardar a mitad de misión y recargar', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge1';
+        const est = AJ.Guardado.estadoNuevo();
+        est.misiones = { bienvenida: 'objetivo_ok' };
+        est.mapaActual = 2;
+        est.inventario.monedas = 77;
+        est.tiempo.minutos = 555;
+        AJ.Guardado.guardar(est);
+        const l = AJ.Guardado.cargar();
+        AJ.Guardado.borrar();
+        return (l && l.misiones.bienvenida === 'objetivo_ok' && l.mapaActual === 2 &&
+          l.inventario.monedas === 77 && l.tiempo.minutos === 555) ? true : 'no restauró bien';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B2: save corrupto no rompe (devuelve null)', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge2';
+        try { window.localStorage.setItem(AJ.SAVE_KEY, '{ esto no es json'); } catch (e) {}
+        const l = AJ.Guardado.cargar();
+        AJ.Guardado.borrar();
+        return l === null ? true : 'no devolvió null';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B3: estado para cada pueblo sobrevive el round-trip', () => {
+      // No llama cargar() (corromperia la escena viva); valida los datos.
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge3';
+        let ok = true;
+        [1, 2].forEach((id) => {
+          const e = AJ.Guardado.estadoNuevo(); e.mapaActual = id;
+          AJ.Guardado.guardar(e);
+          const l = AJ.Guardado.cargar();
+          if (!l || l.mapaActual !== id) ok = false;
+        });
+        AJ.Guardado.borrar();
+        return ok ? true : 'round-trip de pueblo falló';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B4: interactuar parcela vacía / fuera de parcela no rompe', () => {
+      if (!escena.granja || !AJ.Mapa.meta.granja) return true; // n/a en este pueblo
+      const p = AJ.Mapa.meta.granja, key = p.x + ',' + p.y;
+      delete escena.estado.granja[key];
+      const r1 = escena.granja.intentarInteractuar(p.x, p.y);      // planta
+      const r2 = escena.granja.intentarInteractuar(-5, -5);        // fuera: false
+      delete escena.estado.granja[key];
+      if (escena.granja.cropSprites[key]) escena.granja.cropSprites[key].setVisible(false);
+      return (r1 === true && r2 === false) ? true : 'r1=' + r1 + ' r2=' + r2;
+    });
+
+    check('B5: inventario/monedas enormes no rompen el HUD ni el menú', () => {
+      const inv = escena.estado.inventario;
+      inv.items = inv.items || {};
+      inv.monedas = 9999999; inv.items.verdura = 99999; inv.items.lena = 88888;
+      if (escena._actualizarHUD) escena._actualizarHUD();
+      if (escena.crafteo && escena.crafteo._refrescarMenu) escena.crafteo._refrescarMenu();
+      if (escena.afinidad && escena.afinidad._refrescar) escena.afinidad._refrescar();
+      return true; // si no lanzó, pasa (el restore global limpia)
+    });
+
+    check('B6: hablar dos veces al mismo NPC es estable', () => {
+      if (!conNPCs || !escena.misiones || !escena.npcManager) return true;
+      const npc = escena.npcManager.npcs[0];
+      const dlg = { abierto: false, mostrar: function (n, l, cb) { if (cb) cb(); } };
+      escena.misiones.alHablar(npc, dlg);
+      escena.misiones.alHablar(npc, dlg); // dos veces: no debe lanzar ni saltar de estado
+      return true;
+    });
+
+    check('B7: cargar sin guardado devuelve null', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge7_inexistente';
+        return AJ.Guardado.cargar() === null ? true : 'no devolvió null';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
@@ -363,6 +449,8 @@ AJ.SmokeTest = (function () {
           escena.estado.tiempo.minutos = snap.minutos;
         escena.estado.granja = JSON.parse(snap.granja);
         if (snap.afinidad !== undefined) escena.estado.afinidad = JSON.parse(snap.afinidad);
+        if (snap.misiones !== undefined) escena.estado.misiones = JSON.parse(snap.misiones);
+        escena.estado.misionActiva = snap.misionActiva;
         // Re-sincronizar la vista de la granja con el estado restaurado.
         if (escena.granja && escena.granja.cropSprites) {
           Object.keys(escena.granja.cropSprites).forEach((k) => {

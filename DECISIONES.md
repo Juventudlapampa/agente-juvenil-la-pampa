@@ -118,6 +118,17 @@ grande (lógica guardada en `dialogo.js`).
 - Verificado: smoke 47/47, placa OK, d-pad 68px sin desbordar en 375px, input táctil
   responde. El *confort real* en celular necesita mano humana (ver PLAYTEST.md).
 
+### D18 — Capa de pulido P4 (robustez): casos de borde en el smoke
+**Por qué:** el smoke (sin flag, siempre) sumó 7 casos de borde: guardar a mitad de
+misión y recargar (round-trip), save corrupto → null, estado por pueblo sobrevive el
+round-trip (sin llamar `cargar` para no corromper la escena), interactuar parcela
+vacía / fuera de parcela, inventario y monedas enormes (HUD + menú no rompen), hablar
+dos veces al mismo NPC, cargar sin guardado → null. Todos los tests mutadores son
+**no destructivos** (snapshot/restore, ahora también de `misiones`). Resultado honesto:
+**ningún borde reveló un bug** — la base ya era robusta por los try/catch por sistema y
+el guardado defensivo (migración por campos + fallback a memoria). Smoke 54/54 (Pueblo),
+47/47 (Colonia).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
