@@ -38,6 +38,27 @@ recién cuando el smoke-test del sistema da PASS.
 **Por qué:** versión estable y CDN confiable. Si no hay internet la primera vez,
 `main.js` muestra un mensaje claro en lugar de pantalla en blanco.
 
+## Criterio de éxito — resultado final
+
+Verificado en navegador (server local + lectura del canvas). Todo cumplido:
+
+| Criterio | Resultado |
+|----------|-----------|
+| Abre sin errores en consola | ✅ Sin errores en carga limpia |
+| Se ve el pueblo pampeano | ✅ Plaza, monumento, iglesia, Muni, Casa de la Juventud, almacén, casas, aguada, caldenes, huerta |
+| El jugador camina, choca y la cámara lo sigue | ✅ Movimiento 4 dir, colisiones (monumento/agua/NPCs), cámara con follow |
+| Se habla con NPCs y se completan misiones | ✅ 6 NPCs, diálogo RPG, 5 misiones cívicas en cadena |
+| Guarda y recupera al recargar | ✅ Posición, misiones, granja, hora y monedas persisten (Continuar) |
+| Anda en celular | ✅ Escala FIT + controles táctiles (d-pad + acción) que disparan input |
+| Smoke-test todo PASS | ✅ **23/23 PASS** |
+| Llega a la pantalla final | ✅ Al completar las 5 misiones → felicitación con resumen |
+
+> **Nota de entorno de verificación:** el preview headless mantiene la pestaña
+> "hidden", lo que pausa `requestAnimationFrame` y cuelga el screenshot del
+> harness. Se verificó manejando el loop a mano (`game.step`) y leyendo
+> `canvas.toDataURL` (imágenes de ~60–100 KB, no vacías). En un navegador real
+> (doble clic / GitHub Pages / celular) el loop corre normal a 60 fps.
+
 ## Resultados del smoke-test
 
 > Se completa al cerrar cada fase. Ver consola del navegador (F12).
