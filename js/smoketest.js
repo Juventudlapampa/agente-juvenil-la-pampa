@@ -102,7 +102,7 @@ AJ.SmokeTest = (function () {
 
     // 8. FASE 2: NPCs y diálogo (si el flag está activo)
     if (AJ.CONFIG.npcsDialogo) {
-      check('Diálogo disponible', () => escena.dialogo && typeof escena.dialogo.mostrar === 'function');
+      check('Diálogo disponible', () => !!(escena.dialogo && typeof escena.dialogo.mostrar === 'function'));
       if (conNPCs) {
         check('NPCs creados', () => {
           const n = escena.npcManager && escena.npcManager.npcs.length;
@@ -336,6 +336,19 @@ AJ.SmokeTest = (function () {
         AJ.Sonido.toggleMute(); const m1 = AJ.Sonido.estaMuteado();
         AJ.Sonido.setMute(m0); // restaurar
         return (m1 === !m0) ? true : 'mute no togglea';
+      });
+    }
+
+    // 18. P3: UX pulida
+    if (AJ.CONFIG.uiPulida) {
+      check('Clase ui-pulida aplicada al body', () =>
+        document.body.classList.contains('ui-pulida') ? true : 'sin clase ui-pulida');
+      check('Diálogo construido (con placa)', () =>
+        escena.dialogo && escena.dialogo.placa ? true : 'sin placa de diálogo');
+      check('Botones táctiles presentes', () => {
+        const ids = ['btn-arriba', 'btn-abajo', 'btn-izq', 'btn-der', 'btn-accion'];
+        const faltan = ids.filter((id) => !document.getElementById(id));
+        return faltan.length === 0 ? true : 'faltan: ' + faltan.join(',');
       });
     }
 

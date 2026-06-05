@@ -20,26 +20,45 @@ AJ.Dialogo = class {
 
   _construirUI() {
     const W = this.scene.scale.width, H = this.scene.scale.height;
-    const margen = 16, alto = 130;
+    const margen = 16;
+    let alto = 130;
     this.cont = this.scene.add.container(0, 0).setScrollFactor(0).setDepth(10000);
     this.cont.setVisible(false);
+
+    // P3: con uiPulida, el panel es un poco más alto y el texto más grande.
+    const pulida = !!(AJ.CONFIG && AJ.CONFIG.uiPulida);
+    if (pulida) alto = 142;
+    const top = H - alto - margen;
 
     // Panel
     this.panel = this.scene.add.graphics();
     this.panel.fillStyle(0x2a1f12, 0.94);
-    this.panel.fillRoundedRect(margen, H - alto - margen, W - margen * 2, alto, 12);
+    this.panel.fillRoundedRect(margen, top, W - margen * 2, alto, pulida ? 16 : 12);
     this.panel.lineStyle(3, 0xf3d9a0, 1);
-    this.panel.strokeRoundedRect(margen, H - alto - margen, W - margen * 2, alto, 12);
+    this.panel.strokeRoundedRect(margen, top, W - margen * 2, alto, pulida ? 16 : 12);
+
+    // P3: placa detrás del nombre del que habla.
+    const elementos = [this.panel];
+    if (pulida) {
+      this.placa = this.scene.add.graphics();
+      this.placa.fillStyle(0x8a4a2a, 0.95);
+      this.placa.fillRoundedRect(margen + 10, top - 14, 220, 30, 8);
+      this.placa.lineStyle(2, 0xf3d9a0, 1);
+      this.placa.strokeRoundedRect(margen + 10, top - 14, 220, 30, 8);
+      elementos.push(this.placa);
+    }
 
     // Nombre del que habla
-    this.txtNombre = this.scene.add.text(margen + 18, H - alto - margen + 10, '', {
-      fontFamily: 'Georgia, serif', fontSize: '18px', color: '#f5d020', fontStyle: 'bold',
+    this.txtNombre = this.scene.add.text(margen + (pulida ? 22 : 18), top + (pulida ? -10 : 10), '', {
+      fontFamily: 'Georgia, serif', fontSize: pulida ? '19px' : '18px', color: '#fff7e6',
+      fontStyle: 'bold',
     });
+    if (!pulida) this.txtNombre.setColor('#f5d020');
 
     // Cuerpo del texto
-    this.txtCuerpo = this.scene.add.text(margen + 18, H - alto - margen + 40, '', {
-      fontFamily: 'Georgia, serif', fontSize: '17px', color: '#fff7e6',
-      wordWrap: { width: W - margen * 2 - 36 }, lineSpacing: 4,
+    this.txtCuerpo = this.scene.add.text(margen + 18, top + (pulida ? 30 : 40), '', {
+      fontFamily: 'Georgia, serif', fontSize: pulida ? '18px' : '17px', color: '#fff7e6',
+      wordWrap: { width: W - margen * 2 - 36 }, lineSpacing: pulida ? 6 : 4,
     });
 
     // Indicador "continuar"
@@ -47,7 +66,8 @@ AJ.Dialogo = class {
       fontFamily: 'monospace', fontSize: '18px', color: '#f3d9a0',
     });
 
-    this.cont.add([this.panel, this.txtNombre, this.txtCuerpo, this.txtMas]);
+    elementos.push(this.txtNombre, this.txtCuerpo, this.txtMas);
+    this.cont.add(elementos);
 
     // Parpadeo del indicador.
     this.scene.tweens.add({ targets: this.txtMas, alpha: 0.2, duration: 500,

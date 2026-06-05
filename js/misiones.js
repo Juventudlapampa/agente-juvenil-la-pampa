@@ -271,7 +271,8 @@ AJ.Misiones = class {
   // --- HUD de misión activa (esquina superior derecha) ---
   _crearHUD() {
     const W = this.scene.scale.width;
-    this.hud = this.scene.add.text(W - 12, 10, '', {
+    // y=62: deja lugar arriba-derecha para el botón de mute (P2).
+    this.hud = this.scene.add.text(W - 12, 62, '', {
       fontFamily: 'Georgia, serif', fontSize: '14px', color: '#fff7e6',
       backgroundColor: '#2a1f12cc', padding: { x: 8, y: 6 },
       align: 'right', wordWrap: { width: 280 },

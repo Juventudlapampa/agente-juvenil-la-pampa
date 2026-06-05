@@ -100,3 +100,49 @@ html, body {
   #dpad .fila-media { width: 180px; top: 61px; }
   #btn-arriba, #btn-abajo { left: 61px; }
 }
+
+/* ============ P3: UX pulida (clase ui-pulida en el body) ============ */
+/* Controles táctiles más cómodos: botones más grandes y separados, con un
+   leve panel de fondo para que se vean sobre cualquier escena. */
+body.ui-pulida #dpad {
+  width: 232px; height: 232px;
+  left: 18px; bottom: 30px;
+}
+body.ui-pulida #dpad::before {
+  content: ''; position: absolute; inset: -10px;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.22), rgba(0,0,0,0) 70%);
+  border-radius: 50%; pointer-events: none;
+}
+body.ui-pulida .tbtn {
+  width: 78px; height: 78px; font-size: 30px;
+  border-radius: 18px;
+  background: rgba(58, 44, 16, 0.50);
+  border: 2px solid rgba(255, 243, 196, 0.78);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+  transition: background 0.05s, transform 0.05s;
+}
+body.ui-pulida .tbtn.presionado { background: rgba(168, 90, 58, 0.92); transform: scale(0.92); }
+body.ui-pulida #dpad .fila-media { top: 80px; width: 232px; }
+body.ui-pulida #btn-arriba { top: 2px; left: 78px; }
+body.ui-pulida #btn-abajo  { bottom: 2px; left: 78px; }
+body.ui-pulida .tbtn.accion {
+  width: 100px; height: 100px; font-size: 34px;
+  right: 26px; bottom: 64px;
+  background: rgba(168, 90, 58, 0.62);
+}
+
+/* Botón de mute un poco más prolijo en UI pulida. */
+body.ui-pulida #btn-mute {
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* En pantallas chicas, mantener cómodo pero sin desbordar. */
+@media (max-width: 500px) {
+  body.ui-pulida #dpad { width: 208px; height: 208px; }
+  body.ui-pulida .tbtn { width: 68px; height: 68px; font-size: 26px; }
+  body.ui-pulida #dpad .fila-media { width: 208px; top: 70px; }
+  body.ui-pulida #btn-arriba { left: 70px; }
+  body.ui-pulida #btn-abajo  { left: 70px; }
+  body.ui-pulida .tbtn.accion { width: 88px; height: 88px; }
+}

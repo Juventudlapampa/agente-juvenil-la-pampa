@@ -36,7 +36,7 @@ economía); pantalla final. Todo commiteado y verificado.
 |------|------|--------|
 | P1 Juice | `juice` | **hecho** (true) — smoke 43/43 |
 | P2 Sonido procedural | `sonido` | **hecho** (true) — smoke 44/44 |
-| P3 UX y táctil | `uiPulida` | pendiente |
+| P3 UX y táctil | `uiPulida` | **hecho** (true) — smoke 47/47 |
 | P4 Robustez y bordes | (sin flag) | pendiente |
 | P5 Balance con defaults | (sin flag) | pendiente |
 

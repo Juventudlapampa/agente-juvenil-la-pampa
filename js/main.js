@@ -99,6 +99,8 @@ AJ.iniciarJuego = function () {
   try {
     AJ.Input.init();
     if (AJ.Sonido) { try { AJ.Sonido.init(); } catch (e) { console.warn('[main] sonido off', e); } }
+    // P3: estilo de UI pulida (gateado por flag; el CSS lee la clase del body).
+    try { if (AJ.CONFIG.uiPulida) document.body.classList.add('ui-pulida'); } catch (e) {}
 
     const config = {
       type: Phaser.AUTO,

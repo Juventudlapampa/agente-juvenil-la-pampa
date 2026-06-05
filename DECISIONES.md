@@ -104,6 +104,20 @@ cosecha, moneda, craft, viaje, click). Sin archivos.
   sin lanzar aun con el contexto suspendido. El *gusto* del sonido necesita oído
   humano (ver PLAYTEST.md).
 
+### D17 — Capa de pulido P3 (UX/táctil): clase de body + CSS gateado
+**Por qué:** `CONFIG.uiPulida` agrega una clase `ui-pulida` al `<body>` (desde main.js)
+y el CSS la lee para mejorar **sin tocar la base**: d-pad táctil más grande (68–78px)
+y mejor separado, botón de acción más grande, panel de fondo sutil para verlos sobre
+cualquier escena. El diálogo gana una **placa** detrás del nombre y texto un poco más
+grande (lógica guardada en `dialogo.js`).
+- **Fix de overlap (siempre):** el botón de mute (P2, arriba-derecha) pisaba el HUD del
+  Cuaderno; se bajó el Cuaderno a y=62.
+- **Bug atrapado por el smoke:** reasigné `alto` declarado con `const` en el diálogo →
+  el constructor lanzaba y `this.dialogo` quedaba undefined. Fix: `let alto`. Además se
+  endureció el check "Diálogo disponible" (devolvía `undefined`, falso PASS; ahora `!!`).
+- Verificado: smoke 47/47, placa OK, d-pad 68px sin desbordar en 375px, input táctil
+  responde. El *confort real* en celular necesita mano humana (ver PLAYTEST.md).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

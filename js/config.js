@@ -26,7 +26,7 @@ AJ.CONFIG = {
   // --- Capa de pulido (FASES P) ---
   juice:       true,   // P1: tweens, fades, shake, feedback visual
   sonido:      true,   // P2: efectos procedurales con Web Audio + mute
-  uiPulida:    false,  // P3: UX de diálogo/cuaderno + táctil afinado
+  uiPulida:    true,   // P3: UX de diálogo/cuaderno + táctil afinado
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
