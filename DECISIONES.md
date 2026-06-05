@@ -4,6 +4,29 @@ Cada decisión tomada sin frenar a preguntar queda anotada acá, con su porqué.
 
 ## Arquitectura
 
+### D11 — FASE A: rutinas de NPC con pathfinding BFS + afinidad (bolt-on)
+**Por qué:** la FASE A (`CONFIG.rutinas`) suma vida sin tocar lo que ya andaba.
+- **Todo nuevo en `js/rutinas.js`** (`AJ.Rutinas` + `AJ.Afinidad`), arrancado por
+  `Pueblo._iniciarSistema('rutinas', ...)` con try/catch. Si el flag está en false
+  o el sistema falla, los NPCs quedan estáticos como en la FASE 2: cero regresión.
+- **Movimiento por waypoints (BFS 4-conexo)** en vez de "ir derecho": el greedy se
+  trababa en esquinas cóncavas y en bolsillos (la intendenta atrapada por la
+  aguada). El BFS garantiza camino o nada; el mover sólo espera ante blockers
+  dinámicos (jugador / otro NPC) y **recalcula evitando a los NPCs parados** para
+  no quedar en deadlock contra el lugar de descanso de otro.
+- **Saneo en runtime de spots inválidos:** `_asegurarWalkable` reubica a cualquier
+  NPC que arranque sobre un tile que colisiona (caso Muni/aguada). Es defensa pura
+  de la FASE A; no edita el mapa base. Bug de fondo anotado en ROADMAP.
+- **Afinidad** 0..100 por NPC, sube al hablar (una vez por día de juego, capeada;
+  anti-farmeo). Como cada misión exige varias charlas, cumplir misiones también la
+  sube, sin tocar `misiones.js`. Se persiste en `estado.afinidad` y se ve en el
+  panel "Cuaderno · Vecinos" (botón ♥ o tecla C).
+- **Misiones reskinables sin código:** las 5 misiones siguen siendo plantillas de
+  texto en `AJ.MISIONES` (diálogos como datos). No referencian programas ni marcas
+  reales: se les puede dar bajada institucional editando sólo strings.
+- Verificado en navegador: smoke **28/28 PASS**; los 6 NPCs llegan a la plaza en la
+  franja de tarde y vuelven a su lugar de noche; afinidad sube al hablar y persiste.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

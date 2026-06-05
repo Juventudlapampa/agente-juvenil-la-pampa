@@ -34,8 +34,9 @@ AJ.Guardado = (function () {
       misiones: {},        // id -> 'activa' | 'completada'
       misionActiva: null,  // id de la misión a mostrar en pantalla
       inventario: { monedas: 0, logros: [] },
-      tiempo: { minutos: 8 * 60 }, // arranca 08:00
+      tiempo: { minutos: 8 * 60, dia: 1 }, // arranca Día 1, 08:00
       granja: {},          // "x,y" -> { etapa, plantadoEnMin }
+      afinidad: {},        // id de NPC -> afinidad 0..100 (FASE A)
     };
   }
 
@@ -72,6 +73,7 @@ AJ.Guardado = (function () {
         tiempo: Object.assign(base.tiempo, est.tiempo || {}),
         granja: est.granja || {},
         misiones: est.misiones || {},
+        afinidad: est.afinidad || {},
       });
     } catch (e) {
       console.warn('[Guardado] Save corrupto, ignoro:', e);

@@ -15,8 +15,29 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **FASE FINAL** — pantalla de cierre al completar las 5 misiones.
       _(gatillo desde misiones.js verificado: llega al Final con resumen.)_
 
+### Segunda tanda de fases (bolt-on, detrás de flags nuevos)
+
+- [x] **FASE A — Rutinas + afinidad** (`CONFIG.rutinas`)
+      _(NPCs caminan a la plaza/trabajo/hogar por hora con pathfinding BFS;
+      afinidad por vecino visible en el panel "Cuaderno · Vecinos". Smoke 28/28.
+      Commiteada.)_
+- [ ] **FASE B — Estaciones** (`CONFIG.estaciones`)
+- [ ] **FASE C — Crafteo simple** (`CONFIG.crafteo`)
+- [ ] **FASE D — Varios pueblos / viaje** (`CONFIG.viaje`) — riesgo ALTO; sólo si
+      A+B+C pasan el smoke completo.
+
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.
+
+## Bug latente conocido (no rompe nada, queda anotado)
+
+- **Spot de la Municipalidad sobre la aguada:** el punto frente a la Muni
+  (`npcSpots.muni = 7,17`) cae sobre agua (la aguada `(3,17,5,4)` y su borde de
+  juncos se solapan con la base de la Muni). La intendenta quedaba parada sobre el
+  agua desde FASE 1 (no se notaba porque era estática). La FASE A lo sanea en
+  runtime (`AJ.Rutinas._asegurarWalkable` reubica a cualquier NPC sobre un tile
+  que colisiona). Arreglo de fondo pendiente: en `mapa.js`, mover la puerta/spot
+  de la Muni a un lado caminable o correr la aguada un par de tiles.
 
 ## Futuras noches (bolt-on previsto)
 

@@ -19,6 +19,10 @@ AJ.CONFIG = {
   misiones:    true,   // FASE 2: cuaderno de misiones cívicas
   diaNoche:    true,   // FASE 3: ciclo día/noche con tinte y reloj
   granja:      true,   // FASE 4: parcela, cultivos y economía mínima
+  rutinas:     true,   // FASE A: NPCs con rutinas diarias + afinidad
+  estaciones:  false,  // FASE B: 4 estaciones (paleta + ritmo de cultivos)
+  crafteo:     false,  // FASE C: mesa de crafteo con recetas
+  viaje:       false,  // FASE D: varios pueblos + viaje entre ellos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

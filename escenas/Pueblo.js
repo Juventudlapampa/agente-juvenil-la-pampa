@@ -60,6 +60,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this._iniciarSistema('granja', () => {
       if (AJ.Granja) { this.granja = new AJ.Granja(this, this.estado); this.granja.init(); }
     });
+    // FASE A: rutinas de NPCs + afinidad (necesita npcManager ya creado).
+    this._iniciarSistema('rutinas', () => {
+      if (AJ.Rutinas && this.npcManager) { this.rutinas = new AJ.Rutinas(this, this.estado); this.rutinas.init(); }
+      if (AJ.Afinidad && this.npcManager) { this.afinidad = new AJ.Afinidad(this, this.estado); this.afinidad.init(); }
+    });
 
     // --- Diálogo (UI compartida por NPCs/misiones) ---
     if (AJ.CONFIG.npcsDialogo && AJ.Dialogo) {
@@ -173,6 +178,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (this.diaNoche) { try { this.diaNoche.update(dt); } catch (e) {} }
     if (this.granja) { try { this.granja.update(dt); } catch (e) {} }
     if (this.npcManager) { try { this.npcManager.update(dt); } catch (e) {} }
+    if (this.rutinas) { try { this.rutinas.update(dt); } catch (e) {} }
   }
 
   _interactuar() {
@@ -189,6 +195,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
   }
 
   _hablarCon(npc) {
+    // FASE A: hablar sube la afinidad (una vez por día por NPC).
+    if (this.afinidad) { try { this.afinidad.alHablar(npc); } catch (e) {} }
     if (this.misiones) { this.misiones.alHablar(npc, this.dialogo); }
     else if (this.dialogo) { this.dialogo.mostrar(npc.nombre, npc.saludo || ['Buenas.']); }
   }

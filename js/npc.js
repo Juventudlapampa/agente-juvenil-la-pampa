@@ -30,8 +30,10 @@ AJ.NPC = class {
     // Globito con "!" sobre el NPC (se prende/apaga según misiones).
     this.marca = scene.add.image(this.tx * T + T / 2, this.ty * T - 14, 'exclamacion')
       .setDepth(9000).setScale(0.7).setVisible(false);
-    scene.tweens.add({ targets: this.marca, y: this.marca.y - 4, duration: 600,
-      yoyo: true, repeat: -1 });
+    // Guardamos la referencia del tween: la FASE A (rutinas) la pausa para
+    // posicionar la marca a mano cuando el NPC camina.
+    this.marcaTween = scene.tweens.add({ targets: this.marca, y: this.marca.y - 4,
+      duration: 600, yoyo: true, repeat: -1 });
   }
 
   // Hace que el NPC mire hacia un tile (cuando le hablan).
@@ -102,5 +104,15 @@ AJ.NPCManager = class {
   // ¿Hay un NPC en este tile? (lo usa la escena para colisión.)
   ocupa(tx, ty) { return !!this.porTile[tx + ',' + ty]; }
 
-  update() { /* reservado para rutinas (ROADMAP) */ }
+  // Reubica un NPC a un tile nuevo manteniendo sincronizado porTile
+  // (lo usa la FASE A de rutinas cuando un NPC camina). Aditivo: si las
+  // rutinas están apagadas, nunca se llama y todo queda como antes.
+  reubicar(npc, nx, ny) {
+    const viejo = npc.tx + ',' + npc.ty;
+    if (this.porTile[viejo] === npc) delete this.porTile[viejo];
+    npc.tx = nx; npc.ty = ny;
+    this.porTile[nx + ',' + ny] = npc;
+  }
+
+  update() { /* el tick de movimiento lo maneja AJ.Rutinas (FASE A) */ }
 };

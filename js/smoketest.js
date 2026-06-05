@@ -24,6 +24,7 @@ AJ.SmokeTest = (function () {
           monedas: escena.estado.inventario ? escena.estado.inventario.monedas : undefined,
           minutos: escena.estado.tiempo ? escena.estado.tiempo.minutos : undefined,
           granja: JSON.stringify(escena.estado.granja || {}),
+          afinidad: JSON.stringify(escena.estado.afinidad || {}),
         };
       }
     } catch (e) { snap = null; }
@@ -161,6 +162,54 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 12. FASE A: rutinas + afinidad
+    if (AJ.CONFIG.rutinas) {
+      check('Rutinas y afinidad vivas', () =>
+        escena.rutinas && escena.afinidad && Object.keys(escena.rutinas.def).length > 0
+          ? true : 'sin sistema');
+      check('Cada NPC tiene rutina (trabajo/social/hogar)', () => {
+        if (!escena.rutinas) return 'sin rutinas';
+        const ids = escena.npcManager.npcs.map((n) => n.id);
+        const malas = ids.filter((id) => {
+          const d = escena.rutinas.def[id];
+          return !d || !d.trabajo || !d.social || !d.hogar;
+        });
+        return malas.length === 0 ? true : 'sin rutina: ' + malas.join(',');
+      });
+      check('El NPC camina hacia su destino', () => {
+        if (!escena.rutinas) return 'sin rutinas';
+        const n = escena.npcManager.npcs[0];
+        const rec = escena.rutinas.rec[n.id];
+        if (!rec) return 'sin rec';
+        const px0 = rec.px, py0 = rec.py, tx0 = n.tx, ty0 = n.ty;
+        // Forzar destino lejano (esquina de plaza) y tickear varias veces.
+        const destino = { x: 19, y: 17 };
+        const orig = escena.rutinas._target;
+        escena.rutinas._target = () => destino;
+        for (let i = 0; i < 40; i++) { escena.rutinas.acc = 1; escena.rutinas.update(0.05); }
+        escena.rutinas._target = orig;
+        const movio = Math.abs(rec.px - px0) > 1 || Math.abs(rec.py - py0) > 1;
+        // restaurar posición del NPC para no dejarlo corrido
+        rec.px = px0; rec.py = py0;
+        n.sprite.x = px0; n.sprite.y = py0;
+        if (n.tx !== tx0 || n.ty !== ty0) escena.npcManager.reubicar(n, tx0, ty0);
+        return movio ? true : 'no se movió';
+      });
+      check('Hablar sube la afinidad (capeada, 1/día)', () => {
+        const af = escena.afinidad;
+        if (!af) return 'sin afinidad';
+        const n = escena.npcManager.npcs[0];
+        const v0 = af.nivel(n.id);
+        af.ultimaCharlaDia[n.id] = -1; // permitir bump
+        af.alHablar(n);
+        const v1 = af.nivel(n.id);
+        af.alHablar(n); // segunda charla mismo día: no debe subir
+        const v2 = af.nivel(n.id);
+        return (v1 === Math.min(af.MAX, v0 + af.BUMP_HABLAR) && v2 === v1)
+          ? true : 'bump raro (' + v0 + '->' + v1 + '->' + v2 + ')';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
@@ -169,6 +218,7 @@ AJ.SmokeTest = (function () {
         if (snap.minutos !== undefined && escena.estado.tiempo)
           escena.estado.tiempo.minutos = snap.minutos;
         escena.estado.granja = JSON.parse(snap.granja);
+        if (snap.afinidad !== undefined) escena.estado.afinidad = JSON.parse(snap.afinidad);
         // Re-sincronizar la vista de la granja con el estado restaurado.
         if (escena.granja && escena.granja.cropSprites) {
           Object.keys(escena.granja.cropSprites).forEach((k) => {
