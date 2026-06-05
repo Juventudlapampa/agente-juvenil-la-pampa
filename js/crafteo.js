@@ -151,6 +151,7 @@ AJ.Crafteo = class {
     if (receta.da.monedas) inv.monedas = (inv.monedas || 0) + receta.da.monedas;
     if (receta.da.item) this._agregar(receta.da.item, 1);
     if (receta.logro && inv.logros.indexOf(receta.logro) < 0) inv.logros.push(receta.logro);
+    if (AJ.Sonido) { try { AJ.Sonido.craft(); } catch (e) {} }
     this._guardar();
     if (this.scene._actualizarHUD) this.scene._actualizarHUD();
     this._avisoMenu('¡Hiciste ' + receta.emoji + ' ' + receta.nombre + '!');

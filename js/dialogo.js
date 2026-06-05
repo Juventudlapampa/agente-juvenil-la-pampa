@@ -65,6 +65,7 @@ AJ.Dialogo = class {
       this.abierto = true;
       this.cont.setVisible(true);
       this._render();
+      if (AJ.Sonido) { try { AJ.Sonido.dialogo(); } catch (e) {} }
       // P1 (juice): el panel entra con un fade + leve deslizamiento.
       if (AJ.Juice && AJ.Juice.activo()) {
         try {
@@ -91,10 +92,12 @@ AJ.Dialogo = class {
     this.indice++;
     if (this.indice >= this.tramos.length) { this.cerrar(); return false; }
     this._render();
+    if (AJ.Sonido) { try { AJ.Sonido.dialogo(); } catch (e) {} }
     return true;
   }
 
   cerrar() {
+    if (this.abierto && AJ.Sonido) { try { AJ.Sonido.dialogoCerrar(); } catch (e) {} }
     this.abierto = false;
     this.cont.setVisible(false);
     const cb = this.alCerrar;

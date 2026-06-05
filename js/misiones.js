@@ -213,6 +213,7 @@ AJ.Misiones = class {
 
   _completar(m) {
     this.estado.misiones[m.id] = 'completada';
+    if (AJ.Sonido) { try { AJ.Sonido.mision(); } catch (e) {} }
     // P1 (juice): celebración breve al cumplir una misión.
     if (AJ.Juice) {
       try {

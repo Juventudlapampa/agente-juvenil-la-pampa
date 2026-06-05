@@ -192,6 +192,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }
       catch (e) { console.warn('[Pueblo] update jugador', e); }
+      // P2: pasos (con throttle) mientras camina.
+      if (AJ.Sonido && this.jugador.moviendo) {
+        this._tPaso = (this._tPaso || 0) + dt;
+        if (this._tPaso >= 0.28) { this._tPaso = 0; try { AJ.Sonido.paso(); } catch (e) {} }
+      } else { this._tPaso = 0.28; }
       // FASE D: ¿el jugador pisó una salida? -> viajar de pueblo.
       if (AJ.CONFIG.viaje && !this._viajando) {
         try {
@@ -242,6 +247,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     } catch (e) { console.warn('[Pueblo] guardar viaje', e); }
     // Reiniciar la escena cargando el estado recién guardado (NO un juego
     // nuevo): init recargará el mapa destino y la posición de llegada.
+    if (AJ.Sonido) { try { AJ.Sonido.viaje(); } catch (e) {} }
     if (AJ.Juice) AJ.Juice.reiniciar(this, { nuevo: false });
     else this.scene.restart({ nuevo: false });
   }

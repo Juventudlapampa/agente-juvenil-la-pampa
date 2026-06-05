@@ -86,7 +86,10 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
       Phaser.Geom.Rectangle.Contains);
     cont.on('pointerover', () => dibujar(true));
     cont.on('pointerout', () => dibujar(false));
-    cont.on('pointerdown', () => { try { onClick(); } catch (e) { console.error(e); } });
+    cont.on('pointerdown', () => {
+      if (AJ.Sonido) { try { AJ.Sonido.desbloquear(); AJ.Sonido.click(); } catch (e) {} }
+      try { onClick(); } catch (e) { console.error(e); }
+    });
     return cont;
   }
 };

@@ -98,6 +98,7 @@ AJ.Input = (function () {
 AJ.iniciarJuego = function () {
   try {
     AJ.Input.init();
+    if (AJ.Sonido) { try { AJ.Sonido.init(); } catch (e) { console.warn('[main] sonido off', e); } }
 
     const config = {
       type: Phaser.AUTO,

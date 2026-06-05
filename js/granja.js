@@ -66,6 +66,7 @@ AJ.Granja = class {
       // Plantar.
       this.estado.granja[key] = { etapa: 0, seg: 0 };
       this._pintar(key, 0);
+      if (AJ.Sonido) { try { AJ.Sonido.plantar(); } catch (e) {} }
       this._flotante('🌱 ¡Plantado!', tx, ty, '#a8e063');
       this._guardar();
       return true;
@@ -85,6 +86,7 @@ AJ.Granja = class {
         if (!inv.items) inv.items = {};
         inv.items.verdura = (inv.items.verdura || 0) + 1;
       } catch (e) {}
+      if (AJ.Sonido) { try { AJ.Sonido.cosecha(); } catch (e) {} }
       this._flotante('+' + this.MONEDAS_COSECHA + ' ¢  +1 🥕', tx, ty, '#f5d020');
       if (this.scene._actualizarHUD) this.scene._actualizarHUD();
       this._guardar();

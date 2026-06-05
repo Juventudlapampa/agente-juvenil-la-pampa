@@ -25,6 +25,24 @@ html, body {
   image-rendering: crisp-edges;
 }
 
+/* ---------------------- Botón de mute ------------------------------- */
+#btn-mute {
+  position: fixed;
+  top: 12px; right: 12px;
+  z-index: 60;
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 243, 196, 0.7);
+  background: rgba(42, 31, 18, 0.72);
+  color: #fff3c4;
+  font-size: 20px;
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  padding: 0; line-height: 1;
+}
+#btn-mute:hover { background: rgba(168, 90, 58, 0.85); }
+#btn-mute:active { transform: scale(0.94); }
+
 /* ---------------------- Controles táctiles -------------------------- */
 #tactil {
   position: fixed; inset: 0;

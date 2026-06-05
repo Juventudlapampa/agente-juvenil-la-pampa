@@ -322,6 +322,23 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 17. P2: sonido (no debe romper aunque el audio esté bloqueado)
+    if (AJ.CONFIG.sonido) {
+      check('Sonido disponible y sano', () => {
+        if (!AJ.Sonido) return 'sin Sonido';
+        const fns = ['paso', 'dialogo', 'cosecha', 'mision', 'click'];
+        const faltan = fns.filter((f) => typeof AJ.Sonido[f] !== 'function');
+        if (faltan.length) return 'faltan: ' + faltan.join(',');
+        // llamarlas no debe lanzar (son no-op si el contexto no corre)
+        fns.forEach((f) => AJ.Sonido[f]());
+        // toggle de mute reversible
+        const m0 = AJ.Sonido.estaMuteado();
+        AJ.Sonido.toggleMute(); const m1 = AJ.Sonido.estaMuteado();
+        AJ.Sonido.setMute(m0); // restaurar
+        return (m1 === !m0) ? true : 'mute no togglea';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

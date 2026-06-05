@@ -90,6 +90,20 @@ tween), misiones (celebración + Final con fade), estaciones (shake al cambiar),
 NPC (pulso al hablarle). Verificado: smoke 43/43, transiciones completan sin quedar
 en negro, viaje con fade OK, canvas renderiza.
 
+### D16 — Capa de pulido P2 (sonido): Web Audio procedural, cero descargas
+**Por qué:** `CONFIG.sonido` agrega `js/sonido.js` (`AJ.Sonido`): todos los efectos
+se sintetizan con osciladores + envolventes + ruido (pasos, diálogo, misión,
+cosecha, moneda, craft, viaje, click). Sin archivos.
+- **Autoplay:** el AudioContext se crea perezoso y se resume en el primer gesto
+  (listeners de keydown/pointerdown/touchstart). Si el navegador igual lo bloquea,
+  los sonidos chequean `ctx.state === 'running'` y se saltean en silencio: nunca
+  rompen el juego.
+- **Mute** persistente (localStorage), botón DOM `#btn-mute` siempre visible.
+- Hooks aditivos y guardados en jugador/diálogo/misiones/granja/crafteo/viaje/título.
+- Verificado: smoke 44/44, botón visible y togglea+persiste, los sonidos se llaman
+  sin lanzar aun con el contexto suspendido. El *gusto* del sonido necesita oído
+  humano (ver PLAYTEST.md).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
