@@ -63,6 +63,8 @@ AJ.Jugador = class {
     for (const [px, py] of esquinas) {
       const tx = Math.floor(px / T), ty = Math.floor(py / T);
       if (AJ.Mapa.esColision(tx, ty)) return false;
+      // Colisión extra opcional (NPCs, objetos): la provee la escena.
+      if (this.scene.esColisionExtra && this.scene.esColisionExtra(tx, ty)) return false;
     }
     return true;
   }

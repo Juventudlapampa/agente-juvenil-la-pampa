@@ -6,7 +6,8 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 
 - [x] **FASE 1 — Espina:** título, mapa del pueblo, jugador, colisiones,
       cámara, guardado. _(jugable y commiteada)_
-- [ ] **FASE 2 — Diálogo + Misiones** (`CONFIG.npcsDialogo`, `CONFIG.misiones`)
+- [x] **FASE 2 — Diálogo + Misiones** (`CONFIG.npcsDialogo`, `CONFIG.misiones`)
+      _(NPCs, diálogo RPG, 5 misiones cívicas, HUD cuaderno, Final. Commiteada.)_
 - [ ] **FASE 3 — Tiempo vivo / día-noche** (`CONFIG.diaNoche`)
 - [ ] **FASE 4 — Granja** (`CONFIG.granja`)
 - [ ] **FASE FINAL** — pantalla de cierre al completar misiones (escena lista,

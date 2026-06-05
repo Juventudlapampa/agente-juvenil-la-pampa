@@ -83,6 +83,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     }
   }
 
+  // Colisión extra que consulta el jugador (NPCs ocupan su tile).
+  esColisionExtra(tx, ty) {
+    return this.npcManager ? this.npcManager.ocupa(tx, ty) : false;
+  }
+
   // Arranca un sistema sólo si su flag está en true; si falla, lo apaga.
   _iniciarSistema(nombre, fn) {
     if (!AJ.CONFIG[nombre]) { this.sistemas[nombre] = false; return; }

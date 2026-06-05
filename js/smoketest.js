@@ -81,6 +81,33 @@ AJ.SmokeTest = (function () {
       }
     });
 
+    // 8. FASE 2: NPCs y diálogo (si el flag está activo)
+    if (AJ.CONFIG.npcsDialogo) {
+      check('NPCs creados', () => {
+        const n = escena.npcManager && escena.npcManager.npcs.length;
+        return n >= 5 ? true : 'Hay ' + (n || 0) + ' NPCs';
+      });
+      check('Diálogo disponible', () => escena.dialogo && typeof escena.dialogo.mostrar === 'function');
+      check('NPCs colisionan (no se atraviesan)', () =>
+        escena.npcManager && escena.npcManager.npcs.length > 0 &&
+        escena.esColisionExtra(escena.npcManager.npcs[0].tx, escena.npcManager.npcs[0].ty) === true);
+    }
+
+    // 9. FASE 2: misiones
+    if (AJ.CONFIG.misiones) {
+      check('Misiones definidas (>=4)', () => AJ.MISIONES && AJ.MISIONES.length >= 4
+        ? true : 'Hay ' + (AJ.MISIONES ? AJ.MISIONES.length : 0));
+      check('Sistema de misiones vivo', () => escena.misiones && escena.misiones.hud);
+      check('Cadena de misiones consistente', () => {
+        // Cada misión referencia NPCs que existen.
+        if (!escena.npcManager) return 'sin npcManager';
+        const ids = escena.npcManager.npcs.map((n) => n.id);
+        const malas = AJ.MISIONES.filter((m) =>
+          ids.indexOf(m.npcInicio) < 0 || ids.indexOf(m.objetivoNpc) < 0 || ids.indexOf(m.npcFin) < 0);
+        return malas.length === 0 ? true : 'NPC inexistente en: ' + malas.map((m) => m.id).join(',');
+      });
+    }
+
     // --- Reporte ---
     const pasados = r.filter((x) => x.ok).length;
     const total = r.length;

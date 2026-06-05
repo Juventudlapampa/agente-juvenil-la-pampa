@@ -15,8 +15,8 @@ window.AJ = window.AJ || {};
 AJ.CONFIG = {
   // --- Flags de sistemas (se encienden sólo si pasan smoke-test) ---
   // Arrancan en false; se ponen en true al cerrar cada fase verificada.
-  npcsDialogo: false,  // FASE 2: NPCs + cuadro de diálogo
-  misiones:    false,  // FASE 2: cuaderno de misiones cívicas
+  npcsDialogo: true,   // FASE 2: NPCs + cuadro de diálogo
+  misiones:    true,   // FASE 2: cuaderno de misiones cívicas
   diaNoche:    false,  // FASE 3: ciclo día/noche con tinte y reloj
   granja:      false,  // FASE 4: parcela, cultivos y economía mínima
 

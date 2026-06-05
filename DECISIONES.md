@@ -55,6 +55,22 @@ recién cuando el smoke-test del sistema da PASS.
     verificó manejando el loop a mano (`game.step`) y leyendo `canvas.toDataURL`.
     En un navegador real (doble clic / GitHub Pages) el loop corre normal.
 
+- **FASE 2 (verificada en navegador):** Smoke-test **17/17 PASS**.
+  - 6 NPCs creados en sus puntos, con colisión (no se atraviesan) y globo "!".
+  - Cuadro de diálogo RPG por tramos; congela el movimiento mientras está abierto.
+  - 5 misiones cívicas en cadena (ofrecer → objetivo → volver). Se simuló la
+    partida completa: terminan las 5, da 90 monedas (10+15+15+20+30) y 5 logros,
+    y dispara la pantalla Final correctamente.
+  - HUD "Cuaderno" arriba a la derecha con misión activa y progreso (x/5).
+
+### D8 — Misiones en cadena lineal y completables sólo hablando
+**Por qué:** el requisito pide misiones que "se inician y completan hablando con el
+NPC correcto". Se modeló cada misión como cadena de 3 toques (NPC que la da → NPC
+objetivo → volver al que la dio), con una sola misión activa por vez para que la
+pista en pantalla sea siempre clara. El "!" sobre el NPC correcto guía sin texto.
+Es robusto (máquina de estados simple en `estado.misiones[id]`) y bolt-on para
+sumar misiones paralelas o por ítems más adelante.
+
 ### D7 — Bug encontrado y corregido por el smoke-test
 El helper `check()` del smoke-test marcaba como FAIL cualquier retorno "truthy"
 no booleano (p. ej. el sprite del jugador). Se corrigió para tratar truthy como
