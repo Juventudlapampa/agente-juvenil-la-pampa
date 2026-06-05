@@ -80,8 +80,12 @@ AJ.Granja = class {
         const inv = this.estado.inventario;
         inv.monedas = (inv.monedas || 0) + this.MONEDAS_COSECHA;
         if (inv.logros && inv.logros.indexOf('Primera cosecha') < 0) inv.logros.push('Primera cosecha');
+        // FASE C (opcional): además de monedas, la cosecha da 1 'verdura' para
+        // craftear. Guardado: si el crafteo está apagado igual no molesta.
+        if (!inv.items) inv.items = {};
+        inv.items.verdura = (inv.items.verdura || 0) + 1;
       } catch (e) {}
-      this._flotante('+' + this.MONEDAS_COSECHA + ' ¢', tx, ty, '#f5d020');
+      this._flotante('+' + this.MONEDAS_COSECHA + ' ¢  +1 🥕', tx, ty, '#f5d020');
       if (this.scene._actualizarHUD) this.scene._actualizarHUD();
       this._guardar();
       return true;

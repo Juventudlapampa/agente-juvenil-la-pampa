@@ -33,7 +33,7 @@ AJ.Guardado = (function () {
       jugador: { x: AJ.Mapa.SPAWN.x, y: AJ.Mapa.SPAWN.y, dir: 'abajo' },
       misiones: {},        // id -> 'activa' | 'completada'
       misionActiva: null,  // id de la misión a mostrar en pantalla
-      inventario: { monedas: 0, logros: [] },
+      inventario: { monedas: 0, logros: [], items: {} }, // items: ingredientes/objetos (FASE C)
       tiempo: { minutos: 8 * 60, dia: 1 }, // arranca Día 1, 08:00
       granja: {},          // "x,y" -> { etapa, plantadoEnMin }
       afinidad: {},        // id de NPC -> afinidad 0..100 (FASE A)

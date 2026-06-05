@@ -41,6 +41,22 @@ Cada decisión tomada sin frenar a preguntar queda anotada acá, con su porqué.
   Verificado: verano (×1.4) crece más que invierno (×0.5).
 - Smoke **32/32 PASS**.
 
+### D13 — FASE C: crafteo con ingredientes de la huerta y del monte
+**Por qué:** `CONFIG.crafteo` suma una mesa de oficios en `js/crafteo.js`
+(`AJ.Crafteo`) con 5 recetas, atado a la economía existente.
+- **Inventario de ítems** nuevo en `estado.inventario.items` (aditivo en
+  guardado; persiste). Dos ingredientes base: `verdura` (la da la cosecha, hook
+  guardado en granja.js que NO cambia el +10 monedas de FASE 4) y `lena` (se junta
+  de los caldenes del mapa, 1 por árbol por día de juego).
+- **Texturas propias** (mesa) generadas en el sistema con `make.graphics`, sin
+  tocar art.js. La mesa se ubica en un tile validado walkable cerca de la huerta y
+  **colisiona** (vía `esColisionExtra`, ahora también consulta crafteo).
+- **Menú** clickeable + atajos 1–5; congela el movimiento como el diálogo; Esc/acción
+  cierran (la guardia del Esc cierra el menú antes de volver al título).
+- **Recetas reskinables** (datos en `AJ.RECETAS`): mermelada, fardo de leña, guiso
+  criollo, canasta, adorno. Determinístico, sin azar ni plata real.
+- Smoke **38/38 PASS**; crafteo y persistencia de ítems verificados.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

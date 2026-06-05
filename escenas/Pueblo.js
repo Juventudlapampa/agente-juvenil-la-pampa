@@ -69,6 +69,10 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this._iniciarSistema('estaciones', () => {
       if (AJ.Estaciones) { this.estaciones = new AJ.Estaciones(this, this.estado); this.estaciones.init(); }
     });
+    // FASE C: mesa de crafteo + recetas.
+    this._iniciarSistema('crafteo', () => {
+      if (AJ.Crafteo) { this.crafteo = new AJ.Crafteo(this, this.estado); this.crafteo.init(); }
+    });
 
     // --- Diálogo (UI compartida por NPCs/misiones) ---
     if (AJ.CONFIG.npcsDialogo && AJ.Dialogo) {
@@ -80,8 +84,10 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this._onUnload = () => this.guardar();
     window.addEventListener('beforeunload', this._onUnload);
 
-    // --- Tecla ESC para volver al título (guardando) ---
+    // --- Tecla ESC: cierra el menú de crafteo si está abierto; si no, vuelve
+    //     al título (guardando). ---
     this.input.keyboard.on('keydown-ESC', () => {
+      if (this.crafteo && this.crafteo.menuAbierto) { this.crafteo.cerrarMenu(); return; }
       this.guardar();
       this.scene.start('Titulo');
     });
@@ -92,9 +98,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     }
   }
 
-  // Colisión extra que consulta el jugador (NPCs ocupan su tile).
+  // Colisión extra que consulta el jugador (NPCs y la mesa de crafteo).
   esColisionExtra(tx, ty) {
-    return this.npcManager ? this.npcManager.ocupa(tx, ty) : false;
+    if (this.npcManager && this.npcManager.ocupa(tx, ty)) return true;
+    if (this.crafteo && this.crafteo.ocupa && this.crafteo.ocupa(tx, ty)) return true;
+    return false;
   }
 
   // Arranca un sistema sólo si su flag está en true; si falla, lo apaga.
@@ -165,8 +173,9 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
 
   update(time, delta) {
     const dt = delta / 1000;
-    // ¿Hay un diálogo abierto? Si sí, el movimiento se congela.
-    const dialogoAbierto = this.dialogo && this.dialogo.abierto;
+    // ¿Hay un diálogo o el menú de crafteo abierto? Si sí, congelar movimiento.
+    const dialogoAbierto = (this.dialogo && this.dialogo.abierto) ||
+                           (this.crafteo && this.crafteo.menuAbierto);
 
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }
@@ -189,6 +198,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
   _interactuar() {
     // Si hay diálogo abierto, avanzarlo.
     if (this.dialogo && this.dialogo.abierto) { this.dialogo.avanzar(); return; }
+    // Si el menú de crafteo está abierto, la acción lo cierra.
+    if (this.crafteo && this.crafteo.menuAbierto) { this.crafteo.cerrarMenu(); return; }
     // Buscar NPC al frente.
     const frente = this.jugador.tileFrente();
     if (this.npcManager) {
@@ -197,6 +208,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     }
     // Si hay granja, intentar interactuar con la parcela.
     if (this.granja && this.granja.intentarInteractuar(frente.x, frente.y)) return;
+    // Mesa de crafteo / juntar leña de caldenes.
+    if (this.crafteo && this.crafteo.intentarInteractuar(frente.x, frente.y)) return;
   }
 
   _hablarCon(npc) {

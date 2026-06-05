@@ -24,7 +24,9 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **FASE B — Estaciones** (`CONFIG.estaciones`)
       _(4 estaciones derivadas del día: tinte de paleta + factor de crecimiento
       de cultivos. Smoke 32/32. Commiteada.)_
-- [ ] **FASE C — Crafteo simple** (`CONFIG.crafteo`)
+- [x] **FASE C — Crafteo simple** (`CONFIG.crafteo`)
+      _(mesa de oficios + 5 recetas que combinan verdura (cosecha) y leña
+      (caldenes); ítems persistentes. Smoke 38/38. Commiteada.)_
 - [ ] **FASE D — Varios pueblos / viaje** (`CONFIG.viaje`) — riesgo ALTO; sólo si
       A+B+C pasan el smoke completo.
 

@@ -25,6 +25,7 @@ AJ.SmokeTest = (function () {
           minutos: escena.estado.tiempo ? escena.estado.tiempo.minutos : undefined,
           granja: JSON.stringify(escena.estado.granja || {}),
           afinidad: JSON.stringify(escena.estado.afinidad || {}),
+          items: JSON.stringify((escena.estado.inventario && escena.estado.inventario.items) || {}),
         };
       }
     } catch (e) { snap = null; }
@@ -236,9 +237,57 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 14. FASE C: crafteo
+    if (AJ.CONFIG.crafteo) {
+      check('Mesa de crafteo lista', () =>
+        escena.crafteo && escena.crafteo.mesaTile && escena.crafteo.sprite &&
+        !AJ.Mapa.esColision(escena.crafteo.mesaTile.x, escena.crafteo.mesaTile.y)
+          ? true : 'mesa en tile inválido');
+      check('Recetas definidas (>=4)', () => AJ.RECETAS && AJ.RECETAS.length >= 4
+        ? true : 'hay ' + (AJ.RECETAS ? AJ.RECETAS.length : 0));
+      check('Juntar leña de un caldén (1/día)', () => {
+        const c = escena.crafteo;
+        if (!c) return 'sin crafteo';
+        // buscar un caldén
+        let cx = -1, cy = -1;
+        for (let y = 0; y < AJ.Mapa.ALTO && cx < 0; y++)
+          for (let x = 0; x < AJ.Mapa.ANCHO; x++)
+            if (AJ.Mapa.tex[y][x] === 'calden') { cx = x; cy = y; break; }
+        if (cx < 0) return 'no hay caldenes';
+        const l0 = c._cant('lena');
+        c.lenaPorDia[cx + ',' + cy] = -1; // permitir
+        c.intentarInteractuar(cx, cy);
+        const l1 = c._cant('lena');
+        c.intentarInteractuar(cx, cy); // segunda vez mismo día: no suma
+        const l2 = c._cant('lena');
+        return (l1 === l0 + 1 && l2 === l1) ? true : 'leña rara (' + l0 + '->' + l1 + '->' + l2 + ')';
+      });
+      check('Craftear consume y produce', () => {
+        const c = escena.crafteo;
+        if (!c) return 'sin crafteo';
+        const rec = AJ.RECETAS.find((r) => r.id === 'mermelada'); // 3 verdura -> 30 monedas
+        c.estado.inventario.items.verdura = 3;
+        const m0 = c.estado.inventario.monedas || 0;
+        const ok = c.craftear(rec);
+        const v = c._cant('verdura'), m1 = c.estado.inventario.monedas || 0;
+        const logro = c.estado.inventario.logros.indexOf(rec.logro) >= 0;
+        return (ok && v === 0 && m1 === m0 + 30 && logro) ? true
+          : 'craft mal (ok=' + ok + ' v=' + v + ' m=' + m0 + '->' + m1 + ')';
+      });
+      check('No craftear sin ingredientes', () => {
+        const c = escena.crafteo;
+        if (!c) return 'sin crafteo';
+        c.estado.inventario.items.lena = 0;
+        const rec = AJ.RECETAS.find((r) => r.id === 'fardo'); // 4 leña
+        return c.craftear(rec) === false ? true : 'crafteó sin leña';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
+        if (snap.items !== undefined && escena.estado.inventario)
+          escena.estado.inventario.items = JSON.parse(snap.items);
         if (snap.monedas !== undefined && escena.estado.inventario)
           escena.estado.inventario.monedas = snap.monedas;
         if (snap.minutos !== undefined && escena.estado.tiempo)

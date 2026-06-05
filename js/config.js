@@ -21,7 +21,7 @@ AJ.CONFIG = {
   granja:      true,   // FASE 4: parcela, cultivos y economía mínima
   rutinas:     true,   // FASE A: NPCs con rutinas diarias + afinidad
   estaciones:  true,   // FASE B: 4 estaciones (paleta + ritmo de cultivos)
-  crafteo:     false,  // FASE C: mesa de crafteo con recetas
+  crafteo:     true,   // FASE C: mesa de crafteo con recetas
   viaje:       false,  // FASE D: varios pueblos + viaje entre ellos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
