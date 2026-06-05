@@ -217,6 +217,17 @@ de la lista de vecinos (la usa el Registro D3); `_defsPueblo1/_defsColonia` deri
 nuevos de `ROSTER_D1` (gated). Un smoke-check verifica que ningún NPC creado quede fuera
 del roster (anti-drift). Verificado: Pueblo 1 66/66 (9 NPCs), Colonia 67/67 (8 NPCs).
 
+### D27 — D2: más misiones plantilla (insertadas sin romper el final)
+**Por qué:** `CONFIG.masMisiones` suma 4 misiones (`AJ.MISIONES_D2`, 2 por pueblo),
+concatenadas a `AJ.MISIONES` sólo si `masMisiones` **Y** `poblarMundo` (usan los
+vecinos de D1). Las del pueblo 1 se **insertan ANTES de `fiesta`** (que sigue siendo el
+gran final que dispara la pantalla Final); las de la Colonia van al final de su cadena.
+Reusan el sistema de misiones por pueblo (C1.2) → progreso persistido por id. Contenido
+del mismo workflow (genérico; la rifa fue reescrita como colecta). Verificado: 11
+misiones totales, cadena Pueblo 1 = [bienvenida, plaza, acto, aguada, pu1_quiosco,
+pu1_sirena, fiesta], Colonia = 4; completar `pu1_quiosco` da recompensa y avanza a
+`pu1_sirena`. Pueblo 1 67/67, Colonia 68/68.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

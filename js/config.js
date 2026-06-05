@@ -36,7 +36,7 @@ AJ.CONFIG = {
   brujula:        true,  // C2.3: guía/flecha hacia la misión activa
   // --- Capa D (más mundo y más para hacer) ---
   poblarMundo:    true,  // D1: más NPCs con diálogo/afinidad en ambos pueblos
-  masMisiones:    false, // D2: más misiones plantilla
+  masMisiones:    true,  // D2: más misiones plantilla (requiere poblarMundo: usan sus NPCs)
   registro:       false, // D3: Registro del Agente (colección estilo "Pokédex")
   tercerPueblo:   false, // D4: tercer pueblo (opcional, gated)
   // --- Capa E (meta, cierre y accesibilidad) ---

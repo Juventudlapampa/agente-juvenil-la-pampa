@@ -178,6 +178,86 @@ AJ.MISIONES_COLONIA = [
   },
 ];
 
+/* D2 — Más misiones plantilla (CONFIG.masMisiones). Reusan vecinos de D1, así que
+ * requieren CONFIG.poblarMundo. Contenido generado y revisado por workflow (genérico,
+ * sin marcas ni apuestas; una rifa fue reescrita como colecta cívica). Las del pueblo
+ * 1 se insertan ANTES de "fiesta" (que queda como gran final); las de la Colonia van
+ * al final de su cadena. Ver el concat al final del archivo. */
+AJ.MISIONES_D2 = [
+  {
+    id: 'pu1_quiosco', pueblo: 1, titulo: 'La colecta del cuartel',
+    npcInicio: 'quiosquera', objetivoNpc: 'jubilado', npcFin: 'quiosquera',
+    pista: 'Buscá a Don Tito en el banco de la plaza para la colecta del cuartel.',
+    dialogoOferta: [
+      'Agente, juntamos donaciones para el cuartel de bomberos y andamos flojos.',
+      'Don Tito se sienta todo el día en la plaza: andá a pedirle una manito.',
+    ],
+    dialogoObjetivo: [
+      '¿Una mano para los bomberos? Pongo lo mío, que para algo está la jubilación.',
+      'Decile a la Coca que cuente conmigo, como siempre.',
+    ],
+    dialogoFin: [
+      '¡Don Tito colaboró! Ese viejo tiene más corazón que cara de amargo.',
+      'Con lo juntado el cuartel se compra mangueras nuevas. Gracias, Agente.',
+    ],
+    recompensa: { monedas: 15, logro: 'Puntal del cuartel' },
+  },
+  {
+    id: 'pu1_sirena', pueblo: 1, titulo: 'La sirena del cuartel',
+    npcInicio: 'bombero', objetivoNpc: 'cura', npcFin: 'bombero',
+    pista: 'Pedile al Padre Antonio una bendición para el cuartel de bomberos.',
+    dialogoOferta: [
+      'Agente, arreglamos la sirena vieja y el sábado la estrenamos.',
+      'Estaría lindo que el Padre Antonio venga a bendecir el cuartel. ¿Lo invitás?',
+    ],
+    dialogoObjetivo: [
+      '¿Bendecir a los bomberos? Con todo gusto, hijo, que arriesgan el cuero por todos.',
+      'Decile al Lucho que llevo el agua bendita y unas facturas.',
+    ],
+    dialogoFin: [
+      '¡El Padre dijo que sí! El sábado va a estar lleno de gente.',
+      'El pueblo va a dormir más tranquilo. Sos un grande, Agente.',
+    ],
+    recompensa: { monedas: 20, logro: 'Padrino del cuartel' },
+  },
+  {
+    id: 'col_colmenas', pueblo: 2, titulo: 'Miel para la Colonia',
+    npcInicio: 'apicultora', objetivoNpc: 'alambrador', npcFin: 'apicultora',
+    pista: 'Pedile al Vasco Iturri unos postes para cercar las colmenas.',
+    dialogoOferta: [
+      'Agente, las vacas andan rondando las colmenas y me las van a voltear.',
+      'El Vasco Iturri tiene postes de ñandubay de sobra. ¿Le pedís unos para el cerco?',
+    ],
+    dialogoObjetivo: [
+      '¿Postes para las colmenas? Llevá los que quieras, están estacionados.',
+      'Decile a la Flor de Miel que el sábado le clavo el cerco yo mismo.',
+    ],
+    dialogoFin: [
+      '¡Gracias, Agente! Con el cerco las abejas trabajan tranquilas.',
+      'Pasá cuando quieras, que te guardo un frasco de la primera miel.',
+    ],
+    recompensa: { monedas: 15, logro: 'Amigo de las abejas' },
+  },
+  {
+    id: 'col_boliche', pueblo: 2, titulo: 'El boliche de ramos generales',
+    npcInicio: 'almacenera_rural', objetivoNpc: 'puestero', npcFin: 'almacenera_rural',
+    pista: 'Pedile a Don Ramón que arrime la carga al boliche con el sulky.',
+    dialogoOferta: [
+      'Querido, me llegó la mercadería a la estación y no tengo cómo traerla.',
+      'Don Ramón el Puestero anda con el sulky liviano. ¿Le pedís que me dé una mano?',
+    ],
+    dialogoObjetivo: [
+      '¿Acarrear la mercadería de la Pochi? Cómo no, si me fía desde que tengo memoria.',
+      'Andá avisándole que antes del mediodía le dejo todo en el mostrador.',
+    ],
+    dialogoFin: [
+      '¡Bendito seas, Agente! Ya tengo yerba y harina para toda la Colonia.',
+      'Llevate unos bizcochitos para el camino, que no se diga que la Pochi es amarreta.',
+    ],
+    recompensa: { monedas: 20, logro: 'Puntal del boliche' },
+  },
+];
+
 AJ.Misiones = class {
   constructor(scene, estado) {
     this.scene = scene;
@@ -367,4 +447,18 @@ if (window.AJ && AJ.CONFIG && AJ.CONFIG.misionesColonia &&
     AJ.MISIONES && AJ.MISIONES_COLONIA &&
     AJ.MISIONES.indexOf(AJ.MISIONES_COLONIA[0]) < 0) {
   AJ.MISIONES = AJ.MISIONES.concat(AJ.MISIONES_COLONIA);
+}
+
+// D2: sumar las misiones nuevas SÓLO si masMisiones Y poblarMundo (usan vecinos de
+// D1). Las del pueblo 1 se insertan ANTES de 'fiesta' (que sigue siendo el gran final
+// que dispara la pantalla Final); las de la Colonia se agregan al final de su cadena.
+if (window.AJ && AJ.CONFIG && AJ.CONFIG.masMisiones && AJ.CONFIG.poblarMundo &&
+    AJ.MISIONES && AJ.MISIONES_D2 &&
+    AJ.MISIONES.indexOf(AJ.MISIONES_D2[0]) < 0) {
+  const d2p1 = AJ.MISIONES_D2.filter((m) => (m.pueblo || 1) === 1);
+  const d2p2 = AJ.MISIONES_D2.filter((m) => (m.pueblo || 1) === 2);
+  const iFiesta = AJ.MISIONES.findIndex((m) => m.id === 'fiesta');
+  if (iFiesta >= 0) AJ.MISIONES.splice.apply(AJ.MISIONES, [iFiesta, 0].concat(d2p1));
+  else AJ.MISIONES = AJ.MISIONES.concat(d2p1);
+  AJ.MISIONES = AJ.MISIONES.concat(d2p2);
 }

@@ -163,6 +163,19 @@ AJ.SmokeTest = (function () {
           });
         }
       }
+
+      // D2: más misiones plantilla.
+      if (AJ.CONFIG.masMisiones && AJ.CONFIG.poblarMundo) {
+        check('D2: misiones nuevas integradas y bien ubicadas', () => {
+          if (!AJ.MISIONES_D2) return 'sin MISIONES_D2';
+          const enLista = AJ.MISIONES_D2.every((m) => AJ.MISIONES.indexOf(m) >= 0);
+          // 'fiesta' debe seguir DESPUÉS de las nuevas del pueblo 1 (gran final).
+          const iFiesta = AJ.MISIONES.findIndex((m) => m.id === 'fiesta');
+          const iQuiosco = AJ.MISIONES.findIndex((m) => m.id === 'pu1_quiosco');
+          const ordenOk = iFiesta > iQuiosco && iQuiosco >= 0;
+          return (enLista && ordenOk) ? true : 'integración/orden mal';
+        });
+      }
     }
 
     // 10. FASE 3: día/noche
