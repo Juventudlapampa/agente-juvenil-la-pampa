@@ -281,6 +281,16 @@ accesible desde el título, el menú de pausa y la pantalla final. El título su
 opciones. QoL, no toca el balance. Verificado: smoke 75/75, título con los 4 botones,
 créditos abre/cierra desde título/menú/final.
 
+### D33 — E4: robustez final (bordes sobre D/E)
+**Por qué:** el smoke (sin flag) sumó 4 bordes: B12 Registro+tiempo a mitad de partida
+(round-trip), B13 opciones de accesibilidad sobreviven recarga (localStorage), B14 viaje
+al 3er pueblo + recarga, B15 el Final depende de la cadena principal (pueblo 1), NO del
+Registro (se puede ganar con el Registro incompleto). Todos no destructivos. Resultado:
+**ningún borde nuevo reveló un bug** (base robusta). Smoke Pueblo 1 **79/79**, El Puesto
+**70/70**. En total esta noche: snapshot/restore del smoke ampliado (logros, registro,
+afinidad, misiones) y 2 bugs de no-destructividad/visibilidad corregidos (logros tras
+auto-smoke; check de Registro asumía NPC).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

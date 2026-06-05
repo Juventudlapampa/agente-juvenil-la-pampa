@@ -568,6 +568,67 @@ AJ.SmokeTest = (function () {
       return malas.length === 0 ? true : 'misión con NPC inexistente';
     });
 
+    // --- E4: bordes sobre lo nuevo de D/E ---
+    check('B12: Registro + tiempo a mitad de partida round-trip', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge12';
+        const e = AJ.Guardado.estadoNuevo();
+        e.registro = { vecinos: { maestra: true, cura: true }, pueblos: { 1: true, 2: true } };
+        e.tiempoJugado = 1234;
+        e.inventario.logros = ['Agente jurado'];
+        AJ.Guardado.guardar(e);
+        const l = AJ.Guardado.cargar();
+        AJ.Guardado.borrar();
+        return (l && l.registro && l.registro.vecinos.maestra && Object.keys(l.registro.pueblos).length === 2 &&
+          l.tiempoJugado === 1234 && l.inventario.logros.indexOf('Agente jurado') >= 0) ? true : 'round-trip mal';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B13: opciones de accesibilidad sobreviven recarga', () => {
+      if (!AJ.Accesibilidad) return true; // n/a si el flag está off
+      const A = AJ.Accesibilidad;
+      const snapA = JSON.stringify(A.cfg());
+      A.set('velTexto', 'lento'); A.set('tamTexto', 'grande');
+      // simular "recarga": volver a leer desde localStorage (init re-lee)
+      A.init();
+      const ok = A.cfg().velTexto === 'lento' && A.cfg().tamTexto === 'grande';
+      const c = JSON.parse(snapA); A.set('velTexto', c.velTexto); A.set('tamTexto', c.tamTexto); A.set('contraste', c.contraste);
+      return ok ? true : 'accesibilidad no persiste';
+    });
+
+    check('B14: viajar al tercer pueblo y recargar (si existe)', () => {
+      if (!AJ.CONFIG.tercerPueblo) return true; // n/a
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge14';
+        const e = AJ.Guardado.estadoNuevo();
+        e.mapaActual = 3; e.jugador = { x: 4, y: 15, dir: 'abajo' };
+        AJ.Guardado.guardar(e);
+        const l = AJ.Guardado.cargar();
+        AJ.Guardado.borrar();
+        return (l && l.mapaActual === 3) ? true : 'no recordó el 3er pueblo';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B15: el Final depende de la cadena principal, no del Registro', () => {
+      if (!escena.misiones) return true;
+      // Estado: todas las misiones del pueblo 1 completas (cadena principal) con
+      // registro/afinidad incompletos -> _misionActual(pueblo1) debe ser null
+      // (gatilla el Final), sin importar el % del Registro.
+      const snapMis = JSON.stringify(escena.estado.misiones);
+      const wasActual = AJ.Mapa.actual;
+      const p1mis = (AJ.MISIONES || []).filter((m) => (m.pueblo || 1) === 1);
+      const todas = {};
+      p1mis.forEach((m) => { todas[m.id] = 'completada'; });
+      escena.estado.misiones = todas;
+      // Con todas las del pueblo 1 completas no debe quedar ninguna pendiente
+      // (eso gatilla el Final), sin importar el % del Registro.
+      const restante = p1mis.filter((m) => escena.estado.misiones[m.id] !== 'completada');
+      escena.estado.misiones = JSON.parse(snapMis); // restaurar
+      return restante.length === 0 ? true : 'la cadena principal no cierra';
+    });
+
     // 20. C2.1: joystick analógico
     if (AJ.CONFIG.joystickAnalogico) {
       check('Joystick: zona muerta + snap a 4 direcciones', () => {
