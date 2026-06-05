@@ -14,6 +14,19 @@ AJ.SmokeTest = (function () {
 
   function correr(escena) {
     const r = [];
+
+    // El autotest NO debe ensuciar el estado real del jugador: las pruebas de
+    // granja/tiempo mutan economía y reloj. Snapshot + restore al final.
+    let snap = null;
+    try {
+      if (escena && escena.estado) {
+        snap = {
+          monedas: escena.estado.inventario ? escena.estado.inventario.monedas : undefined,
+          minutos: escena.estado.tiempo ? escena.estado.tiempo.minutos : undefined,
+          granja: JSON.stringify(escena.estado.granja || {}),
+        };
+      }
+    } catch (e) { snap = null; }
     const check = (nombre, fn) => {
       let ok = false, detalle = '';
       try {
@@ -147,6 +160,27 @@ AJ.SmokeTest = (function () {
           ? true : 'cosecha no pagó (' + monedas0 + '->' + monedas1 + ')';
       });
     }
+
+    // Restaurar el estado que pudieron tocar las pruebas mutadoras.
+    try {
+      if (snap && escena && escena.estado) {
+        if (snap.monedas !== undefined && escena.estado.inventario)
+          escena.estado.inventario.monedas = snap.monedas;
+        if (snap.minutos !== undefined && escena.estado.tiempo)
+          escena.estado.tiempo.minutos = snap.minutos;
+        escena.estado.granja = JSON.parse(snap.granja);
+        // Re-sincronizar la vista de la granja con el estado restaurado.
+        if (escena.granja && escena.granja.cropSprites) {
+          Object.keys(escena.granja.cropSprites).forEach((k) => {
+            const c = escena.estado.granja[k];
+            const s = escena.granja.cropSprites[k];
+            if (c) s.setTexture('cultivo_' + Math.min(3, c.etapa)).setVisible(true);
+            else s.setVisible(false);
+          });
+        }
+        if (escena._actualizarHUD) escena._actualizarHUD();
+      }
+    } catch (e) { console.warn('[SmokeTest] no se pudo restaurar estado', e); }
 
     // --- Reporte ---
     const pasados = r.filter((x) => x.ok).length;
