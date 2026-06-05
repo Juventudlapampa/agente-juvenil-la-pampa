@@ -1,0 +1,84 @@
+/* =====================================================================
+ * estilo.css — Layout, fondo y controles táctiles
+ * ===================================================================== */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  background: #1c1a17;
+  font-family: Georgia, 'Times New Roman', serif;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+}
+
+#contenedor {
+  position: relative;
+  width: 100vw; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+
+#juego canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ---------------------- Controles táctiles -------------------------- */
+#tactil {
+  position: fixed; inset: 0;
+  pointer-events: none;       /* sólo los botones reciben toques */
+  z-index: 50;
+  display: none;              /* oculto por defecto; JS lo activa en touch */
+}
+
+#tactil.visible { display: block; }
+
+.tbtn {
+  pointer-events: auto;
+  position: absolute;
+  background: rgba(58, 44, 16, 0.55);
+  border: 2px solid rgba(255, 243, 196, 0.7);
+  color: #fff3c4;
+  font-size: 26px;
+  width: 64px; height: 64px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  touch-action: none;
+  transition: background 0.05s;
+}
+
+.tbtn.presionado { background: rgba(168, 90, 58, 0.85); }
+
+/* D-pad abajo-izquierda */
+#dpad {
+  position: absolute;
+  left: 20px; bottom: 24px;
+  width: 200px; height: 200px;
+  pointer-events: none;
+}
+#dpad .fila-media {
+  position: absolute; top: 68px; left: 0; width: 200px;
+  display: flex; justify-content: space-between;
+}
+#btn-arriba { position: absolute; top: 0; left: 68px; }
+#btn-abajo  { position: absolute; bottom: 0; left: 68px; }
+#btn-izq    { position: relative; }
+#btn-der    { position: relative; }
+
+/* Botón de acción abajo-derecha */
+.tbtn.accion {
+  right: 28px; bottom: 60px;
+  width: 84px; height: 84px;
+  font-size: 30px;
+  background: rgba(168, 90, 58, 0.65);
+}
+
+/* En pantallas chicas, agrandar un toque para el pulgar */
+@media (max-width: 500px) {
+  .tbtn { width: 58px; height: 58px; font-size: 22px; }
+  #dpad { width: 180px; height: 180px; }
+  #dpad .fila-media { width: 180px; top: 61px; }
+  #btn-arriba, #btn-abajo { left: 61px; }
+}

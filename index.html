@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#2d2a26" />
+  <title>Agente Juvenil – La Pampa</title>
+  <link rel="stylesheet" href="css/estilo.css" />
+  <!-- Phaser 3 por CDN. Sin build, sin npm. -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+</head>
+<body>
+  <div id="contenedor">
+    <!-- Acá monta Phaser el canvas -->
+    <div id="juego"></div>
+
+    <!-- Controles táctiles (se ocultan en escritorio vía CSS/JS) -->
+    <div id="tactil" aria-hidden="true">
+      <div id="dpad">
+        <button id="btn-arriba" class="tbtn" aria-label="Arriba">▲</button>
+        <div class="fila-media">
+          <button id="btn-izq" class="tbtn" aria-label="Izquierda">◀</button>
+          <button id="btn-der" class="tbtn" aria-label="Derecha">▶</button>
+        </div>
+        <button id="btn-abajo" class="tbtn" aria-label="Abajo">▼</button>
+      </div>
+      <button id="btn-accion" class="tbtn accion" aria-label="Acción">E</button>
+    </div>
+  </div>
+
+  <!-- Núcleo (orden importa: config -> datos -> sistemas -> escenas -> main) -->
+  <script src="js/config.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/mapa.js"></script>
+  <script src="js/guardado.js"></script>
+  <script src="js/jugador.js"></script>
+  <!-- Sistemas de fases posteriores (gated por CONFIG; ver config.js) -->
+  <script src="js/dialogo.js"></script>
+  <script src="js/npc.js"></script>
+  <script src="js/misiones.js"></script>
+  <script src="js/diaNoche.js"></script>
+  <script src="js/granja.js"></script>
+  <!-- Autotest -->
+  <script src="js/smoketest.js"></script>
+  <!-- Escenas -->
+  <script src="escenas/Titulo.js"></script>
+  <script src="escenas/Pueblo.js"></script>
+  <script src="escenas/Final.js"></script>
+  <!-- Arranque -->
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Tooling de desarrollo (preview, server local) y artefactos
+.claude/
+*.log
+Thumbs.db
+.DS_Store

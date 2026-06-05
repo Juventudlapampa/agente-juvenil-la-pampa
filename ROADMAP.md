@@ -1,0 +1,42 @@
+# ROADMAP.md — Pendientes y futuras noches
+
+Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
+
+## Estado de fases
+
+- [x] **FASE 1 — Espina:** título, mapa del pueblo, jugador, colisiones,
+      cámara, guardado. _(jugable y commiteada)_
+- [ ] **FASE 2 — Diálogo + Misiones** (`CONFIG.npcsDialogo`, `CONFIG.misiones`)
+- [ ] **FASE 3 — Tiempo vivo / día-noche** (`CONFIG.diaNoche`)
+- [ ] **FASE 4 — Granja** (`CONFIG.granja`)
+- [ ] **FASE FINAL** — pantalla de cierre al completar misiones (escena lista,
+      falta el gatillo desde misiones).
+
+> Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
+> Lo que quede dudoso se deja en `false` y se anota acá.
+
+## Futuras noches (bolt-on previsto)
+
+### Estaciones
+Extender `AJ.DiaNoche` con un contador de días y un enum de estación que module la
+paleta de tinte y el crecimiento de cultivos. Engancha en el tick de tiempo; no
+requiere tocar el mapa.
+
+### NPCs con rutinas diarias y amistad
+`AJ.NPC` ya tiene posición y dirección. Sumar una propiedad `rutina` (lista de
+{hora, tile}) y un `update` que mueva al NPC según `estado.tiempo`. La amistad es un
+número por NPC en `estado.amistades` que sube al hablar/regalar. No rompe el diálogo
+actual.
+
+### Varios pueblos conectados con viaje
+El mapa hoy es un singleton (`AJ.Mapa`). Para multi-pueblo: convertir `AJ.Mapa` en
+una fábrica `cargarMapa(id)` y agregar tiles de "salida" que disparen un cambio de
+escena con el id destino. El guardado ya soporta agregar `mapaActual` al estado.
+
+### Crafteo
+Sumar `estado.inventario.items` (ya hay `inventario`) y un `AJ.Recetas` que combine
+items en otros. UI nueva tipo grilla; no toca el resto.
+
+### Mejoras de arte
+Reemplazar texturas generadas por PNG reales (ver cabecera de `art.js`). Las claves
+de textura son estables, así que es swap directo.
