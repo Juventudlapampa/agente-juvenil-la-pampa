@@ -43,8 +43,16 @@
 - ¿El botón de acción (E) está bien ubicado? ¿Y el de mute?
 - ¿Se traba alguna dirección al deslizar el dedo?
 - Si algo no cae cómodo: el layout está en `css/estilo.css` bajo `body.ui-pulida`.
-- NOTA: no hay joystick analógico (es d-pad de botones), así que "zona muerta" no
-  aplica; si preferís joystick analógico, queda como pendiente en ROADMAP.
+
+## 7b. Joystick analógico (CELULAR — C2.1)
+- Con `CONFIG.joystickAnalogico` en `true`, el d-pad se reemplaza por un **joystick
+  analógico** abajo-izquierda. Probalo en el celu: ¿se siente mejor que los botones?
+- ¿La **zona muerta** está bien (no se mueve solo, pero arranca sin tener que empujar
+  de más)? ¿El **radio** es cómodo para el pulgar?
+- Tunear: `CONFIG.JOYSTICK.zonaMuerta` (0..1, default 0.30) y `CONFIG.JOYSTICK.radioMax`
+  (px, default 55). Es 4 direcciones con "snap" (el juego es top-down 4-dir).
+- Decisión tuya: ¿dejás el joystick o el d-pad como control por defecto? (Se elige con
+  el flag; sólo uno se muestra a la vez para no encimarse.)
 
 ## 8. Sonido
 - ¿Los efectos procedurales (pasos, cosecha, misión) suman o molestan?

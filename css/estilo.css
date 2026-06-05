@@ -43,6 +43,42 @@ html, body {
 #btn-mute:hover { background: rgba(168, 90, 58, 0.85); }
 #btn-mute:active { transform: scale(0.94); }
 
+/* ---------------------- Joystick analógico (C2.1) ------------------- */
+/* Oculto por defecto. Se muestra sólo si hay táctil (#tactil.visible) y el
+   flag está on (body.joystick-on). En ese caso reemplaza al d-pad. */
+#joystick { display: none; }
+body.joystick-on #tactil.visible #joystick {
+  display: block;
+  position: absolute;
+  left: 30px; bottom: 36px;
+  width: 140px; height: 140px;
+  pointer-events: auto;
+  touch-action: none;
+  z-index: 51;
+}
+/* Cuando el joystick está activo, ocultar el d-pad de botones. */
+body.joystick-on #dpad { display: none; }
+
+#joystick-base {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: rgba(58, 44, 16, 0.42);
+  border: 2px solid rgba(255, 243, 196, 0.65);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+#joystick-knob {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 64px; height: 64px;
+  margin-left: -32px; margin-top: -32px;
+  border-radius: 50%;
+  background: rgba(168, 90, 58, 0.78);
+  border: 2px solid rgba(255, 243, 196, 0.85);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  transition: transform 0.04s ease-out;
+  will-change: transform;
+}
+
 /* ---------------------- Controles táctiles -------------------------- */
 #tactil {
   position: fixed; inset: 0;

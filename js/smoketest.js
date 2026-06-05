@@ -483,6 +483,21 @@ AJ.SmokeTest = (function () {
       } finally { AJ.SAVE_KEY = orig; }
     });
 
+    // 20. C2.1: joystick analógico
+    if (AJ.CONFIG.joystickAnalogico) {
+      check('Joystick: zona muerta + snap a 4 direcciones', () => {
+        if (!AJ.Joystick || typeof AJ.Joystick.dirDesde !== 'function') return 'sin Joystick';
+        const z = AJ.Joystick.dirDesde(2, 1); // muy chico -> zona muerta -> quieto
+        if (z.up || z.down || z.left || z.right) return 'zona muerta no frena';
+        const der = AJ.Joystick.dirDesde(50, 5);   // dominante X+
+        const arr = AJ.Joystick.dirDesde(-5, -50); // dominante Y-
+        return (der.right && !der.up && !der.down && !der.left &&
+                arr.up && !arr.left && !arr.right && !arr.down) ? true : 'snap mal';
+      });
+      check('Joystick: clase joystick-on y d-pad oculto', () =>
+        document.body.classList.contains('joystick-on') ? true : 'sin clase joystick-on');
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

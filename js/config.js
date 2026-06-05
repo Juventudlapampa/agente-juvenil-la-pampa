@@ -31,7 +31,7 @@ AJ.CONFIG = {
   npcsColonia:    true,  // C1.1: NPCs propios de la Colonia (con rutinas/afinidad)
   misionesColonia: true,  // C1.2: misiones cívicas propias de la Colonia
   // --- Capa C2 (controles/opciones/cierre) ---
-  joystickAnalogico: false, // C2.1: joystick táctil analógico opcional
+  joystickAnalogico: true,  // C2.1: joystick táctil analógico opcional
   menu:           false, // C2.2: menú de pausa/opciones
   brujula:        false, // C2.3: guía/flecha hacia la misión activa
 
@@ -53,6 +53,14 @@ AJ.CONFIG = {
 
   // --- Estaciones (FASE B) ---
   DIAS_POR_ESTACION: 3,        // días de juego por estación
+
+  // --- Joystick analógico (C2.1) ---
+  // ⚠️ El FEEL de estos valores necesita prueba humana en celular (ver PLAYTEST).
+  JOYSTICK: {
+    radioMax: 55,    // px de recorrido máximo del pulgar desde el centro.
+    zonaMuerta: 0.30, // fracción del radio (0..1) por debajo de la cual NO se mueve.
+                      // Más alto = hay que empujar más para arrancar (menos sensible).
+  },
 };
 
 /* =====================================================================

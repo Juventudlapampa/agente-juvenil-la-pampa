@@ -171,6 +171,15 @@ dispara la cadena principal (pueblo 1); la Colonia es contenido aparte.
   retoma en `col_aguada` y el Pueblo 1 sigue en `bienvenida` (objetivo_ok). El "!" y
   el HUD apuntan a los NPCs correctos de cada pueblo. Pueblo 1 56/56, Colonia 57/57.
 
+### D22 — C2.1: joystick analógico como alternativa al d-pad
+**Por qué:** `CONFIG.joystickAnalogico` agrega `js/joystick.js` (`AJ.Joystick`): un
+joystick táctil DOM abajo-izquierda que, cuando está on, **reemplaza** al d-pad (el
+CSS oculta el d-pad con `body.joystick-on`) para no encimarse. Alimenta el mismo
+`AJ.Input.estado` con **snap a 4 direcciones** (el juego es 4-dir), así el jugador no
+cambia. **Zona muerta y radio** tuneables y documentados en `CONFIG.JOYSTICK`.
+Verificado: smoke 58/58, arrastrar setea la dirección correcta (con snap), soltar
+limpia, el jugador se mueve. El *feel* queda para playtest humano (anotado en PLAYTEST).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

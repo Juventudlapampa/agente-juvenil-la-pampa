@@ -28,6 +28,13 @@
         <button id="btn-abajo" class="tbtn" aria-label="Abajo">▼</button>
       </div>
       <button id="btn-accion" class="tbtn accion" aria-label="Acción">E</button>
+
+      <!-- Joystick analógico opcional (C2.1). Lo muestra js/joystick.js si
+           CONFIG.joystickAnalogico está on; en ese caso reemplaza al d-pad. -->
+      <div id="joystick" aria-hidden="true">
+        <div id="joystick-base"></div>
+        <div id="joystick-knob"></div>
+      </div>
     </div>
   </div>
 
@@ -49,6 +56,7 @@
   <!-- Capa de pulido (gated por CONFIG) -->
   <script src="js/juice.js"></script>
   <script src="js/sonido.js"></script>
+  <script src="js/joystick.js"></script>
   <!-- Autotest -->
   <script src="js/smoketest.js"></script>
   <!-- Escenas -->
