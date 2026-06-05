@@ -157,6 +157,20 @@ mismo nivel que el principal, **sin sistemas nuevos**: usan los de FASE A/2.
 - Verificado: Pueblo 1 y Colonia **55/55** cada uno; diálogo y afinidad andan en la
   Colonia; sin errores de consola.
 
+### D21 — C1.2: misiones de la Colonia con progreso por pueblo
+**Por qué:** `CONFIG.misionesColonia` agrega 2 misiones cívicas propias de la Colonia
+(`AJ.MISIONES_COLONIA`, `pueblo: 2`), que se concatenan a `AJ.MISIONES` SÓLO si el
+flag está on (si off, todo queda como FASE 2). La lógica de misiones se hizo
+**consciente del pueblo**: `_misionActual`/`_completadas`/HUD filtran por
+`(m.pueblo||1) === AJ.Mapa.actual`, así el Cuaderno muestra la cadena del pueblo donde
+estás. El estado vive en `estado.misiones[id]` (global, persistido), por eso el
+progreso de cada pueblo se **recuerda por separado**. El Final (felicitación) sólo lo
+dispara la cadena principal (pueblo 1); la Colonia es contenido aparte.
+- Verificado end-to-end: avanzar `bienvenida` en Pueblo 1 y completar `col_escuela`
+  en la Colonia → ambos estados conviven; al "Continuar" tras recargar, la Colonia
+  retoma en `col_aguada` y el Pueblo 1 sigue en `bienvenida` (objetivo_ok). El "!" y
+  el HUD apuntan a los NPCs correctos de cada pueblo. Pueblo 1 56/56, Colonia 57/57.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

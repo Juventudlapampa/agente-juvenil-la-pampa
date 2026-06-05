@@ -130,6 +130,23 @@ AJ.SmokeTest = (function () {
           ids.indexOf(m.npcInicio) < 0 || ids.indexOf(m.objetivoNpc) < 0 || ids.indexOf(m.npcFin) < 0);
         return malas.length === 0 ? true : 'NPC inexistente en: ' + malas.map((m) => m.id).join(',');
       });
+
+      // C1.2: misiones propias de la Colonia.
+      if (AJ.CONFIG.misionesColonia) {
+        check('Misiones de la Colonia definidas e integradas', () => {
+          if (!AJ.MISIONES_COLONIA || AJ.MISIONES_COLONIA.length < 1) return 'sin misiones Colonia';
+          const enLista = AJ.MISIONES_COLONIA.every((m) => AJ.MISIONES.indexOf(m) >= 0);
+          const todasP2 = AJ.MISIONES_COLONIA.every((m) => m.pueblo === 2);
+          return (enLista && todasP2) ? true : 'no integradas o pueblo mal';
+        });
+        if (AJ.Mapa.actual === 2 && escena.misiones) {
+          check('Cuaderno de la Colonia muestra misión del pueblo 2', () => {
+            const m = escena.misiones._misionActual();
+            // null = todas completas (válido); si hay, debe ser pueblo 2.
+            return (!m || (m.pueblo || 1) === 2) ? true : 'misión de otro pueblo';
+          });
+        }
+      }
     }
 
     // 10. FASE 3: día/noche

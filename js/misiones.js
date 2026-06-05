@@ -128,6 +128,56 @@ AJ.MISIONES = [
   },
 ];
 
+/* C1.2 — Misiones propias de la Colonia (pueblo: 2). Se suman a AJ.MISIONES
+ * sólo si CONFIG.misionesColonia está en true (ver final del archivo). Son
+ * plantillas de texto reskinables, igual que las del pueblo principal. */
+AJ.MISIONES_COLONIA = [
+  {
+    id: 'col_escuela',
+    pueblo: 2,
+    titulo: 'La escuelita rural',
+    npcInicio: 'maestra_rural',
+    objetivoNpc: 'puestero',
+    npcFin: 'maestra_rural',
+    pista: 'Pedile a Don Ramón unos tablones para arreglar la escuelita.',
+    dialogoOferta: [
+      'Agente, a la escuelita rural se le llueve el techo.',
+      'Don Ramón el Puestero siempre tiene madera de sobra. ¿Le pedís unos tablones?',
+    ],
+    dialogoObjetivo: [
+      '¿Tablones para la escuela? Para los chicos, lo que haga falta.',
+      'Decile a la Seño Marta que mañana se los acerco con el sulky.',
+    ],
+    dialogoFin: [
+      '¡Gracias, Agente! Con ese techo los chicos estudian secos.',
+      'Acá en la Colonia la escuela es sagrada.',
+    ],
+    recompensa: { monedas: 15, logro: 'Amigo de la escuelita' },
+  },
+  {
+    id: 'col_aguada',
+    pueblo: 2,
+    titulo: 'El agua de la Colonia',
+    npcInicio: 'tractorista',
+    objetivoNpc: 'partera',
+    npcFin: 'tractorista',
+    pista: 'Pedile a Doña Anunciación que enseñe a cuidar el agua del molino.',
+    dialogoOferta: [
+      'Agente, el molino y la aguada son la vida de la Colonia.',
+      'Doña Anunciación conoce cada secreto del agua. Que nos dé una mano.',
+    ],
+    dialogoObjetivo: [
+      '¿Cuidar el agua? Hace 50 años que se lo digo a todos, m\'hijo.',
+      'Contale al Colorado que el sábado junto a las mujeres en el molino.',
+    ],
+    dialogoFin: [
+      '¡Bárbaro! Con Doña Anunciación al frente, el agua está cuidada.',
+      'La Colonia te lo agradece, Agente.',
+    ],
+    recompensa: { monedas: 20, logro: 'Cuidador del molino' },
+  },
+];
+
 AJ.Misiones = class {
   constructor(scene, estado) {
     this.scene = scene;
@@ -144,12 +194,21 @@ AJ.Misiones = class {
 
   // --- Helpers de estado ---
   _estadoDe(id) { return this.estado.misiones[id]; }
-  _completadas() {
-    return AJ.MISIONES.filter((m) => this._estadoDe(m.id) === 'completada').length;
+  // C1.2: las misiones se agrupan por pueblo (pueblo||1). El "Cuaderno" muestra
+  // la cadena DEL PUEBLO ACTUAL; el progreso de cada pueblo se recuerda aparte
+  // (todo vive en estado.misiones, que se persiste).
+  _pueblo() { return (window.AJ && AJ.Mapa) ? AJ.Mapa.actual : 1; }
+  _delPueblo() {
+    const pu = this._pueblo();
+    return AJ.MISIONES.filter((m) => (m.pueblo || 1) === pu);
   }
-  // La primera misión no completada es la "actual" desbloqueada.
+  _completadas() {
+    return this._delPueblo().filter((m) => this._estadoDe(m.id) === 'completada').length;
+  }
+  _totalPueblo() { return this._delPueblo().length; }
+  // La primera misión no completada del pueblo actual es la "actual".
   _misionActual() {
-    return AJ.MISIONES.find((m) => this._estadoDe(m.id) !== 'completada') || null;
+    return this._delPueblo().find((m) => this._estadoDe(m.id) !== 'completada') || null;
   }
   // ¿Está desbloqueada? Sólo la actual (las anteriores ya están completas).
   _desbloqueada(m) { return this._misionActual() === m; }
@@ -237,8 +296,11 @@ AJ.Misiones = class {
     this._actualizarHUD();
     if (this.scene._actualizarHUD) this.scene._actualizarHUD();
 
-    // ¿Se completaron todas? -> Final.
-    if (!siguiente) {
+    // ¿Se completó la cadena? El Final (felicitación) es la historia PRINCIPAL
+    // (Pueblo 1). Las misiones de la Colonia son contenido aparte: al terminarlas
+    // se celebra pero no se dispara el Final. C1.2.
+    const esPrincipal = (m.pueblo || 1) === 1;
+    if (!siguiente && esPrincipal) {
       this.scene.time.delayedCall(700, () => {
         try {
           this.scene.guardar();
@@ -282,8 +344,8 @@ AJ.Misiones = class {
   _actualizarHUD() {
     if (!this.hud) return;
     const m = this._misionActual();
-    const total = AJ.MISIONES.length, hechas = this._completadas();
-    if (!m) { this.hud.setText('★ ¡Todas las misiones cumplidas! (' + total + '/' + total + ')'); return; }
+    const total = this._totalPueblo(), hechas = this._completadas();
+    if (!m) { this.hud.setText('★ ¡Misiones cumplidas! (' + hechas + '/' + total + ')'); return; }
     const st = this._estadoDe(m.id);
     let estado = 'Nueva';
     if (st === 'activa') estado = 'En curso';
@@ -296,3 +358,13 @@ AJ.Misiones = class {
 
   _guardar() { try { AJ.Guardado.guardar(this.estado); } catch (e) {} }
 };
+
+// C1.2: sumar las misiones de la Colonia a la lista global SÓLO si el flag está
+// en true. Si está en false, AJ.MISIONES queda como en FASE 2 (cadena del Pueblo 1)
+// y la Colonia no tiene misiones. El estado de cada misión se guarda por id, así el
+// progreso de cada pueblo se recuerda por separado.
+if (window.AJ && AJ.CONFIG && AJ.CONFIG.misionesColonia &&
+    AJ.MISIONES && AJ.MISIONES_COLONIA &&
+    AJ.MISIONES.indexOf(AJ.MISIONES_COLONIA[0]) < 0) {
+  AJ.MISIONES = AJ.MISIONES.concat(AJ.MISIONES_COLONIA);
+}

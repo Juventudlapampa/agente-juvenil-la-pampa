@@ -33,7 +33,16 @@ economía); pantalla final. Todo commiteado y verificado.
 - **D `viaje`**: 2º pueblo "Colonia La Esperanza" (sin NPCs) + viaje ida/vuelta;
   el guardado recuerda el pueblo.
 
-### Capa 2 — Pulido (esta sesión)
+### Capa C1 — Vida en la Colonia (segunda noche) — CERRADA
+- **C1.1 `npcsColonia`**: 5 vecinos rurales con diálogo, rutinas y afinidad (Don
+  Ramón, El Gallego, La Seño Marta, El Colorado, Doña Anunciación). Commit `b27ec64`.
+- **C1.2 `misionesColonia`**: 2 misiones cívicas propias (`col_escuela`, `col_aguada`)
+  en el Cuaderno; progreso por pueblo separado y persistente. (commit a continuación)
+- Smoke al cierre de C1: **Pueblo 1 56/56, Colonia 57/57**. Sin errores de consola.
+- De paso se arreglaron 2 bugs de no-destructividad del auto-smoke (NPCs amontonados,
+  afinidad del 1er NPC "gastada").
+
+### Capa 2 — Pulido (primera noche)
 > Se completa abajo a medida que avanza. Flags nuevos arrancan en `false` y pasan a
 > `true` sólo al verificar con el smoke-test.
 

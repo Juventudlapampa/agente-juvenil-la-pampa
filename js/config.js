@@ -29,7 +29,7 @@ AJ.CONFIG = {
   uiPulida:    true,   // P3: UX de diálogo/cuaderno + táctil afinado
   // --- Capa C1 (vida en la Colonia) ---
   npcsColonia:    true,  // C1.1: NPCs propios de la Colonia (con rutinas/afinidad)
-  misionesColonia: false, // C1.2: misiones cívicas propias de la Colonia
+  misionesColonia: true,  // C1.2: misiones cívicas propias de la Colonia
   // --- Capa C2 (controles/opciones/cierre) ---
   joystickAnalogico: false, // C2.1: joystick táctil analógico opcional
   menu:           false, // C2.2: menú de pausa/opciones
