@@ -32,7 +32,7 @@ AJ.CONFIG = {
   misionesColonia: true,  // C1.2: misiones cívicas propias de la Colonia
   // --- Capa C2 (controles/opciones/cierre) ---
   joystickAnalogico: true,  // C2.1: joystick táctil analógico opcional
-  menu:           false, // C2.2: menú de pausa/opciones
+  menu:           true,  // C2.2: menú de pausa/opciones
   brujula:        false, // C2.3: guía/flecha hacia la misión activa
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---

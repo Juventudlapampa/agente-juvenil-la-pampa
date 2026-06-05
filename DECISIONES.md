@@ -180,6 +180,16 @@ cambia. **Zona muerta y radio** tuneables y documentados en `CONFIG.JOYSTICK`.
 Verificado: smoke 58/58, arrastrar setea la dirección correcta (con snap), soltar
 limpia, el jugador se mueve. El *feel* queda para playtest humano (anotado en PLAYTEST).
 
+### D23 — C2.2: menú de pausa/opciones (QoL, sin tocar balance)
+**Por qué:** `CONFIG.menu` agrega `js/menu.js` (`AJ.Menu`): overlay de pausa con
+Reanudar, mute, Controles/Ayuda, **Reiniciar partida con DOBLE confirmación**
+(confirmar → confirmar2 → borrar) y Volver al título. Botón DOM `#btn-menu` (al lado
+del mute) + tecla **P**; Esc cierra el menú antes que volver al título.
+- **Pausa real:** con el menú abierto, `Pueblo.update` congela jugador, interacción y
+  TODOS los ticks (no pasa el tiempo). Verificado en el smoke (el reloj no avanza).
+- El reinicio borra el guardado y arranca juego nuevo (verificado: monedas/misiones a
+  cero). No toca el balance. Smoke 59/59.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

@@ -498,6 +498,29 @@ AJ.SmokeTest = (function () {
         document.body.classList.contains('joystick-on') ? true : 'sin clase joystick-on');
     }
 
+    // 21. C2.2: menú de pausa
+    if (AJ.CONFIG.menu) {
+      check('Menú: abre/cierra, congela el tiempo y tiene doble confirmación', () => {
+        if (!escena.menu) return 'sin menú';
+        const m = escena.menu;
+        m.abrir();
+        if (!m.abierto) return 'no abrió';
+        // Pausa real: con el menú abierto, un update no avanza el reloj.
+        const min0 = escena.diaNoche ? escena.diaNoche.estado.tiempo.minutos : null;
+        escena.update(0, 1000);
+        const min1 = escena.diaNoche ? escena.diaNoche.estado.tiempo.minutos : null;
+        const congela = (min0 == null) || (min1 === min0);
+        // Reinicio con doble confirmación: hay dos vistas antes de borrar.
+        m.vista = 'confirmar'; m._render();
+        const paso1 = m.vista === 'confirmar';
+        m.vista = 'confirmar2'; m._render();
+        const paso2 = m.vista === 'confirmar2';
+        m.vista = 'menu'; m._render(); m.cerrar();
+        return (!m.abierto && congela && paso1 && paso2) ? true
+          : 'menú raro (congela=' + congela + ')';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

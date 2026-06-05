@@ -90,6 +90,20 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       try { this.dialogo = new AJ.Dialogo(this); } catch (e) { console.warn('[Pueblo] diálogo off', e); }
     }
 
+    // --- C2.2: menú de pausa/opciones (gated por flag) ---
+    if (AJ.CONFIG.menu && AJ.Menu) {
+      try {
+        this.menu = new AJ.Menu(this);
+        this.input.keyboard.on('keydown-P', () => this.menu.alternar());
+        const btn = document.getElementById('btn-menu');
+        if (btn) {
+          btn.style.display = 'flex';
+          this._onBtnMenu = (e) => { e.preventDefault(); this.menu.alternar(); };
+          btn.addEventListener('click', this._onBtnMenu);
+        }
+      } catch (e) { console.warn('[Pueblo] menú off', e); this.menu = null; }
+    }
+
     // --- Guardado automático periódico + al cerrar la pestaña ---
     this.time.addEvent({ delay: 5000, loop: true, callback: () => this.guardar() });
     this._onUnload = () => this.guardar();
@@ -98,6 +112,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     // --- Tecla ESC: cierra el menú de crafteo si está abierto; si no, vuelve
     //     al título (guardando). ---
     this.input.keyboard.on('keydown-ESC', () => {
+      if (this.menu && this.menu.abierto) { this.menu.cerrar(); return; }
       if (this.crafteo && this.crafteo.menuAbierto) { this.crafteo.cerrarMenu(); return; }
       this.guardar();
       if (AJ.Juice) AJ.Juice.irA(this, 'Titulo');
@@ -185,9 +200,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
 
   update(time, delta) {
     const dt = delta / 1000;
-    // ¿Hay un diálogo o el menú de crafteo abierto? Si sí, congelar movimiento.
+    // C2.2: con el menú de pausa abierto, se congela TODO (pausa real).
+    const menuAbierto = !!(this.menu && this.menu.abierto);
+    // ¿Hay un diálogo, el menú de crafteo o la pausa abiertos? -> sin movimiento.
     const dialogoAbierto = (this.dialogo && this.dialogo.abierto) ||
-                           (this.crafteo && this.crafteo.menuAbierto);
+                           (this.crafteo && this.crafteo.menuAbierto) || menuAbierto;
 
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }
@@ -207,17 +224,19 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       }
     }
 
-    // Acción (espacio/E/botón)
-    if (AJ.Input.tomarAccion()) {
+    // Acción (espacio/E/botón). En pausa no interactúa.
+    if (!menuAbierto && AJ.Input.tomarAccion()) {
       try { this._interactuar(); } catch (e) { console.warn('[Pueblo] interacción', e); }
     }
 
-    // Sistemas con tick
-    if (this.diaNoche) { try { this.diaNoche.update(dt); } catch (e) {} }
-    if (this.granja) { try { this.granja.update(dt); } catch (e) {} }
-    if (this.npcManager) { try { this.npcManager.update(dt); } catch (e) {} }
-    if (this.rutinas) { try { this.rutinas.update(dt); } catch (e) {} }
-    if (this.estaciones) { try { this.estaciones.update(dt); } catch (e) {} }
+    // Sistemas con tick — congelados durante la pausa (no pasa el tiempo).
+    if (!menuAbierto) {
+      if (this.diaNoche) { try { this.diaNoche.update(dt); } catch (e) {} }
+      if (this.granja) { try { this.granja.update(dt); } catch (e) {} }
+      if (this.npcManager) { try { this.npcManager.update(dt); } catch (e) {} }
+      if (this.rutinas) { try { this.rutinas.update(dt); } catch (e) {} }
+      if (this.estaciones) { try { this.estaciones.update(dt); } catch (e) {} }
+    }
   }
 
   _interactuar() {
@@ -263,5 +282,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
 
   shutdown() {
     if (this._onUnload) window.removeEventListener('beforeunload', this._onUnload);
+    // C2.2: limpiar el listener del botón de menú (DOM persiste entre escenas).
+    if (this._onBtnMenu) {
+      const btn = document.getElementById('btn-menu');
+      if (btn) btn.removeEventListener('click', this._onBtnMenu);
+      this._onBtnMenu = null;
+    }
   }
 };
