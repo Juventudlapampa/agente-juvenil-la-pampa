@@ -93,6 +93,9 @@ js/npc.js               NPCs (FASE 2)
 js/misiones.js          Cuaderno de misiones cívicas (FASE 2)
 js/diaNoche.js          Ciclo día/noche (FASE 3)
 js/granja.js            Parcela y cultivos (FASE 4)
+js/rutinas.js           NPCs con rutinas diarias + afinidad (FASE A)
+js/estaciones.js        4 estaciones: paleta + ritmo de cultivos (FASE B)
+js/crafteo.js           Mesa de oficios + recetas (FASE C)
 js/smoketest.js         Autotest de invariantes (modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título
@@ -102,8 +105,31 @@ DECISIONES.md           Bitácora de decisiones
 ROADMAP.md              Pendientes y futuras noches
 ```
 
+## Qué hay para hacer
+
+- **Misiones cívicas**: hablá con los vecinos del pueblo (tienen un "!" cuando te
+  toca). Completá las 5 para llegar al final.
+- **Amistad**: hablar con los vecinos sube la afinidad (botón **♥ Vecinos** o tecla
+  **C** para ver el Cuaderno de Vecinos).
+- **Rutinas**: los vecinos caminan por el pueblo según la hora (a la plaza a la
+  tarde, a su lugar de mañana y de noche).
+- **Granja**: plantá en la huerta (E), esperá que crezca y cosechá por monedas + 🥕.
+- **Estaciones**: cada 3 días cambia la estación (paleta + ritmo de los cultivos).
+- **Mesa de oficios**: combiná verdura (cosecha) y leña (de los caldenes, con E) en
+  5 recetas.
+- **Viajá**: caminá hasta el cartel **→ Colonia** (este del pueblo) para ir a la
+  **Colonia La Esperanza**, una chacra para farmear y craftear tranquilo. El juego
+  recuerda en qué pueblo estás.
+
+## Flags de sistemas (`js/config.js`)
+
+`npcsDialogo`, `misiones`, `diaNoche`, `granja`, `rutinas`, `estaciones`, `crafteo`,
+`viaje`. Cada uno prende/apaga su sistema. Poné cualquiera en `false` y el juego sigue
+andando sin esa parte (útil para depurar o para una versión más chica).
+
 ## Filosofía anti-rotura
 
 Cada sistema tiene un flag en `CONFIG` y se inicializa dentro de un try/catch. Si un
 sistema falla, se apaga solo y el juego sigue. Un autotest (`smoketest.js`) verifica
-invariantes en cada carga (modo dev) e imprime PASS/FAIL en la consola.
+invariantes en cada carga (modo dev) e imprime PASS/FAIL en la consola. Hoy: **42/42
+PASS** en el pueblo principal.
