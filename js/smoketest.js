@@ -26,8 +26,10 @@ AJ.SmokeTest = (function () {
           granja: JSON.stringify(escena.estado.granja || {}),
           afinidad: JSON.stringify(escena.estado.afinidad || {}),
           items: JSON.stringify((escena.estado.inventario && escena.estado.inventario.items) || {}),
+          logros: JSON.stringify((escena.estado.inventario && escena.estado.inventario.logros) || []),
           misiones: JSON.stringify(escena.estado.misiones || {}),
           misionActiva: escena.estado.misionActiva,
+          registro: JSON.stringify(escena.estado.registro || { vecinos: {}, pueblos: {} }),
         };
       }
     } catch (e) { snap = null; }
@@ -621,11 +623,38 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 23. D3: Registro del Agente
+    if (AJ.CONFIG.registro) {
+      check('Registro: registra avance y calcula %', () => {
+        const reg = escena.registro;
+        if (!reg) return 'sin registro';
+        // snapshot del registro para restaurar (no ensuciar)
+        const snapReg = JSON.stringify(escena.estado.registro);
+        const pueblosVis0 = Object.keys(escena.estado.registro.pueblos).length;
+        // estar en este pueblo ya debería haberlo registrado
+        if (pueblosVis0 < 1) return 'pueblo no registrado';
+        const n = escena.npcManager && escena.npcManager.npcs[0];
+        if (n) reg.registrarVecino(n.id);
+        const d = reg.datos();
+        const ok = d && typeof d.porcentaje === 'number' && d.porcentaje >= 0 && d.porcentaje <= 100 &&
+          d.vecinos.total > 0 && d.misiones.total > 0 && d.vecinos.de >= 1;
+        // panel abre/cierra sin lanzar
+        reg.abrir(); const ab = reg.abierto; reg.cerrar();
+        escena.estado.registro = JSON.parse(snapReg); // restaurar
+        return (ok && ab) ? true : 'datos/panel raros';
+      });
+      check('logrosTotales y totalPueblos coherentes', () =>
+        AJ.logrosTotales().length >= (AJ.MISIONES ? 1 : 0) && AJ.totalPueblos() >= 1 ? true : 'totales mal');
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
         if (snap.items !== undefined && escena.estado.inventario)
           escena.estado.inventario.items = JSON.parse(snap.items);
+        if (snap.logros !== undefined && escena.estado.inventario)
+          escena.estado.inventario.logros = JSON.parse(snap.logros);
+        if (snap.registro !== undefined) escena.estado.registro = JSON.parse(snap.registro);
         if (snap.monedas !== undefined && escena.estado.inventario)
           escena.estado.inventario.monedas = snap.monedas;
         if (snap.minutos !== undefined && escena.estado.tiempo)

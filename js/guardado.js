@@ -38,6 +38,8 @@ AJ.Guardado = (function () {
       tiempo: { minutos: 8 * 60, dia: 1 }, // arranca Día 1, 08:00
       granja: {},          // "x,y" -> { etapa, plantadoEnMin }
       afinidad: {},        // id de NPC -> afinidad 0..100 (FASE A)
+      registro: { vecinos: {}, pueblos: {} }, // Registro del Agente (D3)
+      tiempoJugado: 0,     // segundos reales jugados (E1)
     };
   }
 
@@ -76,6 +78,8 @@ AJ.Guardado = (function () {
         misiones: est.misiones || {},
         afinidad: est.afinidad || {},
         mapaActual: est.mapaActual || 1,
+        registro: est.registro && est.registro.vecinos ? est.registro : { vecinos: {}, pueblos: {} },
+        tiempoJugado: est.tiempoJugado || 0,
       });
     } catch (e) {
       console.warn('[Guardado] Save corrupto, ignoro:', e);

@@ -95,6 +95,14 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       try { this.brujula = new AJ.Brujula(this); } catch (e) { console.warn('[Pueblo] brújula off', e); this.brujula = null; }
     }
 
+    // --- D3: Registro del Agente (gated por flag) ---
+    if (AJ.CONFIG.registro && AJ.Registro) {
+      try {
+        this.registro = new AJ.Registro(this, this.estado);
+        this.registro.registrarPueblo(this.estado.mapaActual || 1); // visitaste este pueblo
+      } catch (e) { console.warn('[Pueblo] registro off', e); this.registro = null; }
+    }
+
     // --- C2.2: menú de pausa/opciones (gated por flag) ---
     if (AJ.CONFIG.menu && AJ.Menu) {
       try {
@@ -280,6 +288,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
   _hablarCon(npc) {
     // P1: feedback visual: el NPC pega un saltito al hablarle.
     if (AJ.Juice && npc && npc.sprite) AJ.Juice.pulso(this, npc.sprite);
+    // D3: conociste a este vecino (queda en el Registro).
+    if (this.registro && npc) { try { this.registro.registrarVecino(npc.id); } catch (e) {} }
     // FASE A: hablar sube la afinidad (una vez por día por NPC).
     if (this.afinidad) { try { this.afinidad.alHablar(npc); } catch (e) {} }
     if (this.misiones) { this.misiones.alHablar(npc, this.dialogo); }

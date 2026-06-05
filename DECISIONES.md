@@ -228,6 +228,20 @@ misiones totales, cadena Pueblo 1 = [bienvenida, plaza, acto, aguada, pu1_quiosc
 pu1_sirena, fiesta], Colonia = 4; completar `pu1_quiosco` da recompensa y avanza a
 `pu1_sirena`. Pueblo 1 67/67, Colonia 68/68.
 
+### D28 — D3: Registro del Agente (meta-progresión)
+**Por qué:** `CONFIG.registro` agrega `js/registro.js` (`AJ.Registro`): colección estilo
+Pokédex que se llena sola — vecinos conocidos (hook en `_hablarCon`), pueblos visitados
+(hook al crear la escena), misiones cumplidas y logros (derivados del estado), con un %
+global. Sólo lectura/registro, **no toca el balance**. Lo conocido se guarda en
+`estado.registro = {vecinos,pueblos}` (persistido); misiones/logros se derivan (no se
+duplican). Totales: `AJ.roster()` (vecinos), `AJ.totalPueblos()`, `AJ.MISIONES.length`,
+`AJ.logrosTotales()`. Accesible desde el menú (nueva sub-vista "Registro / Opciones").
+- **Bug latente que el Registro hizo visible:** el auto-smoke (checks de granja/crafteo)
+  agregaba logros y NO los restauraba → en juego nuevo aparecían 2 logros. Se agregó
+  `logros` y `registro` al snapshot/restore del smoke. Ahora juego nuevo = 0 logros.
+- Verificado: smoke 69/69, panel con barras de avance, persistencia (vecinos/pueblos
+  sobreviven recarga + Continuar).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

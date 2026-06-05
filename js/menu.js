@@ -62,6 +62,12 @@ AJ.Menu = class {
 
   _limpiarFilas() { this.filas.removeAll(true); }
 
+  // ¿Hay sub-panels para mostrar en "Registro / Opciones"?
+  _hayExtras() {
+    const sc = this.scene;
+    return !!(sc.registro || sc.progreso || AJ.Accesibilidad || (AJ.CONFIG.creditos && AJ.Creditos));
+  }
+
   _render() {
     this._limpiarFilas();
     const H = this.scene.scale.height;
@@ -72,8 +78,21 @@ AJ.Menu = class {
       this._boton(y0, 'Reanudar', () => this.cerrar());
       this._boton(y0 + 44, muteTxt, () => { if (AJ.Sonido) AJ.Sonido.toggleMute(); this._render(); });
       this._boton(y0 + 88, 'Controles / Ayuda', () => { this.vista = 'ayuda'; this._render(); });
-      this._boton(y0 + 132, 'Reiniciar partida', () => { this.vista = 'confirmar'; this._render(); }, '#e0a04a');
-      this._boton(y0 + 176, 'Volver al título', () => this._volverTitulo());
+      // Sub-menú "Registro / Opciones" sólo si hay algo que mostrar ahí.
+      if (this._hayExtras()) this._boton(y0 + 132, 'Registro / Opciones', () => { this.vista = 'extras'; this._render(); });
+      const dy = this._hayExtras() ? 44 : 0;
+      this._boton(y0 + 132 + dy, 'Reiniciar partida', () => { this.vista = 'confirmar'; this._render(); }, '#e0a04a');
+      this._boton(y0 + 176 + dy, 'Volver al título', () => this._volverTitulo());
+    } else if (this.vista === 'extras') {
+      this.titulo.setText('REGISTRO / OPCIONES');
+      let y = y0;
+      const sc = this.scene;
+      // Abren un sub-panel ARRIBA del menú: el menú queda abierto (juego en pausa).
+      if (sc.registro) { this._boton(y, '📋 Registro del Agente', () => sc.registro.abrir()); y += 44; }
+      if (sc.progreso) { this._boton(y, '📊 Progreso y estadísticas', () => sc.progreso.abrir()); y += 44; }
+      if (AJ.Accesibilidad) { this._boton(y, '⚙ Accesibilidad', () => AJ.Accesibilidad.abrirPanel(sc)); y += 44; }
+      if (AJ.CONFIG.creditos && AJ.Creditos) { this._boton(y, '📜 Créditos', () => AJ.Creditos.abrir(sc)); y += 44; }
+      this._boton(y + 16, '« Volver', () => { this.vista = 'menu'; this._render(); });
     } else if (this.vista === 'ayuda') {
       this.titulo.setText('CONTROLES');
       const W = this.scene.scale.width;
