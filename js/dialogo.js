@@ -29,6 +29,10 @@ AJ.Dialogo = class {
     const pulida = !!(AJ.CONFIG && AJ.CONFIG.uiPulida);
     if (pulida) alto = 142;
     const top = H - alto - margen;
+    // E2: tamaños base (la accesibilidad los escala en _render).
+    this._fsCuerpoBase = pulida ? 18 : 17;
+    this._fsNombreBase = pulida ? 19 : 18;
+    this._revelando = false;
 
     // Panel
     this.panel = this.scene.add.graphics();
@@ -101,14 +105,54 @@ AJ.Dialogo = class {
   }
 
   _render() {
+    // E2: escala de texto elegida por el jugador (1 si accesibilidad off).
+    const esc = AJ.Accesibilidad ? AJ.Accesibilidad.escalaTexto() : 1;
+    const alto = AJ.Accesibilidad && AJ.Accesibilidad.contraste();
+    try {
+      this.txtNombre.setFontSize(Math.round(this._fsNombreBase * esc));
+      this.txtCuerpo.setFontSize(Math.round(this._fsCuerpoBase * esc));
+      // E2: alto contraste -> contorno negro para que el texto resalte.
+      this.txtCuerpo.setStroke('#000000', alto ? 4 : 0);
+      this.txtNombre.setStroke('#000000', alto ? 4 : 0);
+    } catch (e) {}
     this.txtNombre.setText(this.nombre);
-    this.txtCuerpo.setText(this.tramos[this.indice] || '');
     this.txtMas.setText(this.indice < this.tramos.length - 1 ? '▼' : '✕');
+    // E2: revelar el cuerpo (typewriter) según la velocidad elegida.
+    this._revelarCuerpo(this.tramos[this.indice] || '');
+  }
+
+  // Revela el texto de a un caracter (o de una si la velocidad es instantánea).
+  _revelarCuerpo(texto) {
+    this._detenerReveal();
+    const ms = AJ.Accesibilidad ? AJ.Accesibilidad.velTextoMs() : 0;
+    if (!ms || ms <= 0) { this.txtCuerpo.setText(texto); this._revelando = false; return; }
+    this._textoCompleto = texto;
+    this._revelando = true;
+    this.txtCuerpo.setText('');
+    let i = 0;
+    this._timerReveal = this.scene.time.addEvent({
+      delay: ms, loop: true, callback: () => {
+        i++;
+        this.txtCuerpo.setText(texto.slice(0, i));
+        if (i >= texto.length) { this._revelando = false; this._detenerReveal(); }
+      },
+    });
+  }
+
+  _detenerReveal() {
+    if (this._timerReveal) { try { this._timerReveal.remove(false); } catch (e) {} this._timerReveal = null; }
   }
 
   // Avanza al siguiente tramo o cierra. Devuelve true si seguía abierto.
   avanzar() {
     if (!this.abierto) return false;
+    // E2: si se está revelando, la acción completa el tramo de una (no avanza).
+    if (this._revelando) {
+      this._detenerReveal();
+      this.txtCuerpo.setText(this._textoCompleto || (this.tramos[this.indice] || ''));
+      this._revelando = false;
+      return true;
+    }
     this.indice++;
     if (this.indice >= this.tramos.length) { this.cerrar(); return false; }
     this._render();
@@ -117,6 +161,7 @@ AJ.Dialogo = class {
   }
 
   cerrar() {
+    this._detenerReveal();
     if (this.abierto && AJ.Sonido) { try { AJ.Sonido.dialogoCerrar(); } catch (e) {} }
     this.abierto = false;
     this.cont.setVisible(false);

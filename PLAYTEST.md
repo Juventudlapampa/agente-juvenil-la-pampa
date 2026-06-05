@@ -17,6 +17,10 @@
 - ¿Los tramos de texto son muy largos? ¿Se avanza cómodo con E / botón?
 - ¿El sonido de diálogo (blip) cansa o está bien?
 - Tunear texto: es contenido (en `js/misiones.js` → `AJ.MISIONES`).
+- **E2:** ahora la **velocidad de texto del diálogo la elige el jugador**
+  (Accesibilidad: lento/normal/rápido/instantáneo). Esto esquiva el debate de "qué
+  ritmo es el correcto". Igual: ¿el **default 'normal'** está bien para arrancar, o
+  conviene otro? (es lo único de ritmo que sigue siendo una decisión de default).
 
 ## 3. Ciclo día/noche y estaciones
 - ¿El día dura bien (default 4 min reales) o marea?

@@ -261,6 +261,18 @@ contado en `Pueblo.update` salvo en pausa), día, monedas, misiones por pueblo y
 (corazones) por cada vecino conocido. Sólo lectura, no toca nada. Accesible desde el menú.
 Verificado: smoke 72/72, panel con stats correctas (754s → "12m 34s"), el tiempo avanza.
 
+### D31 — E2: accesibilidad (opciones del jugador, no defaults)
+**Por qué:** `CONFIG.accesibilidad` agrega `js/accesibilidad.js` (`AJ.Accesibilidad`):
+opciones que ELIGE el jugador y se guardan en localStorage (valen para todas las
+partidas). La headline es la **velocidad de texto del diálogo** (lento/normal/rápido/
+instantáneo): un typewriter en `dialogo.js` (gated; default instantáneo = comportamiento
+original; la acción completa el tramo si se está revelando). Esto **le da la perilla al
+jugador** en vez de adivinar "el ritmo correcto". También: tamaño de texto del diálogo
+(escala 1.0/1.3, en vivo) y alto contraste (clase `alto-contraste` para botones DOM +
+contorno del texto del diálogo). Panel de opciones reutilizable (menú y, en E3, título).
+Verificado: smoke 74/74, typewriter revela parcial y la acción completa, opciones aplican
+y persisten tras recargar.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

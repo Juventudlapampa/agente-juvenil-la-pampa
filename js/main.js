@@ -100,6 +100,7 @@ AJ.iniciarJuego = function () {
     AJ.Input.init();
     if (AJ.Sonido) { try { AJ.Sonido.init(); } catch (e) { console.warn('[main] sonido off', e); } }
     if (AJ.Joystick) { try { AJ.Joystick.init(); } catch (e) { console.warn('[main] joystick off', e); } }
+    if (AJ.Accesibilidad) { try { AJ.Accesibilidad.init(); } catch (e) { console.warn('[main] accesibilidad off', e); } }
     // P3: estilo de UI pulida (gateado por flag; el CSS lee la clase del body).
     try { if (AJ.CONFIG.uiPulida) document.body.classList.add('ui-pulida'); } catch (e) {}
 

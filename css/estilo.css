@@ -61,6 +61,21 @@ html, body {
 #btn-menu:hover { background: rgba(168, 90, 58, 0.85); }
 #btn-menu:active { transform: scale(0.94); }
 
+/* ---------------------- Alto contraste (E2) ------------------------- */
+/* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,
+   borde más fuerte). Sólo afecta si el jugador la activa. */
+body.alto-contraste #btn-mute,
+body.alto-contraste #btn-menu {
+  background: #000000;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+body.alto-contraste .tbtn {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
 /* ---------------------- Joystick analógico (C2.1) ------------------- */
 /* Oculto por defecto. Se muestra sólo si hay táctil (#tactil.visible) y el
    flag está on (body.joystick-on). En ese caso reemplaza al d-pad. */

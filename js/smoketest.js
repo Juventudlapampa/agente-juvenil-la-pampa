@@ -685,6 +685,37 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 26. E2: accesibilidad
+    if (AJ.CONFIG.accesibilidad) {
+      check('Accesibilidad: getters y opciones aplican', () => {
+        const A = AJ.Accesibilidad;
+        if (!A) return 'sin Accesibilidad';
+        const snapA = JSON.stringify(A.cfg());
+        A.set('velTexto', 'lento'); const lento = A.velTextoMs();
+        A.set('velTexto', 'instantaneo'); const inst = A.velTextoMs();
+        A.set('tamTexto', 'grande'); const esc = A.escalaTexto();
+        A.set('contraste', true); const cont = A.contraste();
+        const clase = document.body.classList.contains('alto-contraste');
+        const c = JSON.parse(snapA); // restaurar preferencias
+        A.set('velTexto', c.velTexto); A.set('tamTexto', c.tamTexto); A.set('contraste', c.contraste);
+        return (lento > 0 && inst === 0 && esc > 1 && cont && clase) ? true : 'opciones raras';
+      });
+      check('Diálogo respeta el typewriter (revelando)', () => {
+        if (!escena.dialogo) return 'sin diálogo';
+        const A = AJ.Accesibilidad;
+        const snapA = JSON.stringify(A.cfg());
+        A.set('velTexto', 'normal');
+        escena.dialogo.mostrar('Test', ['Una línea bastante larga para revelar.']);
+        const revelando = escena.dialogo._revelando === true;
+        // avanzar completa el tramo
+        escena.dialogo.avanzar();
+        const completo = escena.dialogo._revelando === false;
+        escena.dialogo.cerrar();
+        const c = JSON.parse(snapA); A.set('velTexto', c.velTexto);
+        return (revelando && completo) ? true : 'typewriter raro';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

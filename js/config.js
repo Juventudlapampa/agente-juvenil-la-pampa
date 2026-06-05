@@ -41,7 +41,7 @@ AJ.CONFIG = {
   tercerPueblo:   true,  // D4: tercer pueblo (opcional, gated)
   // --- Capa E (meta, cierre y accesibilidad) ---
   progreso:       true,  // E1: pantalla de progreso/estadísticas
-  accesibilidad:  false, // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)
+  accesibilidad:  true,  // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)
   creditos:       false, // E3: menú principal pulido + créditos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
