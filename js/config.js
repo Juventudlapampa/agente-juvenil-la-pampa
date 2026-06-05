@@ -40,7 +40,7 @@ AJ.CONFIG = {
   registro:       true,  // D3: Registro del Agente (colección estilo "Pokédex")
   tercerPueblo:   true,  // D4: tercer pueblo (opcional, gated)
   // --- Capa E (meta, cierre y accesibilidad) ---
-  progreso:       false, // E1: pantalla de progreso/estadísticas
+  progreso:       true,  // E1: pantalla de progreso/estadísticas
   accesibilidad:  false, // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)
   creditos:       false, // E3: menú principal pulido + créditos
 

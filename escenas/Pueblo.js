@@ -103,6 +103,12 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       } catch (e) { console.warn('[Pueblo] registro off', e); this.registro = null; }
     }
 
+    // --- E1: pantalla de progreso/estadísticas (gated por flag) ---
+    if (AJ.CONFIG.progreso && AJ.Progreso) {
+      try { this.progreso = new AJ.Progreso(this, this.estado); }
+      catch (e) { console.warn('[Pueblo] progreso off', e); this.progreso = null; }
+    }
+
     // --- C2.2: menú de pausa/opciones (gated por flag) ---
     if (AJ.CONFIG.menu && AJ.Menu) {
       try {
@@ -215,6 +221,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     const dt = delta / 1000;
     // C2.2: con el menú de pausa abierto, se congela TODO (pausa real).
     const menuAbierto = !!(this.menu && this.menu.abierto);
+    // E1: contar tiempo jugado (segundos reales), salvo en pausa.
+    if (!menuAbierto) this.estado.tiempoJugado = (this.estado.tiempoJugado || 0) + dt;
     // ¿Hay un diálogo, el menú de crafteo o la pausa abiertos? -> sin movimiento.
     const dialogoAbierto = (this.dialogo && this.dialogo.abierto) ||
                            (this.crafteo && this.crafteo.menuAbierto) || menuAbierto;

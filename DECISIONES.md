@@ -254,6 +254,13 @@ sentidos, guardado por pueblo y smoke 61/61 en el Puesto, verificados** (un resu
 intermedio "raro" fue artefacto de timing de un eval async, no un bug). Fix menor: el
 check de Registro asumía un NPC para registrar; ahora sólo lo exige donde hay vecinos.
 
+### D30 — E1: pantalla de progreso/estadísticas (sólo lectura)
+**Por qué:** `CONFIG.progreso` agrega `js/progreso.js` (`AJ.Progreso`): panel que lee del
+Registro (D3) + el estado y muestra % global, tiempo jugado (nuevo: `estado.tiempoJugado`,
+contado en `Pueblo.update` salvo en pausa), día, monedas, misiones por pueblo y afinidad
+(corazones) por cada vecino conocido. Sólo lectura, no toca nada. Accesible desde el menú.
+Verificado: smoke 72/72, panel con stats correctas (754s → "12m 34s"), el tiempo avanza.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

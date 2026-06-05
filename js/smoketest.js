@@ -666,6 +666,25 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 25. E1: pantalla de progreso
+    if (AJ.CONFIG.progreso) {
+      check('Progreso: panel lee stats sin romper', () => {
+        const pr = escena.progreso;
+        if (!pr) return 'sin progreso';
+        const mpp = pr._misionesPorPueblo();
+        const okMis = mpp && Object.keys(mpp).length >= 1;
+        const tiempo = pr._fmtTiempo(125); // 2m 5s
+        pr.abrir(); const ab = pr.abierto; pr.cerrar();
+        return (okMis && /m/.test(tiempo) && ab) ? true : 'panel/stats raros';
+      });
+      check('E1: cuenta el tiempo jugado', () => {
+        const t0 = escena.estado.tiempoJugado || 0;
+        escena.update(0, 500); // 0.5s
+        const t1 = escena.estado.tiempoJugado || 0;
+        return t1 > t0 ? true : 'tiempo no avanza';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
