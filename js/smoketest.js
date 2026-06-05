@@ -108,6 +108,18 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 10. FASE 3: día/noche
+    if (AJ.CONFIG.diaNoche) {
+      check('Reloj y tinte creados', () => escena.diaNoche && escena.diaNoche.overlay && escena.diaNoche.reloj);
+      check('El tiempo avanza', () => {
+        if (!escena.diaNoche) return 'sin sistema';
+        const antes = escena.diaNoche.estado.tiempo.minutos;
+        escena.diaNoche.update(1.0); // simula 1 seg
+        const desp = escena.diaNoche.estado.tiempo.minutos;
+        return desp > antes ? true : 'no avanzó (' + antes + '->' + desp + ')';
+      });
+    }
+
     // --- Reporte ---
     const pasados = r.filter((x) => x.ok).length;
     const total = r.length;

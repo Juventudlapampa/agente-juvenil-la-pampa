@@ -63,6 +63,19 @@ recién cuando el smoke-test del sistema da PASS.
     y dispara la pantalla Final correctamente.
   - HUD "Cuaderno" arriba a la derecha con misión activa y progreso (x/5).
 
+- **FASE 3 (verificada en navegador):** Smoke-test **20/20 PASS**.
+  - Reloj de juego (Día N · HH:MM · período) y tinte a pantalla completa que
+    interpola color/alpha entre claves horarias (noche azul, amanecer/atardecer
+    naranja, día sin tinte). Verificado visualmente a las 22:00 (escena azulada,
+    UI legible por encima del tinte).
+  - Un día de juego = 240 s reales (configurable en CONFIG.SEGUNDOS_POR_DIA).
+
+### D9 — Tinte como una sola capa de color (no shaders)
+**Por qué:** un rectángulo a pantalla completa con color+alpha fijado a la cámara
+(depth 8000, debajo de la UI) es lo más liviano y compatible. Se interpola entre
+claves horarias. Evita pipelines/shaders que podrían no andar en GPUs viejas o
+en el WebGL del celular. `minutosAbsolutos()` expone el tiempo para la granja.
+
 ### D8 — Misiones en cadena lineal y completables sólo hablando
 **Por qué:** el requisito pide misiones que "se inician y completan hablando con el
 NPC correcto". Se modeló cada misión como cadena de 3 toques (NPC que la da → NPC

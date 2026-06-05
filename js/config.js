@@ -17,7 +17,7 @@ AJ.CONFIG = {
   // Arrancan en false; se ponen en true al cerrar cada fase verificada.
   npcsDialogo: true,   // FASE 2: NPCs + cuadro de diálogo
   misiones:    true,   // FASE 2: cuaderno de misiones cívicas
-  diaNoche:    false,  // FASE 3: ciclo día/noche con tinte y reloj
+  diaNoche:    true,   // FASE 3: ciclo día/noche con tinte y reloj
   granja:      false,  // FASE 4: parcela, cultivos y economía mínima
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---

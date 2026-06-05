@@ -8,7 +8,8 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
       cámara, guardado. _(jugable y commiteada)_
 - [x] **FASE 2 — Diálogo + Misiones** (`CONFIG.npcsDialogo`, `CONFIG.misiones`)
       _(NPCs, diálogo RPG, 5 misiones cívicas, HUD cuaderno, Final. Commiteada.)_
-- [ ] **FASE 3 — Tiempo vivo / día-noche** (`CONFIG.diaNoche`)
+- [x] **FASE 3 — Tiempo vivo / día-noche** (`CONFIG.diaNoche`)
+      _(reloj + tinte horario interpolado. Commiteada.)_
 - [ ] **FASE 4 — Granja** (`CONFIG.granja`)
 - [ ] **FASE FINAL** — pantalla de cierre al completar misiones (escena lista,
       falta el gatillo desde misiones).
