@@ -32,8 +32,26 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
       el guardado recuerda el pueblo. Pueblo 1 smoke 42/42, Colonia 35/35.
       Commiteada.)_
 
+### Capa 2 — Pulido (P1–P5)
+
+- [x] **P1 — Juice** (`CONFIG.juice`): tweens, fades de escena, shake, feedback.
+- [x] **P2 — Sonido procedural** (`CONFIG.sonido`): Web Audio, mute, sin descargas.
+- [x] **P3 — UX y táctil** (`CONFIG.uiPulida`): diálogo con placa, d-pad afinado.
+- [x] **P4 — Robustez** (sin flag): 7 casos de borde en el smoke.
+- [x] **P5 — Balance** (sin flag): `CONFIG.BALANCE` centralizado + `PLAYTEST.md`.
+- Smoke al cierre: **55/55** (Pueblo 1), 47/47 (Colonia).
+
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.
+
+## Futuras noches (bolt-on previsto, todo detrás de flags)
+
+- **NPCs propios de la Colonia** (hoy no tiene; es chacra tranquila). Sumar 1–2
+  vecinos con sus spots en `mapa.js` (Pueblo 2) y dejar que `crearTodos` los cree.
+- **Joystick analógico opcional** para táctil (hoy es d-pad de botones; ver PLAYTEST).
+- **Más recetas / economía entre pueblos** (precios distintos por pueblo).
+- **Bajada institucional de las misiones** (editar sólo los strings de `AJ.MISIONES`).
+- **Arreglo de fondo del mapa**: ver "Bug latente" abajo.
 
 ## Bug latente conocido (no rompe nada, queda anotado)
 
