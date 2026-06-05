@@ -67,6 +67,19 @@
 - ¿Se entiende que el cartel "→ Colonia" lleva al otro pueblo?
 - ¿La Colonia se siente como un lugar útil (farmear/craftear tranquilo) o vacío?
 
+## 11. La Colonia (C1) — ¿engancha como el pueblo principal?
+- Ahora la Colonia tiene 5 vecinos propios (Don Ramón, El Gallego, La Seño Marta,
+  El Colorado, Doña Anunciación) con diálogo y afinidad, y 2 misiones propias.
+- ¿Da ganas de pasar tiempo en la Colonia o se siente de segunda? ¿Las 2 misiones
+  alcanzan o querés más?
+- ¿El progreso por separado (cada pueblo recuerda lo suyo) se entiende al jugar?
+
+## 12. Menú de pausa, brújula (C2) — QoL
+- ¿El menú de pausa (tecla **P** o botón ☰) tiene lo que esperás? ¿El reset con doble
+  confirmación es claro (no se borra sin querer)?
+- ¿La **brújula** (flecha hacia la misión) ayuda sin molestar, o la sentís invasiva?
+  Se puede apagar con `CONFIG.brujula`.
+
 ---
 
 ### Cómo apagar cualquier cosa que no te guste

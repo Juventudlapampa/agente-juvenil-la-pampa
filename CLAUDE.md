@@ -49,9 +49,23 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `juice` | tweens, fades, shake, feedback visual (P1) |
 | `sonido` | efectos procedurales Web Audio + mute (P2) |
 | `uiPulida` | diálogo/cuaderno + táctil afinado (P3) |
+| `npcsColonia` | 5 vecinos propios de la Colonia (C1.1) |
+| `misionesColonia` | 2 misiones propias de la Colonia (C1.2) |
+| `joystickAnalogico` | joystick táctil analógico (reemplaza el d-pad) (C2.1) |
+| `menu` | menú de pausa/opciones + reset con doble confirmación (C2.2) |
+| `brujula` | flecha hacia la misión activa / la salida (C2.3) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
+Hoy: **Pueblo 1 64/64, Colonia 65/65 PASS**.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
+Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
+
+### Misiones por pueblo (C1.2)
+`AJ.MISIONES` (pueblo 1) + `AJ.MISIONES_COLONIA` (pueblo 2, se concatena si el flag
+está on). Cada misión tiene `pueblo` (1 por defecto). El Cuaderno muestra la cadena
+del pueblo actual (`AJ.Mapa.actual`); el estado vive en `estado.misiones[id]`, así el
+progreso de cada pueblo se recuerda por separado. El Final (felicitación) lo dispara
+sólo la cadena principal (pueblo 1).
 
 ## Estructura
 
@@ -73,6 +87,9 @@ js/estaciones.js        4 estaciones
 js/crafteo.js           Mesa + AJ.RECETAS (datos)
 js/juice.js             AJ.Juice (tweens/fades/shake/celebrar)
 js/sonido.js            AJ.Sonido (Web Audio procedural + mute)
+js/joystick.js          AJ.Joystick (joystick táctil analógico, C2.1)
+js/menu.js              AJ.Menu (pausa/opciones/reset, C2.2)
+js/brujula.js           AJ.Brujula (guía hacia la misión, C2.3)
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título

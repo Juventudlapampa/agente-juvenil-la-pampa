@@ -39,18 +39,31 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **P3 — UX y táctil** (`CONFIG.uiPulida`): diálogo con placa, d-pad afinado.
 - [x] **P4 — Robustez** (sin flag): 7 casos de borde en el smoke.
 - [x] **P5 — Balance** (sin flag): `CONFIG.BALANCE` centralizado + `PLAYTEST.md`.
-- Smoke al cierre: **55/55** (Pueblo 1), 47/47 (Colonia).
+- Smoke al cierre de la Capa 2: 55/55 (Pueblo 1), 47/47 (Colonia).
+
+### Capa C1 — Vida en la Colonia
+
+- [x] **C1.1 `npcsColonia`**: 5 vecinos propios de la Colonia con diálogo/afinidad.
+- [x] **C1.2 `misionesColonia`**: 2 misiones propias; progreso por pueblo separado.
+
+### Capa C2 — Controles, opciones y cierre
+
+- [x] **C2.1 `joystickAnalogico`**: joystick táctil (alternativa al d-pad).
+- [x] **C2.2 `menu`**: pausa/opciones + reset con doble confirmación.
+- [x] **C2.3 `brujula`**: guía hacia la misión activa / la salida.
+- [x] **C2.4** (sin flag): casos de borde sobre lo nuevo.
+- Smoke al cierre de C2: **Pueblo 1 64/64, Colonia 65/65**.
 
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.
 
 ## Futuras noches (bolt-on previsto, todo detrás de flags)
 
-- **NPCs propios de la Colonia** (hoy no tiene; es chacra tranquila). Sumar 1–2
-  vecinos con sus spots en `mapa.js` (Pueblo 2) y dejar que `crearTodos` los cree.
-- **Joystick analógico opcional** para táctil (hoy es d-pad de botones; ver PLAYTEST).
-- **Más recetas / economía entre pueblos** (precios distintos por pueblo).
-- **Bajada institucional de las misiones** (editar sólo los strings de `AJ.MISIONES`).
+- **Más misiones/recetas/economía entre pueblos** (precios distintos por pueblo;
+  intercambio entre el pueblo y la Colonia).
+- **Bajada institucional de las misiones** (editar sólo los strings de `AJ.MISIONES`/
+  `AJ.MISIONES_COLONIA` — decisión del humano, no automatizable).
+- **Tercer pueblo / más mapa** (la fábrica `AJ.Mapa.cargar(id)` ya lo soporta).
 - **Arreglo de fondo del mapa**: ver "Bug latente" abajo.
 
 ## Bug latente conocido (no rompe nada, queda anotado)

@@ -42,6 +42,17 @@ economía); pantalla final. Todo commiteado y verificado.
 - De paso se arreglaron 2 bugs de no-destructividad del auto-smoke (NPCs amontonados,
   afinidad del 1er NPC "gastada").
 
+### Capa C2 — Controles, opciones y cierre (segunda noche) — CERRADA
+- **C2.1 `joystickAnalogico`**: joystick táctil analógico (reemplaza el d-pad cuando
+  está on). Zona muerta/radio en `CONFIG.JOYSTICK`. Commit `9d6817b`.
+- **C2.2 `menu`**: menú de pausa (reanudar, mute, controles, reset con doble
+  confirmación, volver al título). Pausa real (congela el tiempo). Commit `348c7ff`.
+- **C2.3 `brujula`**: flecha discreta hacia la misión activa; a la salida si el
+  objetivo está en el otro pueblo. Commit `2ae605e`.
+- **C2.4** (sin flag): 4 casos de borde nuevos en el smoke (viaje a mitad de misión,
+  joystick sin jugador, reset limpio, coherencia por pueblo). Commit `ca64ad6`.
+- Smoke al cierre de C2: **Pueblo 1 64/64, Colonia 65/65**. Sin errores de consola.
+
 ### Capa 2 — Pulido (primera noche)
 > Se completa abajo a medida que avanza. Flags nuevos arrancan en `false` y pasan a
 > `true` sólo al verificar con el smoke-test.
