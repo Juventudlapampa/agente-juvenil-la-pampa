@@ -58,5 +58,16 @@ AJ.EscenaFinal = class extends Phaser.Scene {
       if (AJ.Juice) AJ.Juice.irA(this, 'Titulo');
       else this.scene.start('Titulo');
     });
+
+    // E3: acceso a créditos desde el final.
+    if (AJ.CONFIG.creditos && AJ.Creditos) {
+      const cr = this.add.text(W / 2, H * 0.92, '📜 Ver créditos', {
+        fontFamily: 'Georgia, serif', fontSize: '18px', color: '#3a2c10',
+        backgroundColor: '#f4cd6088', padding: { x: 12, y: 6 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      cr.on('pointerover', () => cr.setColor('#8a4a2a'));
+      cr.on('pointerout', () => cr.setColor('#3a2c10'));
+      cr.on('pointerdown', () => { if (AJ.Sonido) { try { AJ.Sonido.click(); } catch (e) {} } AJ.Creditos.abrir(this); });
+    }
   }
 };

@@ -273,6 +273,14 @@ contorno del texto del diálogo). Panel de opciones reutilizable (menú y, en E3
 Verificado: smoke 74/74, typewriter revela parcial y la acción completa, opciones aplican
 y persisten tras recargar.
 
+### D32 — E3: menú principal pulido + créditos
+**Por qué:** `CONFIG.creditos` agrega `js/creditos.js` (`AJ.Creditos`): overlay de
+créditos GENÉRICO (sin nombres/marcas/programas reales; menciona la regla no-apuestas)
+accesible desde el título, el menú de pausa y la pantalla final. El título suma botones
+"⚙ Opciones" (abre el panel de accesibilidad) y "📜 Créditos", con acceso claro a
+opciones. QoL, no toca el balance. Verificado: smoke 75/75, título con los 4 botones,
+créditos abre/cierra desde título/menú/final.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

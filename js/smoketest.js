@@ -716,6 +716,16 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 27. E3: créditos
+    if (AJ.CONFIG.creditos) {
+      check('Créditos: abre y cierra sin romper', () => {
+        if (!AJ.Creditos) return 'sin Creditos';
+        AJ.Creditos.abrir(escena);
+        AJ.Creditos.cerrar();
+        return true; // si no lanzó, pasa
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

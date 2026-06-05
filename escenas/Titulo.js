@@ -58,10 +58,25 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
       });
     }
 
+    // E3: accesos a Opciones (accesibilidad) y Créditos (chiquitos, abajo).
+    const chicos = [];
+    if (AJ.Accesibilidad && AJ.Accesibilidad.activo()) chicos.push({ t: '⚙ Opciones', fn: () => AJ.Accesibilidad.abrirPanel(this) });
+    if (AJ.CONFIG.creditos && AJ.Creditos) chicos.push({ t: '📜 Créditos', fn: () => AJ.Creditos.abrir(this) });
+    chicos.forEach((c, i) => {
+      const x = chicos.length === 1 ? W / 2 : (W / 2 + (i === 0 ? -90 : 90));
+      const b = this.add.text(x, H * 0.84, c.t, {
+        fontFamily: 'Georgia, serif', fontSize: '18px', color: '#3a2c10',
+        backgroundColor: '#f4cd6066', padding: { x: 10, y: 5 },
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      b.on('pointerover', () => b.setColor('#8a4a2a'));
+      b.on('pointerout', () => b.setColor('#3a2c10'));
+      b.on('pointerdown', () => { if (AJ.Sonido) { try { AJ.Sonido.desbloquear(); AJ.Sonido.click(); } catch (e) {} } c.fn(); });
+    });
+
     // Pie de página
-    this.add.text(W / 2, H - 28,
-      'Flechas/WASD para moverte · Espacio/E para interactuar',
-      { fontFamily: 'monospace', fontSize: '14px', color: '#3a2c10' }
+    this.add.text(W / 2, H - 22,
+      'Flechas/WASD · Espacio/E para interactuar · P para pausa',
+      { fontFamily: 'monospace', fontSize: '13px', color: '#3a2c10' }
     ).setOrigin(0.5);
   }
 
