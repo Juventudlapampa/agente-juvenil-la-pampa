@@ -636,8 +636,10 @@ AJ.SmokeTest = (function () {
         const n = escena.npcManager && escena.npcManager.npcs[0];
         if (n) reg.registrarVecino(n.id);
         const d = reg.datos();
+        // En un pueblo sin NPCs (El Puesto) no se puede registrar un vecino;
+        // sólo exigimos vecinos.de>=1 donde hay con quién hablar.
         const ok = d && typeof d.porcentaje === 'number' && d.porcentaje >= 0 && d.porcentaje <= 100 &&
-          d.vecinos.total > 0 && d.misiones.total > 0 && d.vecinos.de >= 1;
+          d.vecinos.total > 0 && d.misiones.total > 0 && (!n || d.vecinos.de >= 1);
         // panel abre/cierra sin lanzar
         reg.abrir(); const ab = reg.abierto; reg.cerrar();
         escena.estado.registro = JSON.parse(snapReg); // restaurar
@@ -645,6 +647,23 @@ AJ.SmokeTest = (function () {
       });
       check('logrosTotales y totalPueblos coherentes', () =>
         AJ.logrosTotales().length >= (AJ.MISIONES ? 1 : 0) && AJ.totalPueblos() >= 1 ? true : 'totales mal');
+    }
+
+    // 24. D4: tercer pueblo (sin llamar cargar: no corromper la escena viva)
+    if (AJ.CONFIG.tercerPueblo) {
+      check('D4: tercer pueblo coherente', () => {
+        if (AJ.totalPueblos() !== 3) return 'totalPueblos != 3';
+        if (AJ.Mapa.actual === 2) {
+          const destinos = (AJ.Mapa.meta.salidas || []).map((s) => s.destino).sort();
+          if (destinos.join(',') !== '1,3') return 'Colonia: salidas != [1,3]';
+        }
+        if (AJ.Mapa.actual === 3) {
+          if (AJ.Mapa.meta.conNPCs !== false) return 'pueblo3 no debería tener NPCs';
+          if (!(AJ.Mapa.meta.salidas || []).some((s) => s.destino === 2)) return 'pueblo3 sin salida a la Colonia';
+          if (!AJ.Mapa.meta.granja) return 'pueblo3 sin huerta';
+        }
+        return true;
+      });
     }
 
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.

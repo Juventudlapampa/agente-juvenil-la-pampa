@@ -242,6 +242,18 @@ duplican). Totales: `AJ.roster()` (vecinos), `AJ.totalPueblos()`, `AJ.MISIONES.l
 - Verificado: smoke 69/69, panel con barras de avance, persistencia (vecinos/pueblos
   sobreviven recarga + Continuar).
 
+### D29 — D4: tercer pueblo "El Puesto del Monte" (gated, verificado solidez)
+**Por qué:** `CONFIG.tercerPueblo` agrega un 3er mapa vía la fábrica `AJ.Mapa.cargar(id)`
+(ya soportaba multi-pueblo). Topología lineal: Pueblo ↔ Colonia ↔ Puesto. La Colonia
+gana una 2ª salida al este (gated) hacia el Puesto; el Puesto vuelve a la Colonia.
+**El Puesto NO es relleno:** outpost de monte con huerta (farmear), mesa de oficios
+(craftear), mucho caldén (leña) y aguada — útil y completo, sin NPCs/misiones
+(conNPCs=false). `AJ.totalPueblos()` pasa a 3 (el Registro lo cuenta). Sin tocar el
+arte. Se mantuvo el bar alto que pedía la consigna: **viaje en cadena en ambos
+sentidos, guardado por pueblo y smoke 61/61 en el Puesto, verificados** (un resultado
+intermedio "raro" fue artefacto de timing de un eval async, no un bug). Fix menor: el
+check de Registro asumía un NPC para registrar; ahora sólo lo exige donde hay vecinos.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

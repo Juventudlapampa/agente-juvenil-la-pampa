@@ -187,9 +187,53 @@ AJ.Mapa = (function () {
     // FASE D: salida al oeste de vuelta al pueblo.
     poner(2, 15, T.TIERRA);
     meta.salidas = [{ x: 2, y: 15, destino: 1, llegada: { x: 35, y: 20 } }];
+    // D4: si hay tercer pueblo, una segunda salida al ESTE hacia El Puesto.
+    if (window.AJ && AJ.CONFIG && AJ.CONFIG.tercerPueblo) {
+      poner(37, 15, T.TIERRA);
+      meta.salidas.push({ x: 37, y: 15, destino: 3, llegada: { x: 4, y: 15 } });
+      meta.carteles.push({ x: 37, y: 13, texto: '→ El Puesto' });
+    }
     // C1.1: la Colonia tiene NPCs sólo si el flag npcsColonia está en true.
     meta.conNPCs = !!(window.AJ && AJ.CONFIG && AJ.CONFIG.npcsColonia);
     meta.nombre = 'Colonia La Esperanza';
+    SPAWN.x = 4; SPAWN.y = 15;
+  }
+
+  // --- PUEBLO 3: "El Puesto del Monte" (D4, outpost de monte, sin NPCs) -----
+  function construirPueblo3() {
+    base();
+    montePerimetro();
+
+    // Camino principal.
+    calleH(15, 1, 38);
+
+    // Un par de ranchos de puesteros.
+    edificio('ranchoA', 'casa', 10, 7, 4, 4, 1, null);
+    edificio('ranchoB', 'casa', 30, 19, 4, 4, 1, null);
+
+    // Huerta del puesto (para farmear/craftear).
+    const gx = 22, gy = 8, gw = 5, gh = 4;
+    rect(gx, gy, gw, gh, T.ARADO);
+    meta.granja = { x: gx, y: gy, w: gw, h: gh };
+    meta.carteles.push({ x: gx, y: gy - 1, texto: 'Huerta del Puesto' });
+
+    // Aguada del monte.
+    aguada(6, 20, 4, 3);
+
+    // MUCHO monte de caldenes (es "del monte") -> leña a piacere.
+    caldenesDecor([[4, 5], [7, 6], [13, 18], [16, 6], [19, 24], [24, 25],
+      [27, 6], [31, 11], [34, 8], [33, 24], [9, 24], [25, 18], [12, 11], [29, 26],
+      [5, 11], [35, 18], [18, 11], [21, 25]]);
+
+    // Carteles.
+    meta.carteles.push({ x: 4, y: 13, texto: 'El Puesto del Monte' });
+    meta.carteles.push({ x: 2, y: 13, texto: '← A la Colonia' });
+
+    // Salida de vuelta a la Colonia.
+    poner(2, 15, T.TIERRA);
+    meta.salidas = [{ x: 2, y: 15, destino: 2, llegada: { x: 35, y: 15 } }];
+    meta.conNPCs = false; // outpost tranquilo: sin NPCs ni misiones
+    meta.nombre = 'El Puesto del Monte';
     SPAWN.x = 4; SPAWN.y = 15;
   }
 
@@ -201,7 +245,8 @@ AJ.Mapa = (function () {
   // Carga (reconstruye in-place) el pueblo `id`. Devuelve el id activo.
   function cargar(id) {
     _reset();
-    if (id === 2) { construirPueblo2(); actual = 2; }
+    if (id === 3 && AJ.CONFIG && AJ.CONFIG.tercerPueblo) { construirPueblo3(); actual = 3; }
+    else if (id === 2) { construirPueblo2(); actual = 2; }
     else { construirPueblo1(); actual = 1; }
     return actual;
   }

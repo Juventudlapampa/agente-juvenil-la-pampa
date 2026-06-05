@@ -38,7 +38,7 @@ AJ.CONFIG = {
   poblarMundo:    true,  // D1: más NPCs con diálogo/afinidad en ambos pueblos
   masMisiones:    true,  // D2: más misiones plantilla (requiere poblarMundo: usan sus NPCs)
   registro:       true,  // D3: Registro del Agente (colección estilo "Pokédex")
-  tercerPueblo:   false, // D4: tercer pueblo (opcional, gated)
+  tercerPueblo:   true,  // D4: tercer pueblo (opcional, gated)
   // --- Capa E (meta, cierre y accesibilidad) ---
   progreso:       false, // E1: pantalla de progreso/estadísticas
   accesibilidad:  false, // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)

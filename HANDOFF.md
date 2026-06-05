@@ -25,6 +25,16 @@ Verificado: smoke **Pueblo 1 64/64, Colonia 65/65 PASS**, árbol limpio, **17 fl
 true**, sin errores de consola. Objetivo de D: más mundo/contenido. Objetivo de E:
 meta-progresión, accesibilidad y cierre.
 
+### Capa D — Más mundo y más para hacer (tercera noche) — CERRADA
+- **D1 `poblarMundo`**: 6 vecinos nuevos (3 por pueblo), reusando texturas. Commit `25efced`.
+- **D2 `masMisiones`**: 4 misiones nuevas (requiere poblarMundo). Commit `5a1810f`.
+- **D3 `registro`**: Registro del Agente (colección + %). Commit `6d8a076`.
+- **D4 `tercerPueblo`**: "El Puesto del Monte" (outpost de monte con huerta/mesa/leña).
+  Se hizo porque D1/D2/D3 pasaban el smoke; verificado sólido. (commit a continuación)
+- Contenido (NPCs/misiones) generado por un workflow de 3 agentes; el crítico reescribió
+  una rifa con plata como colecta cívica (regla no-apuestas).
+- Smoke al cierre de D: Pueblo 1 **70/70**, Colonia ~71, El Puesto **61/61**.
+
 ## Capas construidas
 
 ### Capa 0 — Base (FASES 1–4 + Final)
