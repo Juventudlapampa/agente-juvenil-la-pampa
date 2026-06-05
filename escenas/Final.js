@@ -14,6 +14,7 @@ AJ.EscenaFinal = class extends Phaser.Scene {
 
   create() {
     const W = this.scale.width, H = this.scale.height;
+    if (AJ.Juice) AJ.Juice.fadeIn(this);
 
     // Fondo atardecer pampeano.
     const g = this.add.graphics();
@@ -53,6 +54,9 @@ AJ.EscenaFinal = class extends Phaser.Scene {
     cont.setSize(260, 56);
     cont.setInteractive(new Phaser.Geom.Rectangle(-130, -28, 260, 56),
       Phaser.Geom.Rectangle.Contains);
-    cont.on('pointerdown', () => this.scene.start('Titulo'));
+    cont.on('pointerdown', () => {
+      if (AJ.Juice) AJ.Juice.irA(this, 'Titulo');
+      else this.scene.start('Titulo');
+    });
   }
 };

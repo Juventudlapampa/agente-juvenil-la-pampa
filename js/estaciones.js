@@ -79,6 +79,7 @@ AJ.Estaciones = class {
 
   _avisarCambio(e) {
     try {
+      if (AJ.Juice) AJ.Juice.shake(this.scene, 0.004, 240);
       const W = this.scene.scale.width, H = this.scene.scale.height;
       const t = this.scene.add.text(W / 2, H / 2, '¡Llegó ' + e.art + ' ' + e.nombre + '! ' + e.emoji, {
         fontFamily: 'Georgia, serif', fontSize: '30px', color: '#fff7e6',

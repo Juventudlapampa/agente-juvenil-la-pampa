@@ -23,6 +23,10 @@ AJ.CONFIG = {
   estaciones:  true,   // FASE B: 4 estaciones (paleta + ritmo de cultivos)
   crafteo:     true,   // FASE C: mesa de crafteo con recetas
   viaje:       true,   // FASE D: varios pueblos + viaje entre ellos
+  // --- Capa de pulido (FASES P) ---
+  juice:       true,   // P1: tweens, fades, shake, feedback visual
+  sonido:      false,  // P2: efectos procedurales con Web Audio + mute
+  uiPulida:    false,  // P3: UX de diálogo/cuaderno + táctil afinado
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

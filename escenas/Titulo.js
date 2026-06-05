@@ -12,6 +12,7 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
 
   create() {
     const W = this.scale.width, H = this.scale.height;
+    if (AJ.Juice) AJ.Juice.fadeIn(this);
 
     // Fondo: cielo pampeano con degradé y horizonte de campo.
     const g = this.add.graphics();
@@ -45,13 +46,15 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
     // Botón JUGAR (nueva partida)
     this._boton(W / 2, H * 0.58, 'Jugar', () => {
       try { AJ.Guardado.borrar(); } catch (e) {}
-      this.scene.start('Pueblo', { nuevo: true });
+      if (AJ.Juice) AJ.Juice.irA(this, 'Pueblo', { nuevo: true });
+      else this.scene.start('Pueblo', { nuevo: true });
     });
 
     // Botón CONTINUAR (sólo si hay guardado)
     if (hayGuardado) {
       this._boton(W / 2, H * 0.70, 'Continuar', () => {
-        this.scene.start('Pueblo', { nuevo: false });
+        if (AJ.Juice) AJ.Juice.irA(this, 'Pueblo', { nuevo: false });
+        else this.scene.start('Pueblo', { nuevo: false });
       });
     }
 

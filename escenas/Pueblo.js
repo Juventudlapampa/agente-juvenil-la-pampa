@@ -40,6 +40,9 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     const T = AJ.CONFIG.TILE;
     const M = AJ.Mapa;
 
+    // P1: la escena entra desde negro (no-op si juice está apagado).
+    if (AJ.Juice) AJ.Juice.fadeIn(this);
+
     // --- Render del mapa ---
     this._dibujarMapa();
 
@@ -97,7 +100,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this.input.keyboard.on('keydown-ESC', () => {
       if (this.crafteo && this.crafteo.menuAbierto) { this.crafteo.cerrarMenu(); return; }
       this.guardar();
-      this.scene.start('Titulo');
+      if (AJ.Juice) AJ.Juice.irA(this, 'Titulo');
+      else this.scene.start('Titulo');
     });
 
     // Smoke-test (modo dev): correr al final del create.
@@ -238,10 +242,13 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     } catch (e) { console.warn('[Pueblo] guardar viaje', e); }
     // Reiniciar la escena cargando el estado recién guardado (NO un juego
     // nuevo): init recargará el mapa destino y la posición de llegada.
-    this.scene.restart({ nuevo: false });
+    if (AJ.Juice) AJ.Juice.reiniciar(this, { nuevo: false });
+    else this.scene.restart({ nuevo: false });
   }
 
   _hablarCon(npc) {
+    // P1: feedback visual: el NPC pega un saltito al hablarle.
+    if (AJ.Juice && npc && npc.sprite) AJ.Juice.pulso(this, npc.sprite);
     // FASE A: hablar sube la afinidad (una vez por día por NPC).
     if (this.afinidad) { try { this.afinidad.alHablar(npc); } catch (e) {} }
     if (this.misiones) { this.misiones.alHablar(npc, this.dialogo); }

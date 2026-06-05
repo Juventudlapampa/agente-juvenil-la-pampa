@@ -213,6 +213,13 @@ AJ.Misiones = class {
 
   _completar(m) {
     this.estado.misiones[m.id] = 'completada';
+    // P1 (juice): celebración breve al cumplir una misión.
+    if (AJ.Juice) {
+      try {
+        const W = this.scene.scale.width, H = this.scene.scale.height;
+        AJ.Juice.celebrar(this.scene, W / 2, H * 0.4);
+      } catch (e) {}
+    }
     // Recompensa
     try {
       const inv = this.estado.inventario;
@@ -231,10 +238,12 @@ AJ.Misiones = class {
 
     // ¿Se completaron todas? -> Final.
     if (!siguiente) {
-      this.scene.time.delayedCall(400, () => {
+      this.scene.time.delayedCall(700, () => {
         try {
           this.scene.guardar();
-          this.scene.scene.start('Final', { resumen: { monedas: this.estado.inventario.monedas } });
+          const datos = { resumen: { monedas: this.estado.inventario.monedas } };
+          if (AJ.Juice) AJ.Juice.irA(this.scene, 'Final', datos);
+          else this.scene.scene.start('Final', datos);
         } catch (e) { console.warn('[Misiones] no se pudo ir al Final', e); }
       });
     }

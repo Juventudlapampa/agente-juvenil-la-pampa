@@ -307,6 +307,21 @@ AJ.SmokeTest = (function () {
         typeof escena.estado.mapaActual === 'number' ? true : 'sin mapaActual');
     }
 
+    // 16. P1: juice (visual, no debe romper nada)
+    if (AJ.CONFIG.juice) {
+      check('Juice disponible y sano', () => {
+        if (!AJ.Juice || !AJ.Juice.activo()) return 'sin Juice';
+        // ninguna de estas llamadas debe lanzar (sobre un objeto descartable
+        // para no alterar el HUD real)
+        const tmp = escena.add.text(-9999, -9999, '.', {}).setVisible(false);
+        AJ.Juice.shake(escena, 0.001, 1);
+        AJ.Juice.aparecer(escena, tmp);
+        AJ.Juice.pulso(escena, tmp);
+        escena.tweens.killTweensOf(tmp); tmp.destroy();
+        return true;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

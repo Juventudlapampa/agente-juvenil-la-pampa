@@ -79,6 +79,17 @@ granja, crafteo, Pueblo).
 - Verificado: viaje ida y vuelta, persistencia, sin errores de consola. Smoke
   Pueblo 1 42/42, Colonia 35/35.
 
+### D15 — Capa de pulido P1 (juice): helpers centrales auto-gateados
+**Por qué:** `CONFIG.juice` agrega `js/juice.js` (`AJ.Juice`) con helpers (fadeIn,
+irA, reiniciar, shake, aparecer, pulso, celebrar). Cada helper chequea el flag
+adentro, así los llamados desde las escenas/sistemas son **no-op** cuando juice
+está apagado (cero riesgo). Las transiciones de escena usan `camerafadeoutcomplete`
+con un `delayedCall` de **fallback** por si el evento no llega (no quedarse en negro).
+Hooks aditivos y guardados: Título/Pueblo/Final (fade in/out), diálogo (entra con
+tween), misiones (celebración + Final con fade), estaciones (shake al cambiar),
+NPC (pulso al hablarle). Verificado: smoke 43/43, transiciones completan sin quedar
+en negro, viaje con fade OK, canvas renderiza.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

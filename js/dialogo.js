@@ -65,6 +65,14 @@ AJ.Dialogo = class {
       this.abierto = true;
       this.cont.setVisible(true);
       this._render();
+      // P1 (juice): el panel entra con un fade + leve deslizamiento.
+      if (AJ.Juice && AJ.Juice.activo()) {
+        try {
+          this.cont.setAlpha(0); this.cont.y = 12;
+          this.scene.tweens.add({ targets: this.cont, alpha: 1, y: 0,
+            duration: 160, ease: 'Quad.easeOut' });
+        } catch (e) { this.cont.setAlpha(1); this.cont.y = 0; }
+      }
     } catch (e) {
       console.warn('[Dialogo] no se pudo mostrar', e);
       this.cerrar();
