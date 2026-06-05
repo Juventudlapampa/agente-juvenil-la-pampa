@@ -198,6 +198,14 @@ sí en el OTRO pueblo, apunta a la **salida** (te guía a viajar). Se oculta cua
 estás al lado del objetivo. Textura generada por código. Verificado: smoke 60/60,
 apunta al NPC correcto y a la salida en el caso cruzado.
 
+### D25 — C2.4: robustez final (bordes sobre lo nuevo)
+**Por qué:** el smoke (sin flag) sumó bordes sobre C1/C2: B8 viajar a mitad de misión
+con estado de 2 pueblos (round-trip), B9 joystick sin jugador (escenas sin movimiento)
+no rompe, B10 reset deja estado limpio, B11 NPCs/misiones por pueblo coherentes. Todos
+no destructivos. Resultado honesto: **ningún borde reveló un bug nuevo** (la base es
+robusta por los try/catch por sistema y el guardado defensivo). Smoke 64/64 (Pueblo 1),
+65/65 (Colonia). De C1 ya se habían arreglado 2 bugs de no-destructividad del smoke.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

@@ -483,6 +483,60 @@ AJ.SmokeTest = (function () {
       } finally { AJ.SAVE_KEY = orig; }
     });
 
+    // --- C2.4: bordes sobre lo nuevo (Colonia, viaje, joystick, reset) ---
+    check('B8: viajar a mitad de misión (estado de 2 pueblos) round-trip', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge8';
+        const e = AJ.Guardado.estadoNuevo();
+        e.mapaActual = 2;
+        e.misiones = { bienvenida: 'objetivo_ok', col_escuela: 'activa' };
+        e.jugador = { x: 4, y: 15, dir: 'abajo' };
+        AJ.Guardado.guardar(e);
+        const l = AJ.Guardado.cargar();
+        AJ.Guardado.borrar();
+        return (l && l.mapaActual === 2 && l.misiones.bienvenida === 'objetivo_ok' &&
+          l.misiones.col_escuela === 'activa' && l.jugador.x === 4) ? true : 'round-trip mal';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B9: joystick no rompe sin jugador (escenas sin movimiento)', () => {
+      if (!AJ.Joystick || typeof AJ.Joystick.dirDesde !== 'function') return true; // n/a
+      // dirDesde es puro y no necesita escena ni jugador.
+      const r = AJ.Joystick.dirDesde(60, 0);
+      // setear el input global (lo que haría un toque) no debe lanzar aunque
+      // no haya jugador que lo lea.
+      if (AJ.Input && AJ.Input.estado) { AJ.Input.estado.right = r.right; AJ.Input.resetDirs && AJ.Input.resetDirs(); }
+      return r.right === true ? true : 'dirDesde mal';
+    });
+
+    check('B10: reset de partida deja estado limpio', () => {
+      const orig = AJ.SAVE_KEY;
+      try {
+        AJ.SAVE_KEY = orig + '__edge10';
+        const e = AJ.Guardado.estadoNuevo();
+        e.inventario.monedas = 500; e.misiones = { bienvenida: 'completada' };
+        AJ.Guardado.guardar(e);
+        AJ.Guardado.borrar();
+        const limpio = AJ.Guardado.estadoNuevo();
+        return (!AJ.Guardado.existe() && limpio.inventario.monedas === 0 &&
+          Object.keys(limpio.misiones).length === 0 && limpio.mapaActual === 1) ? true : 'no quedó limpio';
+      } finally { AJ.SAVE_KEY = orig; }
+    });
+
+    check('B11: NPCs y misiones por pueblo son coherentes', () => {
+      // Cada misión del pueblo actual referencia NPCs que existen acá.
+      if (!escena.npcManager) return true;
+      const ids = escena.npcManager.npcs.map((n) => n.id);
+      const delPueblo = (AJ.MISIONES || []).filter((m) => (m.pueblo || 1) === AJ.Mapa.actual);
+      const malas = delPueblo.filter((m) =>
+        ids.indexOf(m.npcInicio) < 0 || ids.indexOf(m.objetivoNpc) < 0 || ids.indexOf(m.npcFin) < 0);
+      // En un pueblo con NPCs debería haber al menos 1 misión propia coherente.
+      if (escena.npcManager.npcs.length > 0 && delPueblo.length === 0 && AJ.CONFIG.misionesColonia && AJ.Mapa.actual === 2)
+        return 'Colonia sin misiones propias';
+      return malas.length === 0 ? true : 'misión con NPC inexistente';
+    });
+
     // 20. C2.1: joystick analógico
     if (AJ.CONFIG.joystickAnalogico) {
       check('Joystick: zona muerta + snap a 4 direcciones', () => {
