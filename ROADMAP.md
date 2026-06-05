@@ -21,7 +21,9 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
       _(NPCs caminan a la plaza/trabajo/hogar por hora con pathfinding BFS;
       afinidad por vecino visible en el panel "Cuaderno · Vecinos". Smoke 28/28.
       Commiteada.)_
-- [ ] **FASE B — Estaciones** (`CONFIG.estaciones`)
+- [x] **FASE B — Estaciones** (`CONFIG.estaciones`)
+      _(4 estaciones derivadas del día: tinte de paleta + factor de crecimiento
+      de cultivos. Smoke 32/32. Commiteada.)_
 - [ ] **FASE C — Crafteo simple** (`CONFIG.crafteo`)
 - [ ] **FASE D — Varios pueblos / viaje** (`CONFIG.viaje`) — riesgo ALTO; sólo si
       A+B+C pasan el smoke completo.

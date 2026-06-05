@@ -27,6 +27,20 @@ Cada decisión tomada sin frenar a preguntar queda anotada acá, con su porqué.
 - Verificado en navegador: smoke **28/28 PASS**; los 6 NPCs llegan a la plaza en la
   franja de tarde y vuelven a su lugar de noche; afinidad sube al hablar y persiste.
 
+### D12 — FASE B: estaciones derivadas del día (sin estado nuevo)
+**Por qué:** `CONFIG.estaciones` suma 4 estaciones en `js/estaciones.js`
+(`AJ.Estaciones`) como bolt-on.
+- **Derivadas de `estado.tiempo.dia`** (que ya persiste y avanza diaNoche): la
+  estación = `floor((día-1)/DIAS_POR_ESTACION) % 4`. No agrega estado a guardar;
+  al recargar se recalcula sola.
+- **Tinte por capa propia** (rectángulo a pantalla completa, depth 7990, POR DEBAJO
+  del tinte día/noche 8000): se combinan. Primavera verde, verano amarillo, otoño
+  naranja, invierno azul frío. Verificado visualmente otoño vs invierno.
+- **Ritmo de cultivos:** la granja lee `scene.estaciones.factorCrecimiento()` con un
+  hook aditivo y guardado (factor 1 si el sistema está apagado → FASE 4 idéntica).
+  Verificado: verano (×1.4) crece más que invierno (×0.5).
+- Smoke **32/32 PASS**.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

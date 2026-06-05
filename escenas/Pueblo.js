@@ -65,6 +65,10 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       if (AJ.Rutinas && this.npcManager) { this.rutinas = new AJ.Rutinas(this, this.estado); this.rutinas.init(); }
       if (AJ.Afinidad && this.npcManager) { this.afinidad = new AJ.Afinidad(this, this.estado); this.afinidad.init(); }
     });
+    // FASE B: estaciones (deriva del día; modula paleta y crecimiento).
+    this._iniciarSistema('estaciones', () => {
+      if (AJ.Estaciones) { this.estaciones = new AJ.Estaciones(this, this.estado); this.estaciones.init(); }
+    });
 
     // --- Diálogo (UI compartida por NPCs/misiones) ---
     if (AJ.CONFIG.npcsDialogo && AJ.Dialogo) {
@@ -179,6 +183,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (this.granja) { try { this.granja.update(dt); } catch (e) {} }
     if (this.npcManager) { try { this.npcManager.update(dt); } catch (e) {} }
     if (this.rutinas) { try { this.rutinas.update(dt); } catch (e) {} }
+    if (this.estaciones) { try { this.estaciones.update(dt); } catch (e) {} }
   }
 
   _interactuar() {

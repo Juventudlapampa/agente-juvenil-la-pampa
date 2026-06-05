@@ -20,7 +20,7 @@ AJ.CONFIG = {
   diaNoche:    true,   // FASE 3: ciclo día/noche con tinte y reloj
   granja:      true,   // FASE 4: parcela, cultivos y economía mínima
   rutinas:     true,   // FASE A: NPCs con rutinas diarias + afinidad
-  estaciones:  false,  // FASE B: 4 estaciones (paleta + ritmo de cultivos)
+  estaciones:  true,   // FASE B: 4 estaciones (paleta + ritmo de cultivos)
   crafteo:     false,  // FASE C: mesa de crafteo con recetas
   viaje:       false,  // FASE D: varios pueblos + viaje entre ellos
 
@@ -39,6 +39,9 @@ AJ.CONFIG = {
 
   // --- Granja ---
   SEG_CRECIMIENTO_CULTIVO: 30, // segundos reales por etapa de cultivo
+
+  // --- Estaciones (FASE B) ---
+  DIAS_POR_ESTACION: 3,        // días de juego por estación
 };
 
 // Clave de guardado en localStorage.

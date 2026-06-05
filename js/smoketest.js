@@ -210,6 +210,32 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 13. FASE B: estaciones
+    if (AJ.CONFIG.estaciones) {
+      check('Estaciones vivas (overlay + cartel)', () =>
+        escena.estaciones && escena.estaciones.overlay && escena.estaciones.cartel ? true : 'sin sistema');
+      check('Estación correcta según el día', () => {
+        const E = escena.estaciones;
+        if (!E) return 'sin sistema';
+        const dpe = E.DIAS_POR_ESTACION;
+        // día 1 -> Primavera(0); día dpe+1 -> Verano(1); etc.
+        const orig = escena.diaNoche ? escena.diaNoche.dia : null;
+        const probar = (dia, esp) => {
+          if (escena.diaNoche) escena.diaNoche.dia = dia; else E.estado.tiempo.dia = dia;
+          return E.indice() === esp;
+        };
+        const ok = probar(1, 0) && probar(dpe + 1, 1) && probar(2 * dpe + 1, 2) &&
+                   probar(3 * dpe + 1, 3) && probar(4 * dpe + 1, 0);
+        if (escena.diaNoche && orig != null) escena.diaNoche.dia = orig; // restaurar
+        return ok ? true : 'mapa día→estación mal';
+      });
+      check('El factor de crecimiento varía por estación', () => {
+        const factores = AJ.Estaciones.DATA.map((d) => d.factor);
+        const distintos = new Set(factores).size;
+        return distintos >= 3 ? true : 'factores poco variados';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

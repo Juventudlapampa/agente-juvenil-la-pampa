@@ -107,12 +107,18 @@ AJ.Granja = class {
 
   update(dt) {
     const paso = Math.max(1, AJ.CONFIG.SEG_CRECIMIENTO_CULTIVO);
+    // FASE B (opcional): la estación acelera/frena el crecimiento. Si no hay
+    // sistema de estaciones, el factor es 1 y el comportamiento es el de FASE 4.
+    let factor = 1;
+    if (this.scene.estaciones && this.scene.estaciones.factorCrecimiento) {
+      try { factor = this.scene.estaciones.factorCrecimiento(); } catch (e) { factor = 1; }
+    }
     let cambio = false;
     const g = this.estado.granja;
     for (const key in g) {
       const c = g[key];
       if (!c || c.etapa >= this.ETAPA_MADURO) continue;
-      c.seg = (c.seg || 0) + dt;
+      c.seg = (c.seg || 0) + dt * factor;
       while (c.seg >= paso && c.etapa < this.ETAPA_MADURO) {
         c.seg -= paso;
         c.etapa += 1;
