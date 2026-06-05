@@ -90,6 +90,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       try { this.dialogo = new AJ.Dialogo(this); } catch (e) { console.warn('[Pueblo] diálogo off', e); }
     }
 
+    // --- C2.3: brújula hacia la misión activa (gated por flag) ---
+    if (AJ.CONFIG.brujula && AJ.Brujula) {
+      try { this.brujula = new AJ.Brujula(this); } catch (e) { console.warn('[Pueblo] brújula off', e); this.brujula = null; }
+    }
+
     // --- C2.2: menú de pausa/opciones (gated por flag) ---
     if (AJ.CONFIG.menu && AJ.Menu) {
       try {
@@ -236,6 +241,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       if (this.npcManager) { try { this.npcManager.update(dt); } catch (e) {} }
       if (this.rutinas) { try { this.rutinas.update(dt); } catch (e) {} }
       if (this.estaciones) { try { this.estaciones.update(dt); } catch (e) {} }
+      if (this.brujula) { try { this.brujula.update(dt); } catch (e) {} }
     }
   }
 

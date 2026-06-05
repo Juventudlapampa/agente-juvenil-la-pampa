@@ -190,6 +190,14 @@ del mute) + tecla **P**; Esc cierra el menú antes que volver al título.
 - El reinicio borra el guardado y arranca juego nuevo (verificado: monedas/misiones a
   cero). No toca el balance. Smoke 59/59.
 
+### D24 — C2.3: brújula hacia la misión activa
+**Por qué:** `CONFIG.brujula` agrega `js/brujula.js` (`AJ.Brujula`): una flecha
+discreta (amarilla, con latido) alrededor del jugador que apunta al NPC objetivo de
+la misión activa del pueblo. Si en el pueblo actual ya no hay misión pendiente pero
+sí en el OTRO pueblo, apunta a la **salida** (te guía a viajar). Se oculta cuando ya
+estás al lado del objetivo. Textura generada por código. Verificado: smoke 60/60,
+apunta al NPC correcto y a la salida en el caso cruzado.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

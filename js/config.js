@@ -33,7 +33,7 @@ AJ.CONFIG = {
   // --- Capa C2 (controles/opciones/cierre) ---
   joystickAnalogico: true,  // C2.1: joystick táctil analógico opcional
   menu:           true,  // C2.2: menú de pausa/opciones
-  brujula:        false, // C2.3: guía/flecha hacia la misión activa
+  brujula:        true,  // C2.3: guía/flecha hacia la misión activa
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

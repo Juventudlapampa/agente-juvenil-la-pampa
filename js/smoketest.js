@@ -521,6 +521,23 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 22. C2.3: brújula hacia el objetivo
+    if (AJ.CONFIG.brujula) {
+      check('Brújula apunta al objetivo de la misión activa', () => {
+        if (!escena.brujula) return 'sin brújula';
+        if (!conNPCs) return true; // sin NPCs (pueblo vacío) no aplica
+        const obj = escena.brujula.objetivoTile();
+        // Debe haber un objetivo y coincidir con el NPC marcado de la misión.
+        const m = escena.misiones && escena.misiones._misionActual();
+        if (!m) return true; // sin misión actual, válido (no apunta a nada raro)
+        const st = escena.misiones._estadoDe(m.id);
+        const id = !st ? m.npcInicio : (st === 'activa' ? m.objetivoNpc : m.npcFin);
+        const npc = escena.npcManager.porId(id);
+        if (!npc) return 'objetivo sin NPC';
+        return (obj && obj.x === npc.tx && obj.y === npc.ty) ? true : 'no apunta al NPC correcto';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
