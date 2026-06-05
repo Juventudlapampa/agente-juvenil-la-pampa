@@ -57,6 +57,21 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 > Regla: un sistema sólo pasa a `true` en `config.js` cuando su smoke-test da PASS.
 > Lo que quede dudoso se deja en `false` y se anota acá.
 
+### Capa D — Más mundo y más para hacer
+
+- [x] **D1 `poblarMundo`**: +6 vecinos (3 por pueblo), reusando texturas.
+- [x] **D2 `masMisiones`**: +4 misiones (requiere poblarMundo).
+- [x] **D3 `registro`**: Registro del Agente (colección + %).
+- [x] **D4 `tercerPueblo`**: "El Puesto del Monte" (outpost de monte).
+
+### Capa E — Meta, cierre y accesibilidad
+
+- [x] **E1 `progreso`**: pantalla de progreso/estadísticas.
+- [x] **E2 `accesibilidad`**: vel. de texto / tamaño / contraste (elegibles).
+- [x] **E3 `creditos`**: título pulido + créditos.
+- [x] **E4** (sin flag): bordes sobre D/E.
+- Smoke al cierre: **Pueblo 1 79/79, El Puesto 70/70**. 24 flags en true.
+
 ## Futuras noches (bolt-on previsto, todo detrás de flags)
 
 - **Más misiones/recetas/economía entre pueblos** (precios distintos por pueblo;

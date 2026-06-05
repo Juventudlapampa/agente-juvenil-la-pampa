@@ -54,18 +54,32 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `joystickAnalogico` | joystick táctil analógico (reemplaza el d-pad) (C2.1) |
 | `menu` | menú de pausa/opciones + reset con doble confirmación (C2.2) |
 | `brujula` | flecha hacia la misión activa / la salida (C2.3) |
+| `poblarMundo` | +6 vecinos (3 por pueblo), reusando texturas (D1) |
+| `masMisiones` | +4 misiones (requiere poblarMundo) (D2) |
+| `registro` | Registro del Agente (colección + %) (D3) |
+| `tercerPueblo` | 3er pueblo "El Puesto del Monte" (D4) |
+| `progreso` | pantalla de progreso/estadísticas (E1) |
+| `accesibilidad` | vel. de texto / tamaño / contraste, elegibles (E2) |
+| `creditos` | título pulido + créditos (E3) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 64/64, Colonia 65/65 PASS**.
+Hoy: **Pueblo 1 79/79, Colonia ~80, El Puesto 70/70 PASS**. 24 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
-### Misiones por pueblo (C1.2)
-`AJ.MISIONES` (pueblo 1) + `AJ.MISIONES_COLONIA` (pueblo 2, se concatena si el flag
-está on). Cada misión tiene `pueblo` (1 por defecto). El Cuaderno muestra la cadena
-del pueblo actual (`AJ.Mapa.actual`); el estado vive en `estado.misiones[id]`, así el
-progreso de cada pueblo se recuerda por separado. El Final (felicitación) lo dispara
-sólo la cadena principal (pueblo 1).
+### NPCs y misiones por pueblo (C1.2 + D1/D2) — datos reskinables
+- **NPCs:** `AJ.ROSTER_BASE` (11) + `AJ.ROSTER_D1` (6, si `poblarMundo`). `AJ.roster()`
+  devuelve la lista efectiva (la usa el Registro). `npc.js` `_defsPueblo1/_defsColonia`
+  crean los de cada pueblo; en pueblos sin NPCs (`meta.conNPCs===false`) no se crean.
+- **Misiones:** `AJ.MISIONES` (pueblo 1) + `AJ.MISIONES_COLONIA` (si `misionesColonia`) +
+  `AJ.MISIONES_D2` (si `masMisiones` Y `poblarMundo`; las del pueblo 1 se insertan ANTES
+  de `fiesta`). Cada misión tiene `pueblo` (1 por defecto). El Cuaderno muestra la cadena
+  del pueblo actual (`AJ.Mapa.actual`); el estado vive en `estado.misiones[id]` → progreso
+  por pueblo. El Final (felicitación) lo dispara sólo la cadena del pueblo 1.
+- **Mundo:** `AJ.Mapa.cargar(id)` (1=El pueblo, 2=Colonia, 3=El Puesto si `tercerPueblo`).
+  `meta.salidas` = tiles de viaje. `AJ.totalPueblos()` = 2 ó 3.
+- **Contenido (D1/D2) generado por un workflow** de agentes (escritores + crítico). Todo
+  genérico, sin marcas/programas/nombres reales.
 
 ## Estructura
 
@@ -88,8 +102,12 @@ js/crafteo.js           Mesa + AJ.RECETAS (datos)
 js/juice.js             AJ.Juice (tweens/fades/shake/celebrar)
 js/sonido.js            AJ.Sonido (Web Audio procedural + mute)
 js/joystick.js          AJ.Joystick (joystick táctil analógico, C2.1)
-js/menu.js              AJ.Menu (pausa/opciones/reset, C2.2)
+js/menu.js              AJ.Menu (pausa/opciones/reset, C2.2; sub-vista 'extras')
 js/brujula.js           AJ.Brujula (guía hacia la misión, C2.3)
+js/registro.js          AJ.Registro (colección estilo Pokédex, D3) + AJ.roster()
+js/progreso.js          AJ.Progreso (stats: tiempo/afinidad/misiones, E1)
+js/accesibilidad.js     AJ.Accesibilidad (vel. texto/tamaño/contraste, E2)
+js/creditos.js          AJ.Creditos (overlay de créditos, E3)
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título

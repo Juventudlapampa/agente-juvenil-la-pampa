@@ -69,6 +69,17 @@ economía); pantalla final. Todo commiteado y verificado.
   joystick sin jugador, reset limpio, coherencia por pueblo). Commit `ca64ad6`.
 - Smoke al cierre de C2: **Pueblo 1 64/64, Colonia 65/65**. Sin errores de consola.
 
+### Capa E — Meta, cierre y accesibilidad (tercera noche) — CERRADA
+- **E1 `progreso`**: panel de stats (tiempo jugado, afinidad por vecino, misiones por
+  pueblo). Commit `8ba8ae5`.
+- **E2 `accesibilidad`**: velocidad de texto del diálogo (typewriter, elegible) + tamaño
+  de texto + alto contraste; preferencias en localStorage. Commit `ef1d5cd`.
+- **E3 `creditos`**: título pulido (Opciones/Créditos) + pantalla de créditos. Commit `6c37bc5`.
+- **E4** (sin flag): 4 bordes nuevos (Registro round-trip, accesibilidad persiste, 3er
+  pueblo persiste, Final independiente del Registro). Commit `613a1c0`.
+- Smoke al cierre de E: Pueblo 1 **79/79**, El Puesto **70/70**. Sin errores de consola.
+- **Git sigue sin remote: el push lo hace el humano** (crear repo en GitHub + push).
+
 ### Capa 2 — Pulido (primera noche)
 > Se completa abajo a medida que avanza. Flags nuevos arrancan en `false` y pasan a
 > `true` sólo al verificar con el smoke-test.

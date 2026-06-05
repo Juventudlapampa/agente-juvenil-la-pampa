@@ -78,6 +78,16 @@
   alcanzan o querés más?
 - ¿El progreso por separado (cada pueblo recuerda lo suyo) se entiende al jugar?
 
+## 11b. El tercer pueblo "El Puesto del Monte" (D4) — ¿engancha?
+- Es un outpost de monte (huerta, mesa de oficios, mucha leña, aguada), SIN vecinos.
+- ¿Da ganas de ir, o se siente un mapa de relleno? ¿Le falta algo (un par de NPCs,
+  una misión)? Si te parece de más, se apaga con `CONFIG.tercerPueblo`.
+
+## 11c. El Registro del Agente (D3/E1) — ¿motiva o es relleno?
+- El Registro (menú → Registro / Opciones) muestra % de avance: vecinos, pueblos,
+  misiones, logros. ¿Te dan ganas de completarlo (verlo al 100%) o lo ignorás?
+- La pantalla de Progreso suma tiempo jugado y afinidad por vecino. ¿Sirve o sobra?
+
 ## 12. Menú de pausa, brújula (C2) — QoL
 - ¿El menú de pausa (tecla **P** o botón ☰) tiene lo que esperás? ¿El reset con doble
   confirmación es claro (no se borra sin querer)?
