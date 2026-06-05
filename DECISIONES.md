@@ -206,6 +206,17 @@ no destructivos. Resultado honesto: **ningún borde reveló un bug nuevo** (la b
 robusta por los try/catch por sistema y el guardado defensivo). Smoke 64/64 (Pueblo 1),
 65/65 (Colonia). De C1 ya se habían arreglado 2 bugs de no-destructividad del smoke.
 
+### D26 — D1: poblar el mundo (más vecinos, reusando texturas)
+**Por qué:** `CONFIG.poblarMundo` suma 6 vecinos nuevos (3 por pueblo) con diálogo y
+afinidad, **sin tocar el arte** (reusan las 10 texturas de NPC existentes) ni agregar
+mecánicas. El contenido (nombres, voces costumbristas) se generó con un **workflow de
+3 agentes** (un escritor por pueblo + un crítico-editor) que, entre otras cosas,
+**detectó y reescribió una misión que era una rifa con plata** → colecta cívica (regla
+no-apuestas). Se agregó `AJ.ROSTER_BASE`/`AJ.ROSTER_D1`/`AJ.roster()` como fuente única
+de la lista de vecinos (la usa el Registro D3); `_defsPueblo1/_defsColonia` derivan los
+nuevos de `ROSTER_D1` (gated). Un smoke-check verifica que ningún NPC creado quede fuera
+del roster (anti-drift). Verificado: Pueblo 1 66/66 (9 NPCs), Colonia 67/67 (8 NPCs).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

@@ -113,6 +113,22 @@ AJ.SmokeTest = (function () {
         check('NPCs colisionan (no se atraviesan)', () =>
           escena.npcManager && escena.npcManager.npcs.length > 0 &&
           escena.esColisionExtra(escena.npcManager.npcs[0].tx, escena.npcManager.npcs[0].ty) === true);
+
+        // D1: cada NPC creado tiene entrada en el roster maestro (anti-drift).
+        check('Todos los NPCs están en el roster', () => {
+          if (!AJ.roster) return true;
+          const rosterIds = AJ.roster().map((n) => n.id);
+          const huerfanos = escena.npcManager.npcs.filter((n) => rosterIds.indexOf(n.id) < 0);
+          return huerfanos.length === 0 ? true : 'sin roster: ' + huerfanos.map((n) => n.id).join(',');
+        });
+        if (AJ.CONFIG.poblarMundo) {
+          check('D1: vecinos nuevos creados en este pueblo', () => {
+            const ids = escena.npcManager.npcs.map((n) => n.id);
+            const esperados = AJ.ROSTER_D1.filter((n) => n.pueblo === AJ.Mapa.actual);
+            const faltan = esperados.filter((n) => ids.indexOf(n.id) < 0);
+            return faltan.length === 0 ? true : 'faltan: ' + faltan.map((n) => n.id).join(',');
+          });
+        }
       }
     }
 

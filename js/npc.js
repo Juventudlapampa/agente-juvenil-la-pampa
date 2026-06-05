@@ -11,6 +11,56 @@
 
 window.AJ = window.AJ || {};
 
+/* ROSTER maestro: lista de TODOS los vecinos (id, nombre, pueblo) para el
+ * Registro del Agente (D3), que necesita saber el total aunque no estés en ese
+ * pueblo. Los de D1 se suman sólo si CONFIG.poblarMundo. Mantener alineado con
+ * los defs de abajo (un smoke-check verifica que no haya NPCs sin roster). */
+AJ.ROSTER_BASE = [
+  { id: 'intendenta', nombre: 'Intendenta Beba', pueblo: 1 },
+  { id: 'maestra', nombre: 'La Maestra Rosa', pueblo: 1 },
+  { id: 'almacenero', nombre: 'Don Pedro', pueblo: 1 },
+  { id: 'cura', nombre: 'El Padre Antonio', pueblo: 1 },
+  { id: 'abuela', nombre: 'Doña Elsa', pueblo: 1 },
+  { id: 'chacarero', nombre: 'El Tano Bruno', pueblo: 1 },
+  { id: 'puestero', nombre: 'Don Ramón el Puestero', pueblo: 2 },
+  { id: 'pulpero', nombre: 'El Gallego', pueblo: 2 },
+  { id: 'maestra_rural', nombre: 'La Seño Marta', pueblo: 2 },
+  { id: 'tractorista', nombre: 'El Colorado', pueblo: 2 },
+  { id: 'partera', nombre: 'Doña Anunciación', pueblo: 2 },
+];
+
+// D1 — vecinos nuevos (poblarMundo). tile = lugar fijo y walkable; rutinas reubica
+// si cae sobre algo. Textos generados y revisados (genéricos, sin marcas/apuestas).
+AJ.ROSTER_D1 = [
+  { id: 'quiosquera', nombre: 'La Coca del Quiosco', tex: 'npc_partera', pueblo: 1, dir: 'abajo',
+    tile: { x: 6, y: 8 },
+    saludo: ['Pasá, pasá, que recién entraron los caramelos.', 'Acá me entero de todo antes que el diario.'] },
+  { id: 'bombero', nombre: 'El Lucho, Bombero Voluntario', tex: 'npc_pulpero', pueblo: 1, dir: 'abajo',
+    tile: { x: 32, y: 8 },
+    saludo: ['Somos cuatro gatos locos, pero el cuartel nunca cierra.', 'Si suena la sirena, salimos volando, agente.'] },
+  { id: 'jubilado', nombre: 'Don Tito del Banco de la Plaza', tex: 'npc_puestero', pueblo: 1, dir: 'abajo',
+    tile: { x: 21, y: 17 },
+    saludo: ['Este banco es mío de nueve a doce; después que se sienten otros.', 'Mirá cómo creció el pueblo, pibe. Yo lo vi de barro.'] },
+  { id: 'apicultora', nombre: 'La Flor de Miel', tex: 'npc_maestra', pueblo: 2, dir: 'abajo',
+    tile: { x: 28, y: 10 },
+    saludo: ['Despacito con las abejas, que ellas saben lo que hacen.', '¿Sentís ese zumbido? Es la Colonia trabajando.'] },
+  { id: 'alambrador', nombre: 'El Vasco Iturri', tex: 'npc_chacarero', pueblo: 2, dir: 'der',
+    tile: { x: 12, y: 12 },
+    saludo: ['Un buen alambre tira derecho de tranquera a tranquera.', 'Sin postes firmes no hay campo que se tenga, che.'] },
+  { id: 'almacenera_rural', nombre: 'La Pochi del Boliche', tex: 'npc_abuela', pueblo: 2, dir: 'abajo',
+    tile: { x: 24, y: 18 },
+    saludo: ['Pasá, que recién bajé bizcochitos del horno.', 'Acá en el boliche de ramos te fío hasta la cosecha, querido.'] },
+];
+
+// Roster efectivo según flags (lo usa el Registro D3).
+AJ.roster = function () {
+  let r = AJ.ROSTER_BASE.slice();
+  if (AJ.CONFIG && AJ.CONFIG.poblarMundo) {
+    r = r.concat(AJ.ROSTER_D1.map((n) => ({ id: n.id, nombre: n.nombre, pueblo: n.pueblo })));
+  }
+  return r;
+};
+
 AJ.NPC = class {
   constructor(scene, def) {
     this.scene = scene;
@@ -88,7 +138,15 @@ AJ.NPCManager = class {
       { id: 'chacarero', nombre: 'El Tano Bruno', tex: 'npc_chacarero',
         spot: huertaSpot, dir: 'arriba',
         saludo: ['La tierra da si la cuidás. Así de simple.'] },
-    ];
+    ].concat(this._defsD1(1));
+  }
+
+  // D1 (poblarMundo): vecinos nuevos de un pueblo, mapeados desde AJ.ROSTER_D1.
+  _defsD1(pueblo) {
+    if (!AJ.CONFIG.poblarMundo || !AJ.ROSTER_D1) return [];
+    return AJ.ROSTER_D1.filter((n) => n.pueblo === pueblo).map((n) => ({
+      id: n.id, nombre: n.nombre, tex: n.tex, spot: n.tile, dir: n.dir, saludo: n.saludo,
+    }));
   }
 
   // C1.1 — Colonia La Esperanza: su propio elenco rural.
@@ -112,7 +170,7 @@ AJ.NPCManager = class {
       { id: 'partera', nombre: 'Doña Anunciación', tex: 'npc_partera',
         spot: { x: 10, y: 20 }, dir: 'abajo',
         saludo: ['Traje al mundo a media Colonia, m\'hijo.'] },
-    ];
+    ].concat(this._defsD1(2));
   }
 
   _instanciar(defs) {

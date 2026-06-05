@@ -19,6 +19,12 @@ Verificado, no asumido:
 Verificado: smoke **55/55 PASS** (Pueblo 1), árbol limpio, las 11 fases previas en
 `true`. La Colonia estaba sin NPCs ni misiones propias (objetivo de C1).
 
+## Estado de partida que encontró D/E (tercera noche)
+
+Verificado: smoke **Pueblo 1 64/64, Colonia 65/65 PASS**, árbol limpio, **17 flags en
+true**, sin errores de consola. Objetivo de D: más mundo/contenido. Objetivo de E:
+meta-progresión, accesibilidad y cierre.
+
 ## Capas construidas
 
 ### Capa 0 — Base (FASES 1–4 + Final)

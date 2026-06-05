@@ -34,6 +34,15 @@ AJ.CONFIG = {
   joystickAnalogico: true,  // C2.1: joystick táctil analógico opcional
   menu:           true,  // C2.2: menú de pausa/opciones
   brujula:        true,  // C2.3: guía/flecha hacia la misión activa
+  // --- Capa D (más mundo y más para hacer) ---
+  poblarMundo:    true,  // D1: más NPCs con diálogo/afinidad en ambos pueblos
+  masMisiones:    false, // D2: más misiones plantilla
+  registro:       false, // D3: Registro del Agente (colección estilo "Pokédex")
+  tercerPueblo:   false, // D4: tercer pueblo (opcional, gated)
+  // --- Capa E (meta, cierre y accesibilidad) ---
+  progreso:       false, // E1: pantalla de progreso/estadísticas
+  accesibilidad:  false, // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)
+  creditos:       false, // E3: menú principal pulido + créditos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
