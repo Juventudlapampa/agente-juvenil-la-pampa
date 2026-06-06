@@ -121,6 +121,33 @@ economía); pantalla final. Todo commiteado y verificado.
   de consola. **26 flags en true.**
 - **Git sigue sin remote: el push lo hace el humano** (ver sección "Push" abajo).
 
+### Modo Gestión (GDD) — G1–G4 (quinta noche) — CAPAS CERRADAS
+Sistema NUEVO y aditivo sobre el RPG (no lo toca), definido en `GDD_Agente_Juvenil_La_Pampa.md`.
+Todo cuelga de `AJ.Gestion` (scripts clásicos `js/gestion/*`), detrás de flags con try/catch.
+- **G1 `modoGestion`** (`gestion/datos.js`): 5 medidores, 10 comunidades, 4 niveles + banco
+  anonimizado del modelo real (sin nombres reales), pueblos jugables **FICTICIOS**, 5 líneas
+  de actividad, problemáticas con flag `sensible`; `AJ.Gestion.Estado` (estado por pueblo en
+  `estado.gestion`, clamp de medidores). Commit `303001f`.
+- **G2 `onboarding`** (`gestion/onboarding.js`): los 4 pasos de la Hoja de Ruta (convocatoria/
+  diagnóstico/objetivos+bautizo/organización), lógica pura + asistente DOM (tecla **G**); ≥3
+  miembros = Agencia, <3 = Referente solo. Commit `7de00a5`.
+- **G3 `dilemas`** (`gestion/dilemas.js` + `dilemas_banco.js`): motor situación/opciones/
+  impactos multi-medidor + UI (tecla **H**); 26 dilemas genéricos (6 a mano + **20 generados
+  por un workflow** de 7 escritores + crítico, re-validados por código). El contenido
+  **sensible NO se autogenera** (`CONTENIDO_SENSIBLE.md`; banco sensible vacío). Commit `0ff11e3`.
+- **G4 `tiradas`** (`gestion/tiradas.js`): dado 1–20 + modificadores por medidor (arco
+  suerte→competencia), resultados graduados; modula los impactos de las opciones con
+  `requiereTirada`. El dado es mecánica, **nunca plata real**. Commit `2d093b1`.
+- Smoke al cierre de G4 (con los fixes del review adversarial): **Pueblo 1 105/105, Colonia
+  106/106, El Puesto 96/96 PASS**, sin errores de consola. **30 flags en true.**
+- **Review adversarial (workflow)** al cierre: 12 hallazgos, 7 confirmados, **todos corregidos**
+  (el más serio: ESC dejaba un overlay DOM de gestión huérfano sobre el Título → arreglado).
+  Detalle en `DECISIONES.md` (D43).
+- **Pendiente (próxima noche): G5–G7** en `ROADMAP.md` (ciclo de 30 días + mudanza;
+  descubrimiento/integración de comunidades; robustez de bordes). Las teclas **G/H** son
+  entradas **temporales** hasta que G5 reparta el onboarding y los dilemas en el ciclo de días.
+- **Git sigue sin remote: el push lo hace el humano** (ver sección "Push" abajo).
+
 ### Capa 2 — Pulido (primera noche)
 > Se completa abajo a medida que avanza. Flags nuevos arrancan en `false` y pasan a
 > `true` sólo al verificar con el smoke-test.

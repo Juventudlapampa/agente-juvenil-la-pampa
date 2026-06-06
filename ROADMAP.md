@@ -84,6 +84,34 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **F5** (sin flag): robustez final — 4 bordes sobre la Capa F en el smoke.
 - Smoke al cierre de F: **Pueblo 1 88/88, Colonia 89/89, El Puesto 79/79**. 26 flags en true.
 
+### Modo Gestión (GDD) — sistema nuevo, aditivo sobre el RPG
+
+> Definido en `GDD_Agente_Juvenil_La_Pampa.md`. Convierte las misiones planas en
+> decisiones con consecuencias: medidores, Agencia, dilemas y dado. Todo en `js/gestion/`,
+> detrás de flags, sin tocar el RPG. **Restricciones (GDD §11):** pueblos ficticios,
+> contenido sensible a mano (`CONTENIDO_SENSIBLE.md`), sin apuestas/plata real, reskinable.
+
+- [x] **G1 `modoGestion`**: capa de datos (5 medidores, 10 comunidades, 4 niveles + banco
+      anonimizado, pueblos ficticios, 5 actividades, problemáticas con flag sensible) + estado.
+- [x] **G2 `onboarding`**: armar la Agencia (4 pasos de la Hoja de Ruta) — lógica + UI DOM.
+- [x] **G3 `dilemas`**: motor situación/opciones/impactos + 26 dilemas genéricos validados;
+      contenido sensible NO autogenerado (motor lo soporta, banco vacío).
+- [x] **G4 `tiradas`**: dado 1–20 + modificadores (arco suerte→competencia), resultados graduados.
+- Smoke al cierre de G4 (con fixes del review adversarial): **Pueblo 1 105/105, Colonia 106/106,
+  El Puesto 96/96**. 30 flags en true.
+
+#### Pendiente — G5–G7 (próxima noche)
+- [ ] **G5 `cicloGestion`**: ciclo de 30 días (recon 1–5, gestión 6–30, 3 acciones/día),
+      perfil de gestor al cierre, **mudanza** con experiencia heredada (selector de dificultad).
+      Acá se reparten el onboarding (días 1–5) y los dilemas en el día a día → reemplaza las
+      entradas **temporales** por teclas G/H de Pueblo.js.
+- [ ] **G6 `comunidades`**: descubrimiento por exploración en pueblo chico (íconos bloqueados,
+      como el Registro); modo **integración** (actividades-puente) en los pueblos nivel 4.
+- [ ] **G7 robustez**: smoke de bordes sobre todo lo nuevo; guardado del estado de gestión por
+      pueblo verificado a fondo (round-trips, saves viejos, mudanza ida/vuelta).
+- **Contenido sensible** (salud mental, consumos, violencias, bullying): redacción + revisión
+  humana en `CONTENIDO_SENSIBLE.md` (NO es tarea de la corrida nocturna).
+
 ## Futuras noches (bolt-on previsto, todo detrás de flags)
 
 - **Más misiones/recetas/economía entre pueblos** (precios distintos por pueblo;

@@ -138,17 +138,20 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
 
     // --- G2: armar la Agencia (tecla G). Entrada temporal hasta el ciclo de
     //     30 días (G5), que lo dispara solo en los días 1–5. Gated por flag. ---
-    if (AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
+    if (AJ.CONFIG.modoGestion && AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
       this.input.keyboard.on('keydown-G', () => {
         if (this.dialogo && this.dialogo.abierto) return;
         if (this.menu && this.menu.abierto) return;
+        // No reabrir/reiniciar si ya hay un modal de gestión abierto (p. ej. al
+        // tipear la letra "g" en el nombre de la Agencia).
+        if (AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta()) return;
         try { AJ.Gestion.OnboardingUI.abrir(this, this.estado); }
         catch (e) { console.warn('[Pueblo] onboarding off', e); }
       });
     }
     // --- G3: presentar el próximo dilema elegible (tecla H). Entrada temporal
     //     hasta que el ciclo de 30 días (G5) los reparta. Gated por flag. ---
-    if (AJ.CONFIG.dilemas && AJ.Gestion && AJ.Gestion.DilemasUI) {
+    if (AJ.CONFIG.modoGestion && AJ.CONFIG.dilemas && AJ.Gestion && AJ.Gestion.DilemasUI) {
       this.input.keyboard.on('keydown-H', () => {
         if (this.dialogo && this.dialogo.abierto) return;
         if (this.menu && this.menu.abierto) return;
@@ -170,6 +173,12 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this.input.keyboard.on('keydown-ESC', () => {
       if (this.menu && this.menu.abierto) { this.menu.cerrar(); return; }
       if (this.crafteo && this.crafteo.menuAbierto) { this.crafteo.cerrarMenu(); return; }
+      // Modo Gestión: los modales son overlays DOM; cerralos antes de salir o
+      // quedan flotando sobre el Título (rompen la pantalla). Cerrar y NO salir.
+      if (AJ.Gestion && AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta()) {
+        this._cerrarModalesGestion();
+        return;
+      }
       this.guardar();
       if (AJ.Juice) AJ.Juice.irA(this, 'Titulo');
       else this.scene.start('Titulo');
@@ -186,6 +195,16 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (this.npcManager && this.npcManager.ocupa(tx, ty)) return true;
     if (this.crafteo && this.crafteo.ocupa && this.crafteo.ocupa(tx, ty)) return true;
     return false;
+  }
+
+  // Cierra cualquier overlay DOM del Modo Gestión (idempotente: no-op si no hay).
+  _cerrarModalesGestion() {
+    try {
+      if (AJ.Gestion) {
+        if (AJ.Gestion.OnboardingUI && AJ.Gestion.OnboardingUI.cerrar) AJ.Gestion.OnboardingUI.cerrar();
+        if (AJ.Gestion.DilemasUI && AJ.Gestion.DilemasUI.cerrar) AJ.Gestion.DilemasUI.cerrar();
+      }
+    } catch (e) {}
   }
 
   // Arranca un sistema sólo si su flag está en true; si falla, lo apaga.
@@ -364,5 +383,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       if (btn) btn.removeEventListener('click', this._onBtnMenu);
       this._onBtnMenu = null;
     }
+    // Red de seguridad: si la escena se reinicia (p. ej. viaje) con un modal de
+    // gestión abierto, cerrarlo para no dejar overlays DOM huérfanos.
+    this._cerrarModalesGestion();
   }
 };

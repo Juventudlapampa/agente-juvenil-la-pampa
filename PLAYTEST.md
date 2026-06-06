@@ -112,6 +112,34 @@
   relleno que se ignora? Si motivan poco, se podría sumar alguna meta/medalla más adelante
   (queda en ROADMAP). Se apaga con `CONFIG.estadisticas`.
 
+## 15. Modo Gestión (GDD) — balance y ritmo (G1–G4)
+> El Modo Gestión está en capas tempranas (datos, onboarding, dilemas, dado). El ciclo de
+> 30 días (G5) todavía no está, así que por ahora se prueba por entradas temporales:
+> tecla **G** (armar la Agencia) y tecla **H** (siguiente dilema), con `modoGestion` y sus
+> sub-flags en `true`. **Todos los números de abajo son defaults razonables, no finos.**
+
+- **Balance de los 5 medidores.** Arrancan en valores fijos (Agencia 0, Vínculo 30,
+  Conocimiento 20, Confianza 40, Convicción 60, en `js/gestion/datos.js` → `MEDIDORES.inicial`).
+  ¿Se siente la tensión de que "no quedan los cinco arriba a la vez"? ¿Algún medidor sube/baja
+  demasiado fácil? Los impactos de cada opción están en los dilemas (datos).
+- **Ritmo de los dilemas.** ¿Las situaciones se entienden y enganchan? ¿Las opciones tienen un
+  trade-off que se siente (no hay una obviamente mejor)? ¿El tono pampeano suena natural?
+  (26 dilemas genéricos; el contenido es dato editable en `dilemas.js`/`dilemas_banco.js`.)
+- **El dado (arco suerte→competencia).** ¿Al principio (medidores bajos) se siente que dependés
+  de la suerte, y más adelante que tu gestión manda? ¿La dificultad por defecto (12) y los
+  modificadores se sienten justos o castigan/regalan? Se tunea en `js/gestion/tiradas.js`
+  (`modMedidor`, `clasificar`, `PENAL_REFERENTE_SOLO`). **Ojo:** esto es lo más sensible al feel.
+- **Referente solo vs Agencia.** ¿"Quedar referente solo" (menos de 3 miembros) se siente como
+  una elección válida pero más dura, o como un castigo? (penalidad −3 al dado).
+- **Onboarding.** ¿Los 4 pasos se entienden? ¿Elegir canales según el pueblo (boca a boca vs
+  redes) tiene sentido? ¿Bautizar la Agencia se siente tuyo?
+- **Reacción tras una tirada fallida.** Cuando el dado da Fracaso/Parcial en una opción con 🎲,
+  ¿el texto que aparece acompaña bien el resultado, o conviene escribir reacciones por resultado?
+
+> **Contenido sensible (salud mental, consumos, violencias, bullying):** NO está en el juego;
+> va escrito a mano y revisado (ver `CONTENIDO_SENSIBLE.md`). Eso es decisión humana, no de la
+> corrida nocturna.
+
 ---
 
 ### Cómo apagar cualquier cosa que no te guste

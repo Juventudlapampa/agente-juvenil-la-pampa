@@ -88,7 +88,10 @@ AJ.Gestion.Tiradas = (function () {
       if (!D.medidor(k)) return;
       const v = impactos[k];
       const f = v >= 0 ? r.factorPos : r.factorNeg;
-      const nv = Math.round(v * f);
+      // Redondeo SIMÉTRICO (alejándose de cero) para que un costo chico no se
+      // diluya por el redondeo: -2×1.25 → -3 (no -2), y un costo de -1 no
+      // desaparece en un crítico. factorPos 0 (fracaso) sí anula los positivos.
+      const nv = (f === 0) ? 0 : Math.sign(v) * Math.round(Math.abs(v) * f);
       if (nv !== 0) out[k] = nv;
     });
     return out;

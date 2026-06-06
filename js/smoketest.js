@@ -1165,6 +1165,43 @@ AJ.SmokeTest = (function () {
         if (!res.tirada || typeof res.tirada.dado !== 'number') return 'no rodó el dado';
         return true;
       });
+      check('G4: el escalado castiga costos chicos en fracaso y no los borra en crítico', () => {
+        const T = AJ.Gestion.Tiradas;
+        const frac = T.escalarImpactos({ conviccion: -2 }, 'fracaso');   // -2×1.25 ⇒ -3 (no -2)
+        if (frac.conviccion !== -3) return 'fracaso no amplió el costo chico: ' + frac.conviccion;
+        const crit = T.escalarImpactos({ conviccion: -1 }, 'critico');   // -1×0.5 ⇒ -1 (no 0)
+        if (crit.conviccion !== -1) return 'crítico borró el costo de -1: ' + crit.conviccion;
+        return true;
+      });
+    }
+
+    // 36. Modo Gestión: integración (freeze de movimiento + cierre limpio de modales)
+    if (AJ.CONFIG.modoGestion) {
+      check('Gestión: los modales congelan el movimiento y cierran sin dejar overlay', () => {
+        const G = AJ.Gestion;
+        if (!G || !G.OnboardingUI || !G.modalAbierta) return 'sin UI/modalAbierta';
+        const test = {}; G.Estado.asegurar(test, null);
+        G.OnboardingUI.abrir(escena, test, null);
+        if (!G.modalAbierta()) return 'modalAbierta no detecta el onboarding';
+        // Congela el MOVIMIENTO (no el reloj): con input puesto, el jugador no se mueve.
+        const p0 = escena.jugador.tilePos();
+        AJ.Input.estado.right = true;
+        escena.update(0, 1000);
+        AJ.Input.estado.right = false;
+        const p1 = escena.jugador.tilePos();
+        if (p0.x !== p1.x || p0.y !== p1.y) { escena._cerrarModalesGestion(); return 'no congeló el movimiento'; }
+        // _cerrarModalesGestion (lo que usa ESC) deja todo limpio.
+        escena._cerrarModalesGestion();
+        if (G.modalAbierta() || document.getElementById('gestion-onboarding')) return 'quedó overlay tras cerrar';
+        if (G.DilemasUI && AJ.CONFIG.dilemas) {
+          const d = G.Dilemas.elegibles(test)[0];
+          G.DilemasUI.abrir(escena, test, d, null);
+          if (!G.modalAbierta()) { G.DilemasUI.cerrar(); return 'modalAbierta no detecta el dilema'; }
+          escena._cerrarModalesGestion();
+          if (G.modalAbierta() || document.getElementById('gestion-dilema')) return 'quedó overlay de dilema';
+        }
+        return true;
+      });
     }
 
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.

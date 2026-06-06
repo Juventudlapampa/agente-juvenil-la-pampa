@@ -380,6 +380,92 @@ simuladas (flush + reload + flush).
   F1/F2/F4 ya se comportaba bien. Smoke al cierre: **Pueblo 1 88/88, Colonia 89/89, El
   Puesto 79/79**, sin errores de consola.
 
+### D39 — G1: Modo Gestión, capa de datos (modelo real como banco interno)
+**Por qué:** `CONFIG.modoGestion` abre el Modo Gestión del GDD como sistema **aditivo** sobre
+el RPG (no lo toca), todo bajo `AJ.Gestion` en `js/gestion/datos.js`.
+- **Datos como fuente única:** 5 medidores (Agencia 0–20; los otros 0–100), 10 comunidades con
+  rareza/tags, 4 niveles, 5 líneas de actividad, problemáticas con flag `sensible`, regiones.
+- **Restricción §11 resuelta:** la tabla real de 80 pueblos (Apéndice A) es **modelo interno**.
+  No se nombran localidades reales en el juego: se guarda sólo la **distribución anonimizada**
+  por nivel (`MODELO_NIVEL`, sólo cantidades) y los pueblos jugables son **inventados**
+  (`PUEBLOS`, p. ej. "Paraje El Chañaral"). Así el banco es fiel sin filtrar nombres reales.
+- **Estado:** `AJ.Gestion.Estado` arma `estado.gestion` por pueblo (medidores con clamp,
+  `asegurar/actual/aplicarImpacto`). `guardado.js` suma el campo `gestion` (migración
+  defensiva: saves viejos no rompen). El arranque (`AJ.Gestion.init` desde
+  `Pueblo._iniciarSistema`) sólo asegura el estado; **sin UI** (eso llega en G2+).
+- Verificado: smoke 92/92, el medidor persiste tras guardar/recargar, consola limpia.
+
+### D40 — G2: onboarding (lógica pura + UI, separadas para testear)
+**Por qué:** `CONFIG.onboarding` hace jugables los 4 pasos de la Hoja de Ruta (GDD §3) en
+`js/gestion/onboarding.js`, partido en **lógica pura** (`AJ.Gestion.Onboarding`, testeable sin
+DOM) y **UI** (`AJ.Gestion.OnboardingUI`, asistente DOM estilo creador F1).
+- **Mecánicas fieles al GDD:** convocatoria con efectividad de canales **por nivel** (boca a
+  boca gana en pueblo chico; redes en grande) + el mate; diagnóstico (charla/encuesta) que sube
+  Conocimiento y **descubre** las comunidades del pueblo + las problemáticas NO sensibles;
+  objetivos (bautizo + 2–3 metas); organización (reclutar capeado por candidatos). **≥3 = Agencia;
+  <3 = Referente solo** (penalidad que se cobra en G4).
+- **Freeze de movimiento:** `AJ.Gestion.modalAbierta()` (consultado por `Pueblo.update`) congela
+  al jugador mientras el asistente está abierto. Entrada **temporal** por tecla **G** hasta G5.
+- Verificado: smoke 95/95; wizard end-to-end (bautiza, recluta, fase→gestión); congela el movimiento.
+
+### D41 — G3: motor de dilemas + contenido por workflow, con lo sensible a mano
+**Por qué:** `CONFIG.dilemas` agrega el motor (GDD §7) en `js/gestion/dilemas.js`: dilema =
+dato `{situacion, opciones:[{impactos, reaccion, requiereTirada?}]}`; `resolver()` aplica
+impactos con clamp y marca resuelto; UI DOM (tecla **H**).
+- **Contenido genérico por workflow, validado dos veces:** 6 dilemas a mano + **20 generados por
+  un workflow** (7 escritores por tema NO sensible + 1 crítico-editor que aplicó las
+  restricciones), y luego **re-validados por código** (medidores válidos, ids únicos, trade-off
+  real, scan anti nombres-reales / temas-sensibles / plata). Quedó separado el banco
+  (`dilemas_banco.js`) del motor → reskinable.
+- **Lo sensible NO se autogenera (regla dura, §7/§11):** salud mental, consumos, violencias y
+  bullying van a `CONTENIDO_SENSIBLE.md` (estructura + plantilla + reglas de cuidado), los carga
+  un humano vía `registrarSensibles()`; el banco sensible **arranca vacío**. El smoke verifica
+  que siga vacío y que ningún dilema genérico tenga problemática sensible.
+- Verificado: smoke El pueblo 98/98, Colonia 99/99, El Puesto 89/89; resolver end-to-end.
+
+### D42 — G4: dado con arco suerte→competencia (emergente de un modelo lineal)
+**Por qué:** `CONFIG.tiradas` agrega el dado (GDD §8) en `js/gestion/tiradas.js`. **El dado es
+mecánica, NUNCA plata real** (§11).
+- **El arco es emergente, no scripteado:** `modMedidor` mapea cada medidor a un modificador que
+  va de **negativo** (valor bajo) a **positivo** (valor alto). Con medidores bajos los mods
+  restan y dependés del dado (suerte); con medidores altos suman y un dado mediocre alcanza
+  (competencia). El conocimiento es el modificador por defecto; `bonus` modela estudio/creatividad.
+- **Resultados graduados** (crítico/éxito/parcial/fracaso) por margen, con nat20=crítico y
+  nat1=fracaso (tensión hasta con todo alto). `escalarImpactos` modula la opción según el
+  resultado (crítico agranda lo bueno; fracaso anula lo bueno y agranda el costo). **Referente
+  solo paga −3.** `Dilemas.resolver` usa la tirada si la opción `requiereTirada`.
+- **Determinismo para tests:** `tirar()` acepta `dadoForzado`; el smoke verifica umbrales, arco,
+  escalado y penalidad sin azar.
+- **El balance del dado es lo más sensible al feel** → defaults razonables, ajuste a PLAYTEST.md.
+
+### D43 — Review adversarial del Modo Gestión (workflow) + fixes al cierre
+**Por qué:** al cerrar G4 se corrió un **workflow de review** (4 revisores por dimensión —
+restricciones GDD, anti-rotura, lógica, contenido— + verificadores escépticos por hallazgo).
+12 hallazgos, **7 confirmados**. Corregidos (verificado, no asumido):
+1. **(ALTA) ESC dejaba el overlay DOM de gestión huérfano** al salir al Título (los modales son
+   DOM, la transición de escena no los borra): el Título quedaba inutilizable. Fix: el handler
+   ESC, si `AJ.Gestion.modalAbierta()`, cierra los modales y **no** sale; `shutdown()` también los
+   cierra (red de seguridad ante viaje con un modal abierto). Helper `_cerrarModalesGestion()`.
+2. **(baja) Gating incoherente:** las teclas G/H abrían modales aun con `modoGestion` off (y el
+   dilema quedaba "mudo" porque `resolver` no tenía estado). Fix: exigir `modoGestion` en ambos gates.
+3. **(baja) Hueco de cobertura:** el smoke no verificaba el freeze ni el cierre limpio de los
+   modales. Fix: check de integración (modalAbierta on/off, **congela el movimiento — no el reloj**,
+   `_cerrarModalesGestion` no deja overlay). *(El verificador corrigió la premisa: un modal de
+   gestión congela el movimiento como el menú de crafteo, pero el reloj sólo lo frena la pausa.)*
+4. **(baja) y 5. (baja) Redondeo asimétrico en `escalarImpactos`:** un costo chico (−1/−2) no se
+   amplificaba en fracaso y podía desaparecer en crítico. Fix: redondeo **simétrico** (alejándose
+   de cero) para la magnitud; `factorPos 0` (fracaso) sigue anulando los positivos. Smoke nuevo lo fija.
+6. **(media) Opción de negociación "gratis" en 2 dilemas de poder** (intendente/concejal 'c' sólo
+   sumaban): se les dio un **costo real** (agencia −1 / convicción −2) para alinear con el resto del
+   banco (toda opción paga algo, salvo las cooperativas win-win y las que van a tirada).
+7. **(media) El validador no exige trade-off por opción:** **no se cambió** a propósito — las
+   opciones cooperativas win-win (coordinar con el club, prestar la sala) son diseño legítimo
+   (GDD: la tensión es del estado global, no de cada opción). El invariante real ("cada dilema
+   tiene al menos una opción con costo") **ya lo verifica el smoke**; un lint por-opción daría
+   falsos positivos sobre esas cooperativas.
+- Smoke al cierre (con fixes + 2 checks nuevos): **El pueblo 105/105, Colonia 106/106, El Puesto
+  96/96 PASS**, sin errores de consola.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

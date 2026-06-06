@@ -40,8 +40,8 @@ AJ.Gestion.Dilemas = (function () {
           impactos: { conviccion: 10, confianza: -8 },
           reaccion: 'Se va caliente; los pibes te bancan, el municipio te mira de reojo.' },
         { id: 'c', texto: 'Negociás: número más chico, pero algo cumplís.',
-          impactos: { confianza: 3, conviccion: 1, conocimiento: 2 },
-          reaccion: 'Quedan todos a medias conformes; nadie aplaude, nadie putea.' },
+          impactos: { confianza: 4, conocimiento: 2, agencia: -1 },
+          reaccion: 'Quedan todos a medias conformes; al equipo lo deja medio frío tanto rosqueo.' },
       ],
     },
     {
@@ -55,8 +55,8 @@ AJ.Gestion.Dilemas = (function () {
           impactos: { conviccion: 10, confianza: -7 },
           reaccion: 'Los pibes lo valoran; el concejal se lo guarda.' },
         { id: 'c', texto: 'Logo chico en un rincón, y los pibes al frente.',
-          impactos: { confianza: 4, conviccion: 2 },
-          reaccion: 'Negociación piola: nadie gana del todo, nadie pierde la cara.' },
+          impactos: { confianza: 5, conviccion: -2 },
+          reaccion: 'Negociación piola: entra algo de plata, pero le diste un pie igual.' },
       ],
     },
     {
