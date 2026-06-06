@@ -173,6 +173,10 @@ Todo cuelga de `AJ.Gestion` (scripts clásicos `js/gestion/*`), detrás de flags
   `DECISIONES.md` (D47).
 - Smoke al cierre de G7 (con los fixes): **Pueblo 1 126/126, Colonia 127/127, El Puesto 117/117
   PASS**, sin errores de consola. **32 flags en true.**
+- **GP — pulido de gestión (sin flags nuevos):** GP1 (`dilemas_banco2.js`) sumó 12 dilemas
+  genéricos (banco **38**, commit `e9351ca`); GP2 (commit `988a20c`) hizo el modo encontrable
+  (botón **🗂 Modo Gestión** + ayuda "¿cómo se juega?"), sin tocar balance. Smoke al cierre:
+  **Pueblo 1 127/127, Colonia 128/128, El Puesto 118/118 PASS**, consola limpia.
 - **Modo Gestión G1–G7 completo.** El **balance fino** (medidores, ritmo de 30 días, feel del dado)
   necesita **playtest humano** (ver `PLAYTEST.md` §15–16). El banco de **dilemas sensibles**
   (`CONTENIDO_SENSIBLE.md`) y los **dilemas con voz propia / bajada institucional** los escribe y

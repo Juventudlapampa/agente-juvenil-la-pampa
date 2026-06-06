@@ -72,7 +72,7 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `comunidades` | descubrimiento (pueblo chico) e integración (capital) de comunidades (G6) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 126/126, Colonia 127/127, El Puesto 117/117 PASS**. 32 flags en true.
+Hoy: **Pueblo 1 127/127, Colonia 128/128, El Puesto 118/118 PASS**. 32 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
@@ -166,7 +166,10 @@ Sistema nuevo definido en `GDD_Agente_Juvenil_La_Pampa.md`, **detrás de flags**
   la capital (nivel 4) están las 10 y el modo se invierte: **integración** (actividad-puente que
   junta comunidades, vale más). Una actividad acierta más si apunta a una comunidad que existe **y
   conocés** (bonus de tirada). Sin la infra del pueblo → **cooperación regional** (−Confianza).
-- **Cierre G1–G7 hecho.** Lo que sigue es bajada institucional + contenido a mano (ver abajo).
+- **GP (pulido de gestión, sin flags nuevos):** GP1 = más dilemas genéricos (banco **38**, en
+  `dilemas_banco2.js`); GP2 = entrada visible (botón **🗂 Modo Gestión** + tecla G) y ayuda
+  "¿cómo se juega?" en el menú del día. Sin tocar balance.
+- **Cierre G1–G7 + GP hecho.** Lo que sigue es bajada institucional + contenido a mano (ver abajo).
 - **Pendiente humano:** los dilemas **sensibles** (`CONTENIDO_SENSIBLE.md`, salud mental/consumos/
   violencias/bullying) y los dilemas con **voz propia** los escribe y aprueba una persona.
 
