@@ -136,6 +136,17 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       } catch (e) { console.warn('[Pueblo] menú off', e); this.menu = null; }
     }
 
+    // --- G2: armar la Agencia (tecla G). Entrada temporal hasta el ciclo de
+    //     30 días (G5), que lo dispara solo en los días 1–5. Gated por flag. ---
+    if (AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
+      this.input.keyboard.on('keydown-G', () => {
+        if (this.dialogo && this.dialogo.abierto) return;
+        if (this.menu && this.menu.abierto) return;
+        try { AJ.Gestion.OnboardingUI.abrir(this, this.estado); }
+        catch (e) { console.warn('[Pueblo] onboarding off', e); }
+      });
+    }
+
     // --- Guardado automático periódico + al cerrar la pestaña ---
     this.time.addEvent({ delay: 5000, loop: true, callback: () => this.guardar() });
     this._onUnload = () => this.guardar();
@@ -239,9 +250,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (!menuAbierto) this.estado.tiempoJugado = (this.estado.tiempoJugado || 0) + dt;
     // F4: estadísticas de sesión (tiempo total acumulado entre partidas).
     if (!menuAbierto && AJ.Stats) { try { AJ.Stats.sumarTiempo(dt); } catch (e) {} }
-    // ¿Hay un diálogo, el menú de crafteo o la pausa abiertos? -> sin movimiento.
+    // ¿Hay un diálogo, el menú de crafteo, la pausa o un modal de gestión
+    //  abiertos? -> sin movimiento.
+    const gestionAbierta = !!(AJ.Gestion && AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta());
     const dialogoAbierto = (this.dialogo && this.dialogo.abierto) ||
-                           (this.crafteo && this.crafteo.menuAbierto) || menuAbierto;
+                           (this.crafteo && this.crafteo.menuAbierto) || menuAbierto || gestionAbierta;
 
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }

@@ -1009,6 +1009,54 @@ AJ.SmokeTest = (function () {
         (escena.estado.gestion && escena.estado.gestion.actual) ? true : 'gestion no inicializada en el save');
     }
 
+    // 33. G2: onboarding (armar la Agencia) — sobre estado de prueba aparte.
+    if (AJ.CONFIG.onboarding) {
+      check('G2: lógica de los 4 pasos computa, descubre y clampa bien', () => {
+        const O = AJ.Gestion && AJ.Gestion.Onboarding;
+        if (!O) return 'sin Onboarding';
+        const test = {};
+        AJ.Gestion.Estado.asegurar(test, null);
+        const ep = AJ.Gestion.Estado.actual(test);
+        // paso 1: candidatos por canal (pueblo inicial nivel 1: bocaAboca = 5) + mate
+        const c1 = O.convocatoria(test, ['bocaAboca'], true);
+        if (c1.candidatos !== 5) return 'candidatos bocaAboca=' + c1.candidatos;
+        if (ep.medidores.confianza <= 40) return 'el mate no sumó confianza';
+        // paso 2: diagnóstico revela comunidades + sube conocimiento
+        const conAntes = ep.medidores.conocimiento;
+        O.diagnostico(test, 'charla');
+        if (ep.medidores.conocimiento <= conAntes) return 'diagnóstico no subió conocimiento';
+        if (!Object.keys(ep.comunidadesDescubiertas).length) return 'no descubrió comunidades';
+        // paso 3: objetivos (trim + capea a 3) y bautizo
+        O.objetivos(test, '  La Juntada  ', ['masEspacios', 'vozJoven', 'prevencion', 'laburoJoven']);
+        if (ep.agencia.nombre !== 'La Juntada') return 'bautizo mal: ' + ep.agencia.nombre;
+        if (ep.agencia.objetivos.length !== 3) return 'objetivos no capó a 3: ' + ep.agencia.objetivos.length;
+        // paso 4: reclutar capea a min(20, candidatos=5)
+        const o4 = O.organizacion(test, 99, ['promo', 'redes']);
+        if (o4.miembros !== 5) return 'no capó miembros: ' + o4.miembros;
+        if (ep.medidores.agencia !== 5) return 'medidor agencia mal: ' + ep.medidores.agencia;
+        // cierre: 5 >= 3 => Agencia
+        const fin = O.finalizar(test);
+        if (fin.referenteSolo) return 'debería ser Agencia, no referente solo';
+        if (!ep.onboarding.hecho || ep.fase !== 'gestion') return 'no cerró el onboarding';
+        return true;
+      });
+      check('G2: con menos de 3 miembros queda Referente solo', () => {
+        const O = AJ.Gestion.Onboarding, test = {};
+        const fin = O.correrTodo(test, { canales: ['bocaAboca'], nMiembros: 1, nombreAgencia: 'Solo' });
+        return fin.referenteSolo ? true : 'no marcó referente solo';
+      });
+      check('G2: el asistente DOM abre y cierra sin romper', () => {
+        const UI = AJ.Gestion && AJ.Gestion.OnboardingUI;
+        if (!UI) return 'sin OnboardingUI';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        UI.abrir(escena, test, null);
+        const abierto = !!document.getElementById('gestion-onboarding') && UI.abierta();
+        UI.cerrar();
+        const cerrado = !document.getElementById('gestion-onboarding') && !UI.abierta();
+        return (abierto && cerrado) ? true : 'abierto=' + abierto + ' cerrado=' + cerrado;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

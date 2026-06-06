@@ -49,7 +49,7 @@ AJ.CONFIG = {
   estadisticas:   true,  // F4: estadísticas de sesión acumuladas
   // --- Modo Gestión (GDD; aditivo sobre el RPG, arranca en false hasta smoke) ---
   modoGestion:    true,  // G1: capa de datos (medidores, comunidades, pueblos, etc.)
-  onboarding:     false, // G2: armar la Agencia (4 pasos de la Hoja de Ruta)
+  onboarding:     true,  // G2: armar la Agencia (4 pasos de la Hoja de Ruta)
   dilemas:        false, // G3: motor de dilemas (situación/opciones/impactos)
   tiradas:        false, // G4: dado + modificadores + resultados graduados
 
