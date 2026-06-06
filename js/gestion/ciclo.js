@@ -138,16 +138,22 @@ AJ.Gestion.Ciclo = (function () {
     E.asegurar(estado, null);
     const g = estado.gestion;
     if (!D.pueblo(puebloId) || puebloId === g.actual) return null;
-    g.experiencia.mudanzas = (g.experiencia.mudanzas || 0) + 1;
-    const veces = g.experiencia.mudanzas;
-    if (!g.pueblos[puebloId]) g.pueblos[puebloId] = E.crearPueblo(puebloId);
-    const e = asegurarCampos(g.pueblos[puebloId]);
-    // Experiencia heredada: piso de Confianza + lectura más rápida (Conocimiento).
-    const piso = Math.min(70, 40 + 8 * veces);
-    if (e.medidores.confianza < piso) e.medidores.confianza = piso;
-    e.medidores.conocimiento = E.clampMedidor('conocimiento', e.medidores.conocimiento + 6 * veces);
+    // La experiencia y su bonus se aplican SÓLO al pisar un pueblo por PRIMERA vez
+    // (si no, rebotar A↔B re-pisaría la Confianza y ratchetearía el Conocimiento).
+    const nuevo = !g.pueblos[puebloId];
+    if (nuevo) {
+      g.pueblos[puebloId] = E.crearPueblo(puebloId);
+      g.experiencia.mudanzas = (g.experiencia.mudanzas || 0) + 1;
+      const veces = g.experiencia.mudanzas;
+      const e = asegurarCampos(g.pueblos[puebloId]);
+      const piso = Math.min(70, 40 + 8 * veces);
+      if (e.medidores.confianza < piso) e.medidores.confianza = piso;
+      e.medidores.conocimiento = E.clampMedidor('conocimiento', e.medidores.conocimiento + 6 * veces);
+    } else {
+      asegurarCampos(g.pueblos[puebloId]);
+    }
     g.actual = puebloId;
-    return e;
+    return g.pueblos[puebloId];
   }
 
   return {
@@ -335,8 +341,10 @@ AJ.Gestion.CicloUI = (function () {
     if (!e.onboarding.hecho && AJ.Gestion.OnboardingUI) {
       _btn(cuerpo, 'Armar la Agencia', 'Los 4 pasos de la Hoja de Ruta (gasta un día)', () => {
         cerrar();
-        AJ.Gestion.OnboardingUI.abrir(scene, estado, () => {
-          // el ciclo manda sobre la fase: el onboarding no debe saltar a "gestión".
+        AJ.Gestion.OnboardingUI.abrir(scene, estado, (res) => {
+          // Si canceló (res == null) NO gasta el día: sólo reabrir el menú.
+          if (!res) { render(); return; }
+          // El ciclo manda sobre la fase: el onboarding no debe saltar a "gestión".
           const e2 = C.ep(estado); e2.fase = 'recon';
           C.accionRecon(estado, 'agencia'); _guardar(); render();
         });
@@ -380,8 +388,11 @@ AJ.Gestion.CicloUI = (function () {
     dilemas.forEach((d) => {
       const pro = D.problematica(d.problematica);
       _btn(cuerpo, 'Dilema: ' + (pro ? pro.nombre : d.problematica), d.situacion.slice(0, 70) + '…', () => {
+        // Consumir la acción al ABRIR (como las actividades): así resolver y salir
+        // con ESC no deja un dilema resuelto "gratis" (el efecto se materializa al elegir).
+        if (!C.consumirAccion(estado)) return;
         cerrar();
-        AJ.Gestion.DilemasUI.abrir(scene, estado, d, () => { C.consumirAccion(estado); _guardar(); render(); });
+        AJ.Gestion.DilemasUI.abrir(scene, estado, d, () => { _guardar(); render(); });
       });
     });
     // Actividades (las 5 líneas).

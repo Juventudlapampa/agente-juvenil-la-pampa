@@ -154,6 +154,30 @@ Todo cuelga de `AJ.Gestion` (scripts clásicos `js/gestion/*`), detrás de flags
 - **Review adversarial (workflow)** al cierre: 12 hallazgos, 7 confirmados, **todos corregidos**
   (el más serio: ESC dejaba un overlay DOM de gestión huérfano sobre el Título → arreglado).
   Detalle en `DECISIONES.md` (D43).
+
+### Modo Gestión (GDD) — G5–G7 (sexta noche) — CAPAS CERRADAS
+- **G5 `cicloGestion`** (`gestion/ciclo.js`): ciclo del GDD §2 — RECON días 1–5 (explorar/hablar/
+  armar Agencia) → oferta de rol → GESTIÓN días 6–30 con 3 acciones/día (dilema o actividad,
+  resueltas con el dado) → perfil de gestor al día 30 → MUDANZA (recon de nuevo, hereda
+  experiencia; cada pueblo guarda su estado por separado). Todo en el **menú del día** (tecla G).
+  AJ.Gestion.Ciclo + Actividades + CicloUI. Commit `5ec6594`.
+- **G6 `comunidades`** (`gestion/comunidades.js`): descubrimiento gradual en pueblo chico
+  (comunidades ocultas que se revelan + latentes que el jugador siembra); integración en la
+  capital (nivel 4): actividad-puente. Bonus de tirada por comunidad afín conocida; cooperación
+  regional si falta la infra. Commit `18af073`.
+- **G7** (sin flag): robustez — 6 bordes de extremo a extremo en el smoke (round-trip del estado
+  a mitad del día 12; mudanza con estado por pueblo persistido; 30 días → perfil; referente solo;
+  comunidad revelada persiste; tirada con/sin modificadores). **Ningún borde reveló un bug.** Commit `4c735fd`.
+- **Review adversarial (workflow)** de G5–G7 al cierre: 7 hallazgos, 4 confirmados, **todos
+  corregidos** (el más serio: cancelar "Armar la Agencia" quemaba un día de recon). Detalle en
+  `DECISIONES.md` (D47).
+- Smoke al cierre de G7 (con los fixes): **Pueblo 1 126/126, Colonia 127/127, El Puesto 117/117
+  PASS**, sin errores de consola. **32 flags en true.**
+- **Modo Gestión G1–G7 completo.** El **balance fino** (medidores, ritmo de 30 días, feel del dado)
+  necesita **playtest humano** (ver `PLAYTEST.md` §15–16). El banco de **dilemas sensibles**
+  (`CONTENIDO_SENSIBLE.md`) y los **dilemas con voz propia / bajada institucional** los escribe y
+  aprueba **una persona** — NO es tarea de la corrida nocturna.
+- **Git sigue sin remote: el push lo hace el humano** (ver sección "Push" abajo).
 - **Pendiente (próxima noche): G5–G7** en `ROADMAP.md` (ciclo de 30 días + mudanza;
   descubrimiento/integración de comunidades; robustez de bordes). Las teclas **G/H** son
   entradas **temporales** hasta que G5 reparta el onboarding y los dilemas en el ciclo de días.

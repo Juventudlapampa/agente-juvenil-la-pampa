@@ -466,6 +466,64 @@ restricciones GDD, anti-rotura, lógica, contenido— + verificadores escéptico
 - Smoke al cierre (con fixes + 2 checks nuevos): **El pueblo 105/105, Colonia 106/106, El Puesto
   96/96 PASS**, sin errores de consola.
 
+### D44 — G5: ciclo de 30 días + mudanza (el ciclo manda sobre las fases)
+**Por qué:** `CONFIG.cicloGestion` (`js/gestion/ciclo.js`) integra G1–G4 en el loop del GDD §2.
+- **El ciclo es la autoridad de `fase`/`dia`.** El onboarding (G2) seteaba `fase='gestion'` al
+  terminar; en el ciclo eso es prematuro (la fase la decide la oferta de rol del día 5). En vez de
+  tocar G2, el callback del wizard **desde el ciclo** reescribe `fase='recon'` y cuenta la acción.
+  Así G2 sigue válido standalone y el ciclo no se contamina (cero cambios en onboarding.js para esto).
+- **Las teclas G/H dejan de ser sueltas.** Con `cicloGestion` on, **G abre el menú del día** (hub
+  que reparte onboarding/dilemas/actividades y consume las 3 acciones); sin el ciclo, G/H siguen
+  como en G2/G3. El menú del día es un overlay DOM (consistente con onboarding/dilemas) y queda
+  cubierto por `modalAbierta`/`_cerrarModalesGestion`/ESC (no deja overlays huérfanos, lección de D43).
+- **Actividades** (las 5 líneas, §9) se resuelven con el dado (G4); sin la infra del pueblo cuestan
+  más (gancho `bonusComunidad` para G6). **Perfil** al día 30 por reglas sobre los medidores. **Mudanza:**
+  `estado.gestion.pueblos[id]` ya guardaba por pueblo (G1), así que mudarse = crear/reusar el estado
+  del destino + heredar experiencia (piso de Confianza, +Conocimiento por mudanza); el origen queda intacto.
+- Verificado: smoke +7 (transiciones, 3 acciones/día, perfil, referente solo, mudanza, actividad, UI);
+  menú del día end-to-end. El pueblo 112/112.
+
+### D45 — G6: descubrimiento e integración de comunidades (bonus por conocer)
+**Por qué:** `CONFIG.comunidades` (`js/gestion/comunidades.js`) hace jugable el GDD §5, aditivo.
+- **Descubrimiento gamificado** reusando la idea del Registro (D3): en pueblo chico las comunidades
+  arrancan ocultas y `revelarUna` destraba **la más común primero** (las raras = "hallazgo"). El
+  diagnóstico del onboarding pasa a revelar **sólo 2** con el flag on (antes, todas), dejando el resto
+  para explorar. **Latentes:** las 2 más raras que el pueblo no tiene; el jugador las **siembra**
+  (cuesta capital político). En **nivel 4** se invierte a **integración**: `prepararPueblo` revela las
+  10 y aparece la **actividad-puente** (`resolverPuente`) que junta comunidades conocidas, vale más.
+- **El conocimiento como ventaja concreta** (GDD §8): `bonusActividad` da +2 de dado por cada
+  comunidad afín que **existe y conocés** (cap +6), enganchado al stub `Actividades.bonusComunidad`
+  de G5 (override limpio desde comunidades.js, sin reescribir ciclo.js). **Cooperación regional:** si
+  falta la infra, podés pedir la del pueblo vecino → tirás en dificultad normal a cambio de −Confianza.
+- Verificado: smoke +5 (descubrimiento gradual, bonus, latentes, integración+puente, diagnóstico
+  parcial); chips de comunidades en el menú del día. El pueblo 117/117.
+
+### D46 — G7: robustez del Modo Gestión (persistencia de extremo a extremo)
+**Por qué:** el smoke (sin flag) sumó 6 bordes sobre TODO el Modo Gestión, con foco en **persistencia**
+(los checks por capa usaban estados de prueba; G7 verifica el round-trip por el save real, con una
+clave de guardado aparte para no tocar la partida): estado a mitad del día 12, mudanza con estado por
+pueblo, 30 días → perfil, referente solo, comunidad revelada, tirada con/sin modificadores. Resultado
+honesto: **ningún borde reveló un bug** — el estado de gestión vive en `estado.gestion` y `guardado.js`
+ya lo migra/persiste (G1). El pueblo 123/123, Colonia 124/124, El Puesto 114/114.
+
+### D47 — Review adversarial de G5–G7 (workflow) + fixes al cierre
+**Por qué:** al cerrar G5–G7 se corrió otro workflow de review (4 dimensiones — anti-rotura, lógica del
+ciclo, lógica de comunidades, UI del menú del día — + verificadores escépticos). 7 hallazgos, **4
+confirmados**, todos corregidos (verificado con checks de regresión):
+1. **(ALTA) Cancelar "Armar la Agencia" quemaba un día de recon:** el callback del wizard contaba el
+   día aunque el jugador cancelara en el paso 1 (`onDone(null)`). Fix: contar el día sólo si `res`.
+2. **(media) `mudarse()` re-aplicaba el bonus de experiencia en cada reentrada** (rebotar A↔B
+   ratcheteaba Conocimiento y re-pisaba el piso de Confianza). Fix: aplicar el bonus —e incrementar
+   `experiencia.mudanzas`— SÓLO al pisar un pueblo por primera vez. Reentrar conserva su estado.
+3. **(media) Un dilema podía resolverse "gratis"** (cerrar con ESC entre elegir opción y "Seguir"
+   aplicaba el efecto pero no consumía la acción). Fix: el menú del día **consume la acción al abrir**
+   el dilema (como las actividades), así resolver-y-salir ya pagó el turno.
+4. **(baja, defensivo) `prepararPueblo` (integración) no marcaba conocidas las latentes activadas**
+   (hoy no se pueden sembrar en nivel 4; cubre saves migrados). Fix: usar `presentes()` en vez de
+   `delPueblo()`.
+- Smoke al cierre (con fixes + 3 checks de regresión): **El pueblo 126/126, Colonia 127/127, El
+  Puesto 117/117 PASS**, sin errores de consola.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

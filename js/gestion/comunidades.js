@@ -87,7 +87,9 @@ AJ.Gestion.Comunidades = (function () {
     if (!activo()) return;
     const ep = _ep(estado);
     if (ep && esIntegracion(estado)) {
-      delPueblo(estado).forEach((id) => { ep.comunidadesDescubiertas[id] = true; });
+      // "todo conocido" incluye cualquier latente activada presente (defensivo:
+      // hoy no se pueden sembrar latentes en nivel 4, pero cubre saves migrados).
+      presentes(estado).forEach((id) => { ep.comunidadesDescubiertas[id] = true; });
     }
   }
 

@@ -140,6 +140,33 @@
 > va escrito a mano y revisado (ver `CONTENIDO_SENSIBLE.md`). Eso es decisión humana, no de la
 > corrida nocturna.
 
+## 16. Modo Gestión — ciclo de 30 días, comunidades y mudanza (G5–G7)
+> El ciclo ya está entero: con `cicloGestion` y `comunidades` en `true`, la tecla **G** abre el
+> **menú del día**. Recon (días 1–5) → aceptás el rol → gestión (días 6–30, 3 acciones/día) →
+> perfil al día 30 → mudanza. **Todos los números son defaults, no finos** — esto es 100% playtest.
+
+- **¿El ritmo de 30 días aburre o engancha?** ¿Recon de 5 días se siente bien o largo? ¿3 acciones
+  por día alcanzan o quedan cortas? ¿Llegar al día 30 se siente un viaje o una maratón? (Se tunea
+  en `js/gestion/ciclo.js`: `RECON_DIAS`, `TOTAL_DIAS`, `ACCIONES_DIA`.)
+- **¿El feel del dado se siente justo?** Al principio (medidores bajos) dependés de la suerte; más
+  adelante, de tu gestión. ¿Esa curva se siente bien o castiga/regala? ¿Las actividades sin la infra
+  del pueblo (dificultad +4) o con cooperación regional (−Confianza) son una elección interesante?
+- **¿El balance de medidores funciona?** ¿Se siente la tensión de que no quedan los 5 arriba? ¿Algún
+  medidor sube/baja de más con las actividades (`Actividades.BASE`) o los dilemas?
+- **¿Descubrir comunidades motiva?** En pueblo chico arrancan ocultas (chips ???) y se revelan
+  explorando; las raras son el "hallazgo". ¿Da ganas de explorar para destrabarlas? ¿Sembrar una
+  latente (−Confianza) tienta? En la capital (nivel 4) es integración (actividad-puente): ¿se siente
+  distinto y más rico que el pueblo chico?
+- **¿La mudanza tiene sentido?** Irte a otro pueblo = recon de nuevo pero con experiencia heredada
+  (piso de Confianza, leés más rápido). ¿Funciona como "selector de dificultad" (de un nivel 1 que
+  dominaste a un nivel 4 que es otro mundo)? ¿El piso heredado se siente justo o regala?
+- **¿Los perfiles de gestor cierran?** Al día 30 sale un perfil (articulador/idealista/operador/
+  cercano/referente solo…). ¿Refleja cómo jugaste? (reglas en `Ciclo.calcularPerfil`).
+
+> **Lo que escribe el humano (no la corrida nocturna):** los dilemas **sensibles**
+> (`CONTENIDO_SENSIBLE.md`) y darles **voz propia / bajada institucional** a dilemas y actividades.
+> El motor está listo; el contenido con identidad local y los temas delicados los aprueba una persona.
+
 ---
 
 ### Cómo apagar cualquier cosa que no te guste

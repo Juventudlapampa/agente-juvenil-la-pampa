@@ -68,9 +68,11 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `onboarding` | armar la Agencia: 4 pasos de la Hoja de Ruta (G2) |
 | `dilemas` | motor de dilemas (situación/opciones/impactos multi-medidor) (G3) |
 | `tiradas` | dado 1–20 + modificadores, arco suerte→competencia (G4) |
+| `cicloGestion` | ciclo de 30 días (recon/gestión) + mudanza + menú del día (G5) |
+| `comunidades` | descubrimiento (pueblo chico) e integración (capital) de comunidades (G6) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 105/105, Colonia 106/106, El Puesto 96/96 PASS**. 30 flags en true.
+Hoy: **Pueblo 1 126/126, Colonia 127/127, El Puesto 117/117 PASS**. 32 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
@@ -123,6 +125,8 @@ js/gestion/onboarding.js Armar la Agencia: 4 pasos + UI (AJ.Gestion.Onboarding/U
 js/gestion/dilemas.js   Motor de dilemas + UI (AJ.Gestion.Dilemas/DilemasUI, G3)
 js/gestion/dilemas_banco.js 20 dilemas genéricos validados (banco de contenido, G3)
 js/gestion/tiradas.js   Dado con arco suerte→competencia (AJ.Gestion.Tiradas, G4)
+js/gestion/ciclo.js     Ciclo 30 días + mudanza + actividades + menú del día (AJ.Gestion.Ciclo/Actividades/CicloUI, G5)
+js/gestion/comunidades.js Descubrimiento/integración de comunidades (AJ.Gestion.Comunidades, G6)
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título
@@ -151,9 +155,20 @@ Sistema nuevo definido en `GDD_Agente_Juvenil_La_Pampa.md`, **detrás de flags**
 - **G4 `tiradas`** (`tiradas.js`): dado 1–20 + modificadores por medidor (arco suerte→
   competencia), resultados graduados (crítico/éxito/parcial/fracaso); modula los impactos
   de las opciones `requiereTirada`. **El dado es mecánica, nunca plata real.**
-- **Pendiente (G5–G7):** ciclo de 30 días + mudanza, descubrimiento/integración de
-  comunidades, robustez de bordes. Ver `ROADMAP.md`. Las teclas G/H son entradas
-  **temporales** hasta que G5 reparta el onboarding y los dilemas en el ciclo.
+- **G5 `cicloGestion`** (`ciclo.js`): loop del GDD §2. RECON días 1–5 (explorar/hablar/armar
+  Agencia, cada acción gasta un día) → oferta de rol → GESTIÓN días 6–30 con **3 acciones/día**
+  (cada una un dilema o una de las 5 actividades, resuelta con el dado) → **perfil de gestor** al
+  día 30 → **MUDANZA** (recon de nuevo, heredás experiencia: piso de Confianza + lectura más
+  rápida; cada pueblo guarda su estado por separado). Todo vive en el **menú del día** (tecla **G**).
+  Con el ciclo activo, las teclas G/H sueltas de G2/G3 se reemplazan por el menú.
+- **G6 `comunidades`** (`comunidades.js`): en pueblo chico las comunidades arrancan ocultas y se
+  revelan explorando/hablando (la más común primero); hay **latentes** que el jugador siembra. En
+  la capital (nivel 4) están las 10 y el modo se invierte: **integración** (actividad-puente que
+  junta comunidades, vale más). Una actividad acierta más si apunta a una comunidad que existe **y
+  conocés** (bonus de tirada). Sin la infra del pueblo → **cooperación regional** (−Confianza).
+- **Cierre G1–G7 hecho.** Lo que sigue es bajada institucional + contenido a mano (ver abajo).
+- **Pendiente humano:** los dilemas **sensibles** (`CONTENIDO_SENSIBLE.md`, salud mental/consumos/
+  violencias/bullying) y los dilemas con **voz propia** los escribe y aprueba una persona.
 
 ## Cómo correr y testear
 
@@ -161,8 +176,8 @@ Sistema nuevo definido en `GDD_Agente_Juvenil_La_Pampa.md`, **detrás de flags**
   O server local: `node` con un static server (¡OJO! `python` en esta máquina es el
   stub de Windows Store, no Python real — usar Node).
 - **Smoke-test:** abrí la consola del navegador (F12). Con `dev:true` corre solo al
-  entrar al pueblo e imprime PASS/FAIL. Hoy: **Pueblo 1 105/105, Colonia 106/106, El Puesto
-  96/96 PASS**. Programáticamente: `AJ.SmokeTest.correr(AJ.juego.scene.getScene('Pueblo'))`.
+  entrar al pueblo e imprime PASS/FAIL. Hoy: **Pueblo 1 123/123, Colonia 124/124, El Puesto
+  114/114 PASS**. Programáticamente: `AJ.SmokeTest.correr(AJ.juego.scene.getScene('Pueblo'))`.
 
 ## Dónde retomar
 

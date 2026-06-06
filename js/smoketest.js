@@ -1454,6 +1454,54 @@ AJ.SmokeTest = (function () {
         if (sin.mods !== 0) return 'sin medidores, mods debería ser 0: ' + sin.mods;
         return true;
       });
+      // Fixes del review G5–G7 (regresión):
+      check('G7: reentrar a un pueblo ya gestionado NO re-aplica el bonus de mudanza', () => {
+        const C = AJ.Gestion.Ciclo, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null);
+        const A = test.gestion.actual;
+        const B = C.pueblosDisponibles(test)[0].id;
+        C.mudarse(test, B);
+        const conocB1 = E.actual(test).medidores.conocimiento;
+        E.actual(test).medidores.confianza = 20; // "gastar" en B
+        C.mudarse(test, A); // volver
+        C.mudarse(test, B); // reentrar
+        const epB = test.gestion.pueblos[B];
+        if (epB.medidores.confianza !== 20) return 'reentrar re-pisó la confianza: ' + epB.medidores.confianza;
+        if (epB.medidores.conocimiento !== conocB1) return 'reentrar ratcheteó conocimiento: ' + epB.medidores.conocimiento;
+        if (test.gestion.experiencia.mudanzas !== 1) return 'contó una mudanza de más: ' + test.gestion.experiencia.mudanzas;
+        return true;
+      });
+      check('G7: abrir un dilema desde el menú del día consume la acción (no es gratis)', () => {
+        const C = AJ.Gestion.Ciclo, UI = AJ.Gestion.CicloUI;
+        if (!UI || !AJ.CONFIG.cicloGestion) return true;
+        const test = {}; const ep = C.ep(test);
+        ep.fase = 'gestion'; ep.dia = 6; ep.accionesHoy = 0; ep.dilemasResueltos = [];
+        UI.abrir(escena, test);
+        const ov = document.getElementById('gestion-ciclo');
+        const btns = ov ? Array.prototype.slice.call(ov.querySelectorAll('.gestion-accion')) : [];
+        const bDil = btns.filter((b) => b.textContent.indexOf('Dilema:') >= 0)[0];
+        if (!bDil) { escena._cerrarModalesGestion(); return 'no había dilema en el menú'; }
+        bDil.click(); // abre el dilema y debe consumir la acción
+        const restantes = C.accionesRestantes(C.ep(test));
+        escena._cerrarModalesGestion();
+        return (restantes === 2) ? true : 'no consumió la acción al abrir el dilema: restantes=' + restantes;
+      });
+      check('G7: cancelar "Armar la Agencia" en recon NO gasta un día', () => {
+        const C = AJ.Gestion.Ciclo, UI = AJ.Gestion.CicloUI;
+        if (!UI || !AJ.CONFIG.cicloGestion) return true;
+        const test = {}; C.ep(test); // recon, accionesRecon 0
+        UI.abrir(escena, test);
+        let ov = document.getElementById('gestion-ciclo');
+        const bArmar = Array.prototype.slice.call(ov.querySelectorAll('.gestion-accion')).filter((b) => b.textContent.indexOf('Armar la Agencia') >= 0)[0];
+        if (!bArmar) { escena._cerrarModalesGestion(); return 'no había botón de armar agencia'; }
+        bArmar.click(); // abre el onboarding (paso 1)
+        const obov = document.getElementById('gestion-onboarding');
+        if (!obov) { escena._cerrarModalesGestion(); return 'no abrió el onboarding'; }
+        obov.querySelectorAll('.creador-btn')[0].click(); // "Cancelar" en el paso 1
+        const accionesRecon = C.ep(test).accionesRecon;
+        escena._cerrarModalesGestion();
+        return (accionesRecon === 0) ? true : 'canceló pero gastó un día: accionesRecon=' + accionesRecon;
+      });
     }
 
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.

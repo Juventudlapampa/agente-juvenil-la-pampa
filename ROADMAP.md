@@ -100,17 +100,26 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - Smoke al cierre de G4 (con fixes del review adversarial): **Pueblo 1 105/105, Colonia 106/106,
   El Puesto 96/96**. 30 flags en true.
 
-#### Pendiente — G5–G7 (próxima noche)
-- [ ] **G5 `cicloGestion`**: ciclo de 30 días (recon 1–5, gestión 6–30, 3 acciones/día),
-      perfil de gestor al cierre, **mudanza** con experiencia heredada (selector de dificultad).
-      Acá se reparten el onboarding (días 1–5) y los dilemas en el día a día → reemplaza las
-      entradas **temporales** por teclas G/H de Pueblo.js.
-- [ ] **G6 `comunidades`**: descubrimiento por exploración en pueblo chico (íconos bloqueados,
-      como el Registro); modo **integración** (actividades-puente) en los pueblos nivel 4.
-- [ ] **G7 robustez**: smoke de bordes sobre todo lo nuevo; guardado del estado de gestión por
-      pueblo verificado a fondo (round-trips, saves viejos, mudanza ida/vuelta).
-- **Contenido sensible** (salud mental, consumos, violencias, bullying): redacción + revisión
-  humana en `CONTENIDO_SENSIBLE.md` (NO es tarea de la corrida nocturna).
+#### G5–G7 — CERRADAS (sexta noche)
+- [x] **G5 `cicloGestion`**: ciclo de 30 días (recon 1–5 → oferta de rol → gestión 6–30, 3
+      acciones/día), perfil de gestor al cierre, **mudanza** con experiencia heredada. El
+      onboarding y los dilemas viven en el **menú del día** (la tecla G abre el menú; las
+      entradas sueltas G/H quedan sólo si `cicloGestion` está off).
+- [x] **G6 `comunidades`**: descubrimiento por exploración en pueblo chico (comunidades ocultas
+      + latentes), **integración** (actividad-puente) en nivel 4, bonus de tirada por comunidad
+      conocida y **cooperación regional** si falta la infra.
+- [x] **G7 robustez**: smoke de bordes sobre todo el Modo Gestión (round-trips del estado, mudanza
+      con estado por pueblo, 30 días → perfil, referente solo, comunidad revelada, tirada con/sin mods).
+- Smoke al cierre de G7 (con fixes del review adversarial): **Pueblo 1 126/126, Colonia 127/127,
+  El Puesto 117/117**. 32 flags en true.
+
+#### Pendiente — trabajo HUMANO (no automatizable)
+- [ ] **Contenido sensible** (salud mental, consumos, violencias, bullying): redacción + revisión
+      humana en `CONTENIDO_SENSIBLE.md` (banco vacío; el motor lo soporta vía `registrarSensibles`).
+- [ ] **Dilemas con voz propia / bajada institucional**: dar identidad local a los dilemas y a las
+      actividades (editar datos, sin tocar lógica). Decisión humana.
+- [ ] **Balance fino y playtest** (medidores, ritmo de 30 días, feel del dado): ver `PLAYTEST.md`.
+- [ ] **Arte real** del Modo Gestión si se quiere (íconos de comunidades/medidores): ver `ARTE.md`.
 
 ## Futuras noches (bolt-on previsto, todo detrás de flags)
 
