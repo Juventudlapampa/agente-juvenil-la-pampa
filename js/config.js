@@ -50,7 +50,7 @@ AJ.CONFIG = {
   // --- Modo Gestión (GDD; aditivo sobre el RPG, arranca en false hasta smoke) ---
   modoGestion:    true,  // G1: capa de datos (medidores, comunidades, pueblos, etc.)
   onboarding:     true,  // G2: armar la Agencia (4 pasos de la Hoja de Ruta)
-  dilemas:        false, // G3: motor de dilemas (situación/opciones/impactos)
+  dilemas:        true,  // G3: motor de dilemas (situación/opciones/impactos)
   tiradas:        false, // G4: dado + modificadores + resultados graduados
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---

@@ -146,6 +146,19 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
         catch (e) { console.warn('[Pueblo] onboarding off', e); }
       });
     }
+    // --- G3: presentar el próximo dilema elegible (tecla H). Entrada temporal
+    //     hasta que el ciclo de 30 días (G5) los reparta. Gated por flag. ---
+    if (AJ.CONFIG.dilemas && AJ.Gestion && AJ.Gestion.DilemasUI) {
+      this.input.keyboard.on('keydown-H', () => {
+        if (this.dialogo && this.dialogo.abierto) return;
+        if (this.menu && this.menu.abierto) return;
+        if (AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta()) return;
+        try {
+          const lista = AJ.Gestion.Dilemas.elegibles(this.estado);
+          if (lista.length) AJ.Gestion.DilemasUI.abrir(this, this.estado, lista[0], () => this.guardar());
+        } catch (e) { console.warn('[Pueblo] dilemas off', e); }
+      });
+    }
 
     // --- Guardado automático periódico + al cerrar la pestaña ---
     this.time.addEvent({ delay: 5000, loop: true, callback: () => this.guardar() });

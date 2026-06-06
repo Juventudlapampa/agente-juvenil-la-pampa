@@ -1057,6 +1057,60 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 34. G3: motor de dilemas
+    if (AJ.CONFIG.dilemas) {
+      check('G3: banco de dilemas genéricos válido (estructura/medidores/trade-off/no-sensible)', () => {
+        const M = AJ.Gestion && AJ.Gestion.Dilemas;
+        if (!M) return 'sin Dilemas';
+        const banco = M.BANCO_GENERICO;
+        if (!banco.length) return 'banco vacío';
+        const sens = ['saludMental', 'consumos', 'violencias', 'bullying'];
+        for (let i = 0; i < banco.length; i++) {
+          const d = banco[i];
+          if (!d.id || !d.situacion || !Array.isArray(d.opciones) || d.opciones.length < 2) return 'dilema mal: ' + d.id;
+          if (sens.indexOf(d.problematica) >= 0) return 'genérico con tema sensible: ' + d.id;
+          let hayNeg = false;
+          for (let j = 0; j < d.opciones.length; j++) {
+            const o = d.opciones[j];
+            if (!o.id || !o.texto || !o.impactos) return 'opción mal en ' + d.id;
+            for (const k in o.impactos) {
+              if (!AJ.Gestion.Datos.medidor(k)) return 'medidor inválido "' + k + '" en ' + d.id;
+              if (o.impactos[k] < 0) hayNeg = true;
+            }
+          }
+          if (!hayNeg) return 'sin trade-off (ningún costo) en ' + d.id;
+        }
+        if (M.BANCO_SENSIBLE.length) return 'el banco sensible NO debería autollenarse';
+        return true;
+      });
+      check('G3: resolver aplica impactos y marca el dilema como resuelto', () => {
+        const M = AJ.Gestion.Dilemas, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null);
+        const ep = E.actual(test);
+        const elig = M.elegibles(test);
+        if (!elig.length) return 'sin elegibles';
+        const d = elig[0], op = d.opciones[0];
+        const res = M.resolver(test, d.id, op.id);
+        if (!res) return 'resolver devolvió null';
+        if (ep.dilemasResueltos.indexOf(d.id) < 0) return 'no marcó resuelto';
+        if (M.elegibles(test).some((x) => x.id === d.id)) return 'sigue elegible tras resolver';
+        // resolver con ids inexistentes no rompe
+        if (M.resolver(test, 'no_existe', 'a') !== null) return 'dilema inexistente no devolvió null';
+        return true;
+      });
+      check('G3: el diálogo de dilema abre y cierra sin romper', () => {
+        const UI = AJ.Gestion && AJ.Gestion.DilemasUI;
+        if (!UI) return 'sin DilemasUI';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const d = AJ.Gestion.Dilemas.elegibles(test)[0];
+        UI.abrir(escena, test, d, null);
+        const abierto = !!document.getElementById('gestion-dilema') && UI.abierta();
+        UI.cerrar();
+        const cerrado = !document.getElementById('gestion-dilema') && !UI.abierta();
+        return (abierto && cerrado) ? true : 'abierto=' + abierto + ' cerrado=' + cerrado;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
