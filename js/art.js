@@ -256,6 +256,14 @@ AJ.Art = (function () {
 
   function personaje(scene) {
     const dirs = ['abajo', 'arriba', 'izq', 'der'];
+    // F1: si hay creador de agente, recolorear con la variante elegida. La
+    // variante 0 usa los mismos colores que siempre -> sprite idéntico.
+    let usar = null;
+    if (AJ.CONFIG && AJ.CONFIG.creadorAgente && AJ.Agente && AJ.Agente.colores) {
+      try { usar = AJ.Agente.colores(); } catch (e) { usar = null; }
+    }
+    const camOld = PAL.camisa, camBOld = PAL.camisaB, gorraOld = PAL.gorra;
+    if (usar) { PAL.camisa = usar.camisa; PAL.camisaB = usar.camisaB; PAL.gorra = usar.gorra; }
     dirs.forEach((dir) => {
       for (let paso = 0; paso < 3; paso++) {
         const clave = 'jugador_' + dir + '_' + paso;
@@ -266,6 +274,7 @@ AJ.Art = (function () {
         g.destroy();
       }
     });
+    PAL.camisa = camOld; PAL.camisaB = camBOld; PAL.gorra = gorraOld;
   }
 
   // --- NPCs: variaciones simples de color sobre la base del agente -----

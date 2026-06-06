@@ -35,6 +35,11 @@ meta-progresión, accesibilidad y cierre.
   una rifa con plata como colecta cívica (regla no-apuestas).
 - Smoke al cierre de D: Pueblo 1 **70/70**, Colonia ~71, El Puesto **61/61**.
 
+## Estado de partida que encontró la Capa F (cuarta noche)
+
+Verificado: smoke **Pueblo 81/81 PASS**, árbol limpio, **24 flags en true**, sin errores
+de consola. Objetivo de F: identidad del Agente (creador) + ganchos de arte (artist-ready).
+
 ## Capas construidas
 
 ### Capa 0 — Base (FASES 1–4 + Final)

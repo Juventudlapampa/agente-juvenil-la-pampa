@@ -61,6 +61,53 @@ html, body {
 #btn-menu:hover { background: rgba(168, 90, 58, 0.85); }
 #btn-menu:active { transform: scale(0.94); }
 
+/* ---------------------- Creador de Agente (F1) ---------------------- */
+.modal-dom {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-panel {
+  background: #2a1f12;
+  border: 3px solid #f3d9a0;
+  border-radius: 16px;
+  padding: 22px 26px;
+  width: min(380px, 88vw);
+  color: #fff7e6;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+.modal-panel h2 {
+  margin: 0 0 14px; color: #f5d020; font-family: Georgia, serif; font-size: 24px;
+}
+.modal-panel label {
+  display: block; text-align: left; margin: 12px 0 5px; font-size: 14px; color: #cdbfa0;
+}
+.creador-input {
+  width: 100%; box-sizing: border-box; font-size: 18px; padding: 8px 10px;
+  border-radius: 8px; border: 2px solid #8a6a3a; background: #1c1a17; color: #fff7e6;
+  font-family: Georgia, serif;
+}
+.creador-fila { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.creador-fila.acciones { margin-top: 20px; }
+.creador-opt {
+  flex: 1; min-width: 70px; padding: 9px 6px; border-radius: 8px;
+  border: 2px solid #8a6a3a; background: #3a2c10; color: #fff7e6; cursor: pointer;
+  font-family: Georgia, serif; font-size: 16px;
+}
+.creador-opt.sel { background: #a85a3a; border-color: #f3d9a0; }
+.creador-swatch {
+  width: 56px; height: 56px; border-radius: 10px; border: 4px solid #000; cursor: pointer;
+}
+.creador-swatch.sel { outline: 3px solid #f5d020; outline-offset: 2px; }
+.creador-btn {
+  flex: 1; padding: 11px 8px; border-radius: 10px; border: 2px solid #3a2c10;
+  background: #6a5030; color: #fff3c4; cursor: pointer; font-family: Georgia, serif;
+  font-size: 18px; font-weight: bold;
+}
+.creador-btn.primario { background: #a85a3a; }
+.creador-btn:active { transform: scale(0.96); }
+
 /* ---------------------- Alto contraste (E2) ------------------------- */
 /* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,
    borde más fuerte). Sólo afecta si el jugador la activa. */

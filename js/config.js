@@ -43,6 +43,10 @@ AJ.CONFIG = {
   progreso:       true,  // E1: pantalla de progreso/estadísticas
   accesibilidad:  true,  // E2: opciones de accesibilidad (texto, contraste, vel. diálogo)
   creditos:       true,  // E3: menú principal pulido + créditos
+  // --- Capa F (identidad del agente y ganchos de arte) ---
+  creadorAgente:  true,  // F1: elegir nombre/pronombre/variante al empezar
+  capaArte:       false, // F2: cargar PNG de /assets si existen (fallback procedural)
+  estadisticas:   false, // F4: estadísticas de sesión acumuladas
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

@@ -818,6 +818,27 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 28. F1: creador de Agente
+    if (AJ.CONFIG.creadorAgente) {
+      check('Agente: 4 variantes recolorean distinto + nombre en diálogo', () => {
+        const A = AJ.Agente;
+        if (!A) return 'sin Agente';
+        const snapA = JSON.stringify({ n: A.nombre(), p: A.pronombre(), v: A.variante() });
+        // las 4 variantes deben dar colores de camisa distintos
+        const cols = [];
+        for (let i = 0; i < 4; i++) { A.set('variante', i); cols.push(A.colores().camisa); }
+        const distintos = new Set(cols).size === 4;
+        // sustitución del nombre en el diálogo (sin tocar "Agente Juvenil")
+        A.set('nombre', 'Beba');
+        const sust = A.aplicarNombre('¡Hola Agente! Sos el nuevo Agente Juvenil.');
+        const okSust = sust.indexOf('Hola Beba') >= 0 && sust.indexOf('Agente Juvenil') >= 0;
+        // restaurar elección real
+        const s = JSON.parse(snapA);
+        A.set('nombre', s.n); A.set('pronombre', s.p); A.set('variante', s.v);
+        return (distintos && okSust) ? true : 'variantes/sustitución: d=' + distintos + ' s=' + sust;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

@@ -84,6 +84,10 @@ AJ.Dialogo = class {
       this.nombre = nombre || '';
       this.tramos = Array.isArray(tramos) ? tramos.slice() : [String(tramos)];
       if (this.tramos.length === 0) this.tramos = ['...'];
+      // F1: el nombre del Agente reemplaza el vocativo "Agente" (no-op si off).
+      if (AJ.Agente && AJ.Agente.aplicarNombre) {
+        this.tramos = this.tramos.map((t) => AJ.Agente.aplicarNombre(t));
+      }
       this.indice = 0;
       this.alCerrar = alCerrar || null;
       this.abierto = true;

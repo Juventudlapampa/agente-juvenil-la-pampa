@@ -43,11 +43,16 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
 
     const hayGuardado = AJ.Guardado.existe();
 
-    // Botón JUGAR (nueva partida)
+    // Botón JUGAR (nueva partida). F1: si hay creador de agente, elegir primero.
     this._boton(W / 2, H * 0.58, 'Jugar', () => {
-      try { AJ.Guardado.borrar(); } catch (e) {}
-      if (AJ.Juice) AJ.Juice.irA(this, 'Pueblo', { nuevo: true });
-      else this.scene.start('Pueblo', { nuevo: true });
+      const empezar = () => {
+        try { AJ.Guardado.borrar(); } catch (e) {}
+        if (AJ.Juice) AJ.Juice.irA(this, 'Pueblo', { nuevo: true });
+        else this.scene.start('Pueblo', { nuevo: true });
+      };
+      if (AJ.CONFIG.creadorAgente && AJ.Agente && AJ.Agente.abrirCreador) {
+        AJ.Agente.abrirCreador(this, empezar);
+      } else { empezar(); }
     });
 
     // Botón CONTINUAR (sólo si hay guardado)

@@ -312,6 +312,18 @@ sobre el diff D/E confirmó **13 bugs reales** (agrupados en 5 issues). Todos co
 Verificado: smoke con +3 checks nuevos (cierre de sub-paneles, 100% alcanzable, gating).
 El pueblo **81/81**, Colonia **82/82**, El Puesto **72/72**, sin errores de consola.
 
+### D35 — F1: creador de Agente (identidad + recoloreo del sprite)
+**Por qué:** `CONFIG.creadorAgente` agrega `js/agente.js` (`AJ.Agente`): al "Jugar" el
+jugador elige nombre (máx 12), pronombre (él/ella/elle) y variante visual (4 recoloreos
+del sprite base, **sin arte nuevo**). Se guarda en localStorage. El creador es un overlay
+DOM (input de texto + swatches + pronombre), fiable en celular. `art.js personaje()`
+recolorea con `AJ.Agente.colores()` (variante 0 = colores originales → sprite idéntico);
+al confirmar se borran las texturas `jugador_*` para que el preload las recree con la
+variante. El nombre reemplaza el vocativo "Agente" en los diálogos con
+`/\bAgente\b(?! Juvenil)/` (no toca el título "Agente Juvenil"). Verificado: creador
+funciona, sprite recolorea (variante 2 = verde, variante 0 = celeste original), el
+diálogo dice el nombre elegido y "Agente" cuando no hay nombre. Smoke 82/82.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
