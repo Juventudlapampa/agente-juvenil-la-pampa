@@ -708,6 +708,37 @@ AJ.SmokeTest = (function () {
       });
       check('logrosTotales y totalPueblos coherentes', () =>
         AJ.logrosTotales().length >= (AJ.MISIONES ? 1 : 0) && AJ.totalPueblos() >= 1 ? true : 'totales mal');
+      // Fix review: el Registro debe poder llegar a 100% (totales = alcanzables).
+      check('Registro puede llegar a 100% (totales alcanzables)', () => {
+        const reg = escena.registro; if (!reg) return 'sin registro';
+        const snapReg = JSON.stringify(escena.estado.registro);
+        const snapMis = JSON.stringify(escena.estado.misiones);
+        const snapLog = JSON.stringify(escena.estado.inventario.logros);
+        const roster = AJ.roster();
+        escena.estado.registro = { vecinos: {}, pueblos: {} };
+        roster.forEach((n) => { escena.estado.registro.vecinos[n.id] = true; });
+        for (let i = 1; i <= AJ.totalPueblos(); i++) escena.estado.registro.pueblos[i] = true;
+        const mis = {}; (AJ.MISIONES || []).forEach((m) => { mis[m.id] = 'completada'; });
+        escena.estado.misiones = mis;
+        escena.estado.inventario.logros = AJ.logrosTotales().slice();
+        const pct = reg.datos().porcentaje;
+        escena.estado.registro = JSON.parse(snapReg);
+        escena.estado.misiones = JSON.parse(snapMis);
+        escena.estado.inventario.logros = JSON.parse(snapLog);
+        return pct === 100 ? true : 'tope = ' + pct + '% (no 100)';
+      });
+    }
+
+    // Fix review: el menú de pausa cierra los sub-paneles abiertos (no zombis).
+    if (AJ.CONFIG.menu && escena.menu && escena.registro) {
+      check('Menú cierra los sub-paneles al cerrarse (no zombi)', () => {
+        escena.registro.abrir();
+        const abierto = escena.registro.abierto;
+        escena.menu.abrir();
+        escena.menu.cerrar(); // debe cerrar el menú Y el registro
+        const cerrado = escena.registro.abierto === false;
+        return (abierto && cerrado) ? true : 'sub-panel quedó pegado';
+      });
     }
 
     // 24. D4: tercer pueblo (sin llamar cargar: no corromper la escena viva)

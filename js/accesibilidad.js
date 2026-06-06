@@ -117,8 +117,10 @@ AJ.Accesibilidad = (function () {
     panel = null;
   }
 
+  function panelAbierto() { return !!panel; }
+
   return {
-    activo, init, aplicar, abrirPanel,
+    activo, init, aplicar, abrirPanel, cerrarPanel: _cerrarPanel, panelAbierto,
     velTextoMs, escalaTexto, contraste,
     cfg: _cfg, set: _set,
   };

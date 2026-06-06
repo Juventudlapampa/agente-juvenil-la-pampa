@@ -291,6 +291,27 @@ Registro (se puede ganar con el Registro incompleto). Todos no destructivos. Res
 afinidad, misiones) y 2 bugs de no-destructividad/visibilidad corregidos (logros tras
 auto-smoke; check de Registro asumía NPC).
 
+### D34 — Fixes del review adversarial (workflow de 20 agentes)
+**Por qué:** un workflow de review (5 reviewers por dimensión + verificadores escépticos)
+sobre el diff D/E confirmó **13 bugs reales** (agrupados en 5 issues). Todos corregidos:
+1. **Sub-panel zombi (severidad alta):** cerrar el menú con P/ESC dejaba el sub-panel
+   (Registro/Progreso/Accesibilidad/Créditos) pegado y **despausaba el juego** → el
+   jugador caminaba a ciegas. Fix: `Menu.cerrar()` cierra en cascada los sub-paneles
+   (se expuso `AJ.Accesibilidad.cerrarPanel`).
+2. **Fuga de flag OFF:** el menú mostraba/abría "Accesibilidad" aunque
+   `CONFIG.accesibilidad` estuviera en false (el IIFE siempre existe). Fix: gatear con
+   `AJ.Accesibilidad.activo()` (como ya hacía Titulo.js).
+3. **Registro inalcanzable al 100%:** `AJ.roster()` contaba vecinos de la Colonia aun con
+   `npcsColonia` off, y `AJ.logrosTotales()` contaba logros de granja/crafteo apagados.
+   Fix: ambos gateados por sus flags.
+4. **Desync `mapaActual`:** un save en el 3er pueblo con `tercerPueblo` off caía al pueblo
+   1 pero el estado seguía en 3. Fix: `Pueblo.init` reconcilia `mapaActual` y reubica al
+   jugador en el spawn.
+5. **Merge de `registro`:** no rellenaba la sub-clave `pueblos` si faltaba. Fix: merge con
+   `pueblos || {}`.
+Verificado: smoke con +3 checks nuevos (cierre de sub-paneles, 100% alcanzable, gating).
+El pueblo **81/81**, Colonia **82/82**, El Puesto **72/72**, sin errores de consola.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

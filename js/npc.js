@@ -52,11 +52,16 @@ AJ.ROSTER_D1 = [
     saludo: ['Pasá, que recién bajé bizcochitos del horno.', 'Acá en el boliche de ramos te fío hasta la cosecha, querido.'] },
 ];
 
-// Roster efectivo según flags (lo usa el Registro D3).
+// Roster efectivo (vecinos ALCANZABLES) según flags (lo usa el Registro D3).
+// Pueblo 1 siempre; pueblo 2 (Colonia) sólo si npcsColonia; los de D1 sólo si
+// poblarMundo. Así el % del Registro puede llegar a 100 con cualquier combinación.
 AJ.roster = function () {
-  let r = AJ.ROSTER_BASE.slice();
-  if (AJ.CONFIG && AJ.CONFIG.poblarMundo) {
-    r = r.concat(AJ.ROSTER_D1.map((n) => ({ id: n.id, nombre: n.nombre, pueblo: n.pueblo })));
+  const C = AJ.CONFIG || {};
+  const alcanzable = (pu) => pu === 1 ? true : (pu === 2 ? !!C.npcsColonia : false);
+  const map = (n) => ({ id: n.id, nombre: n.nombre, pueblo: n.pueblo });
+  let r = AJ.ROSTER_BASE.filter((n) => alcanzable(n.pueblo)).map(map);
+  if (C.poblarMundo) {
+    r = r.concat(AJ.ROSTER_D1.filter((n) => alcanzable(n.pueblo)).map(map));
   }
   return r;
 };

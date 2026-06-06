@@ -14,10 +14,14 @@ window.AJ = window.AJ || {};
 
 // Lista de TODOS los logros posibles (según flags activos): misiones + recetas + granja.
 AJ.logrosTotales = function () {
+  const C = AJ.CONFIG || {};
   const s = {};
+  // Logros de misiones (siempre existen las que estén cargadas).
   (AJ.MISIONES || []).forEach((m) => { if (m.recompensa && m.recompensa.logro) s[m.recompensa.logro] = 1; });
-  (AJ.RECETAS || []).forEach((r) => { if (r.logro) s[r.logro] = 1; });
-  s['Primera cosecha'] = 1;
+  // Logros de crafteo y de granja sólo si esos sistemas están activos (si no, son
+  // inalcanzables y no deben contar para el 100% del Registro).
+  if (C.crafteo) (AJ.RECETAS || []).forEach((r) => { if (r.logro) s[r.logro] = 1; });
+  if (C.granja) s['Primera cosecha'] = 1;
   return Object.keys(s);
 };
 

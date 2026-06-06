@@ -78,7 +78,9 @@ AJ.Guardado = (function () {
         misiones: est.misiones || {},
         afinidad: est.afinidad || {},
         mapaActual: est.mapaActual || 1,
-        registro: est.registro && est.registro.vecinos ? est.registro : { vecinos: {}, pueblos: {} },
+        registro: est.registro && est.registro.vecinos
+          ? { vecinos: est.registro.vecinos || {}, pueblos: est.registro.pueblos || {} }
+          : { vecinos: {}, pueblos: {} },
         tiempoJugado: est.tiempoJugado || 0,
       });
     } catch (e) {

@@ -65,7 +65,9 @@ AJ.Menu = class {
   // ¿Hay sub-panels para mostrar en "Registro / Opciones"?
   _hayExtras() {
     const sc = this.scene;
-    return !!(sc.registro || sc.progreso || AJ.Accesibilidad || (AJ.CONFIG.creditos && AJ.Creditos));
+    return !!(sc.registro || sc.progreso ||
+      (AJ.Accesibilidad && AJ.Accesibilidad.activo()) ||
+      (AJ.CONFIG.creditos && AJ.Creditos));
   }
 
   _render() {
@@ -90,7 +92,7 @@ AJ.Menu = class {
       // Abren un sub-panel ARRIBA del menú: el menú queda abierto (juego en pausa).
       if (sc.registro) { this._boton(y, '📋 Registro del Agente', () => sc.registro.abrir()); y += 44; }
       if (sc.progreso) { this._boton(y, '📊 Progreso y estadísticas', () => sc.progreso.abrir()); y += 44; }
-      if (AJ.Accesibilidad) { this._boton(y, '⚙ Accesibilidad', () => AJ.Accesibilidad.abrirPanel(sc)); y += 44; }
+      if (AJ.Accesibilidad && AJ.Accesibilidad.activo()) { this._boton(y, '⚙ Accesibilidad', () => AJ.Accesibilidad.abrirPanel(sc)); y += 44; }
       if (AJ.CONFIG.creditos && AJ.Creditos) { this._boton(y, '📜 Créditos', () => AJ.Creditos.abrir(sc)); y += 44; }
       this._boton(y + 16, '« Volver', () => { this.vista = 'menu'; this._render(); });
     } else if (this.vista === 'ayuda') {
@@ -163,6 +165,13 @@ AJ.Menu = class {
 
   cerrar() {
     this.abierto = false;
+    // Cerrar también cualquier sub-panel de "extras" abierto, para no dejar un
+    // overlay zombi con el juego despausado (review D/E).
+    const sc = this.scene;
+    try { if (sc.registro && sc.registro.abierto) sc.registro.cerrar(); } catch (e) {}
+    try { if (sc.progreso && sc.progreso.abierto) sc.progreso.cerrar(); } catch (e) {}
+    try { if (AJ.Accesibilidad && AJ.Accesibilidad.cerrarPanel) AJ.Accesibilidad.cerrarPanel(); } catch (e) {}
+    try { if (AJ.Creditos && AJ.Creditos.cerrar) AJ.Creditos.cerrar(); } catch (e) {}
     this.cont.setVisible(false);
   }
 };

@@ -26,6 +26,13 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     }
     this.estado = est || AJ.Guardado.estadoNuevo();
     if (this.estado.mapaActual == null) this.estado.mapaActual = 1;
+    // Reconciliar: si el pueblo guardado no existe (p. ej. save en el 3er pueblo
+    // con tercerPueblo apagado), cargar() cae al pueblo 1; el estado debe seguirlo
+    // y reubicar al jugador en el spawn para no quedar fuera de mapa.
+    if (AJ.CONFIG.viaje && AJ.Mapa.cargar && this.estado.mapaActual !== AJ.Mapa.actual) {
+      this.estado.mapaActual = AJ.Mapa.actual;
+      this.estado.jugador = { x: AJ.Mapa.SPAWN.x, y: AJ.Mapa.SPAWN.y, dir: 'abajo' };
+    }
     // Registro de sistemas activos (para el smoke-test y el HUD).
     this.sistemas = {};
   }
