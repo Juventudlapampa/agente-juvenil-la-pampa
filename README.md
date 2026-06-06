@@ -43,16 +43,18 @@ python -m http.server 8000
 
 No hace falta configurar nada más: es HTML + JS estático.
 
-## Reemplazar el arte por PNG reales
+## Reemplazar el arte por PNG reales (artist-ready)
 
-El arte vive en `js/art.js`, generado con `Phaser.Graphics`. Para usar PNG:
+El arte se genera por código (`js/art.js`), pero el juego está **listo para
+artistas** (Capa de Arte, `CONFIG.capaArte`). Para usar un PNG real:
 
-1. Poné los PNG en una carpeta `assets/` (tiles 32×32, personaje 32×48).
-2. En `escenas/Pueblo.js` → `preload()`, cargá las imágenes con las **mismas
-   claves** que usa el juego (p. ej. `this.load.image('pasto', 'assets/pasto.png')`).
-3. Salteá la generación de esa textura en `art.js`. El resto sigue igual.
+1. Guardá el PNG con el **nombre exacto** de la textura:
+   `assets/tiles/<nombre>.png` (32×32) o `assets/sprites/<nombre>.png` (32×48).
+2. Agregá ese `<nombre>` al array correcto en **`assets/manifest.js`**.
+3. Recargá: el juego usa tu PNG; todo lo demás sigue procedural. **No tocás código.**
 
-La cabecera de `js/art.js` tiene el detalle.
+La guía completa (lista de nombres, dimensiones, paleta recomendada) está en
+**[`ARTE.md`](ARTE.md)**.
 
 ## Envolver en .exe con Tauri (escritorio)
 

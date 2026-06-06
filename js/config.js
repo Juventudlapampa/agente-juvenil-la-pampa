@@ -45,7 +45,7 @@ AJ.CONFIG = {
   creditos:       true,  // E3: menú principal pulido + créditos
   // --- Capa F (identidad del agente y ganchos de arte) ---
   creadorAgente:  true,  // F1: elegir nombre/pronombre/variante al empezar
-  capaArte:       false, // F2: cargar PNG de /assets si existen (fallback procedural)
+  capaArte:       true,  // F2: cargar PNG de /assets si existen (fallback procedural)
   estadisticas:   false, // F4: estadísticas de sesión acumuladas
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---

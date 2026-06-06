@@ -319,7 +319,39 @@ AJ.Art = (function () {
     });
   }
 
-  // --- Punto de entrada: genera TODO ----------------------------------
+  // --- F2: Capa de arte (PNG de /assets con fallback procedural) -------
+  //
+  // preparar(scene) es el NUEVO punto de entrada (lo llama Pueblo.preload):
+  //   - Sin CONFIG.capaArte (o manifiesto vacío): genera todo procedural,
+  //     sincrónico, EXACTAMENTE como siempre. Cero cambios.
+  //   - Con capaArte y PNGs listados en AJ.ASSET_MANIFEST: encola la carga de
+  //     esos PNG; cuando termina, generarTodo() rellena procedural lo que falte
+  //     (cada generador saltea las claves que ya existen). Si un PNG listado
+  //     falla (404), se ignora y cae a procedural.
+  function preparar(scene) {
+    const usarCapa = !!(AJ.CONFIG && AJ.CONFIG.capaArte);
+    const man = (window.AJ && AJ.ASSET_MANIFEST) || { tiles: [], sprites: [] };
+    const tiles = man.tiles || [], sprites = man.sprites || [];
+    if (!usarCapa || (tiles.length === 0 && sprites.length === 0)) {
+      generarTodo(scene); // camino clásico, idéntico
+      return;
+    }
+    try {
+      tiles.forEach((k) => { if (!scene.textures.exists(k)) scene.load.image(k, 'assets/tiles/' + k + '.png'); });
+      sprites.forEach((k) => { if (!scene.textures.exists(k)) scene.load.image(k, 'assets/sprites/' + k + '.png'); });
+      // PNG faltante -> se ignora; el procedural lo cubre.
+      scene.load.on('loaderror', function () {});
+      // Cuando termina la carga, rellenar lo que falte con el generador.
+      scene.load.once('complete', function () {
+        try { generarTodo(scene); } catch (e) { console.warn('[Art] generarTodo (capa)', e); }
+      });
+    } catch (e) {
+      console.warn('[Art] capa de arte falló; uso procedural', e);
+      generarTodo(scene);
+    }
+  }
+
+  // --- Genera TODO lo procedural (saltea claves ya cargadas como PNG) --
 
   function generarTodo(scene) {
     pasto(scene); tierra(scene); vereda(scene); agua(scene);
@@ -346,5 +378,5 @@ AJ.Art = (function () {
     iconos(scene);
   }
 
-  return { generarTodo, dibujarAgente, PAL };
+  return { preparar, generarTodo, dibujarAgente, PAL };
 })();

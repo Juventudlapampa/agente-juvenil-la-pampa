@@ -38,9 +38,11 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
   }
 
   preload() {
-    // Generar TODO el arte por código (cero descargas).
-    try { AJ.Art.generarTodo(this); }
-    catch (e) { console.error('[Pueblo] Falló la generación de arte:', e); }
+    // F2: prepara el arte. Sin capaArte (o manifiesto vacío) es generación
+    // procedural sincrónica, idéntica a siempre; con PNGs en /assets los carga
+    // y rellena procedural el resto.
+    try { (AJ.Art.preparar || AJ.Art.generarTodo)(this); }
+    catch (e) { console.error('[Pueblo] Falló la preparación de arte:', e); }
   }
 
   create() {

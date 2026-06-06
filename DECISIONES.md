@@ -324,6 +324,21 @@ variante. El nombre reemplaza el vocativo "Agente" en los diálogos con
 funciona, sprite recolorea (variante 2 = verde, variante 0 = celeste original), el
 diálogo dice el nombre elegido y "Agente" cuando no hay nombre. Smoke 82/82.
 
+### D36 — F2: capa de arte (PNG-first / procedural-fallback) vía manifiesto
+**Por qué:** `CONFIG.capaArte` deja el juego **artist-ready**: `art.js` ahora expone
+`preparar(scene)` (lo llama `Pueblo.preload`). Si `capaArte` está off o el manifiesto
+está vacío, genera todo procedural **sincrónico, idéntico a siempre**. Si hay PNGs
+listados en `assets/manifest.js`, los carga (`assets/tiles|sprites/<nombre>.png`) y el
+generador procedural rellena lo que falte (cada generador saltea claves ya existentes).
+- **Manifiesto en vez de probe ciego:** probar a ciegas 40+ PNGs inexistentes ensucia la
+  consola con 404 (rompe el invariante "abre sin errores"). El manifiesto mantiene la
+  consola limpia a cambio de un paso extra (listar el nombre). Documentado en ARTE.md y
+  README.md.
+- **Verificado end-to-end:** manifiesto vacío → procedural, **cero 404s**, smoke 83/83;
+  con `assets/tiles/pasto.png` (PNG de prueba magenta) + entrada en el manifiesto, el
+  tile `pasto` se cargó del PNG (4×4 magenta), overrideando el procedural; al quitar el
+  PNG, volvió a procedural. Sin tocar el arte generado (sólo se agregó el gancho de carga).
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

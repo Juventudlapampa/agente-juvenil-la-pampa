@@ -839,6 +839,19 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 29. F2: capa de arte (PNG con fallback procedural)
+    if (AJ.CONFIG.capaArte) {
+      check('Capa de arte: preparar() + manifiesto + fallback procedural', () => {
+        if (!AJ.Art || typeof AJ.Art.preparar !== 'function') return 'sin preparar()';
+        const man = AJ.ASSET_MANIFEST;
+        if (!man || !Array.isArray(man.tiles) || !Array.isArray(man.sprites)) return 'manifiesto inválido';
+        // Con manifiesto vacío, todo cae a procedural: las texturas base deben existir.
+        const claves = ['pasto', 'tierra', 'agua', 'calden', 'jugador_abajo_0', 'npc_cura_abajo_0', 'moneda'];
+        const faltan = claves.filter((c) => !escena.textures.exists(c));
+        return faltan.length === 0 ? true : 'faltan texturas: ' + faltan.join(',');
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
