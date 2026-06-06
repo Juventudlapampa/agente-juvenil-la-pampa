@@ -1288,6 +1288,74 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 38. G6: descubrimiento e integración de comunidades
+    if (AJ.CONFIG.comunidades) {
+      check('G6: descubrimiento gradual (revela común primero, hasta agotar)', () => {
+        const CM = AJ.Gestion && AJ.Gestion.Comunidades;
+        if (!CM) return 'sin Comunidades';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const ep = AJ.Gestion.Estado.actual(test); ep.comunidadesDescubiertas = {};
+        if (CM.delPueblo(test).length < 1) return 'pueblo sin comunidades';
+        const oc0 = CM.ocultas(test).length;
+        const c1 = CM.revelarUna(test);
+        if (!c1) return 'no reveló ninguna';
+        if (!CM.conocida(test, c1.id)) return 'la revelada no quedó conocida';
+        if (CM.ocultas(test).length !== oc0 - 1) return 'no descontó una oculta';
+        while (CM.revelarUna(test)) { /* agotar */ }
+        if (CM.revelarUna(test) !== null) return 'siguió revelando tras agotar';
+        return true;
+      });
+      check('G6: bonus de tirada por comunidad afín conocida', () => {
+        const CM = AJ.Gestion.Comunidades, D = AJ.Gestion.Datos;
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const ep = AJ.Gestion.Estado.actual(test); ep.comunidadesDescubiertas = {};
+        const act = D.actividad('culturaTurismo');
+        const sin = CM.bonusActividad(test, act);
+        CM.revelarVarias(test, 10);
+        const con = CM.bonusActividad(test, act);
+        return (con > sin) ? true : 'el bonus no subió al conocer: sin=' + sin + ' con=' + con;
+      });
+      check('G6: comunidades latentes se activan y cuentan como presentes', () => {
+        const CM = AJ.Gestion.Comunidades;
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const lat = CM.latentes(test);
+        if (!lat.length) return 'sin latentes';
+        const id = lat[0];
+        if (CM.presentes(test).indexOf(id) >= 0) return 'la latente ya estaba presente';
+        CM.activarLatente(test, id);
+        if (CM.presentes(test).indexOf(id) < 0) return 'no quedó presente';
+        if (!CM.conocida(test, id)) return 'no quedó conocida';
+        return true;
+      });
+      check('G6: en la capital (nivel 4) es integración (todas conocidas) + actividad-puente', () => {
+        const CM = AJ.Gestion.Comunidades, A = AJ.Gestion.Actividades, C = AJ.Gestion.Ciclo;
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const cap = AJ.Gestion.Datos.PUEBLOS.find((p) => p.nivel === 4);
+        if (!cap) return 'sin capital nivel 4';
+        C.mudarse(test, cap.id);
+        CM.prepararPueblo(test);
+        if (!CM.esIntegracion(test)) return 'no es integración';
+        const todas = CM.delPueblo(test);
+        const conoc = todas.filter((id) => CM.conocida(test, id));
+        if (conoc.length !== todas.length) return 'no reveló todas en integración';
+        const res = A.resolverPuente(test, conoc.slice(0, 3));
+        if (!res || !res.tirada || typeof res.tirada.dado !== 'number') return 'la actividad-puente no rodó';
+        return true;
+      });
+      check('G6: el diagnóstico revela sólo un subconjunto (no todas)', () => {
+        const O = AJ.Gestion.Onboarding, CM = AJ.Gestion.Comunidades, C = AJ.Gestion.Ciclo;
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const grande = AJ.Gestion.Datos.PUEBLOS.find((p) => (p.comunidades || []).length > 2 && p.nivel < 4);
+        if (grande) { C.mudarse(test, grande.id); }
+        AJ.Gestion.Estado.actual(test).comunidadesDescubiertas = {};
+        O.diagnostico(test, 'charla');
+        const ep2 = AJ.Gestion.Estado.actual(test);
+        const total = CM.delPueblo(test).length;
+        const reveladas = CM.delPueblo(test).filter((id) => ep2.comunidadesDescubiertas[id]).length;
+        return (reveladas > 0 && reveladas < total) ? true : 'reveló ' + reveladas + '/' + total + ' (esperaba subconjunto)';
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

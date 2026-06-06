@@ -60,7 +60,12 @@ AJ.Gestion.Ciclo = (function () {
     const reales = Object.keys(imp).length ? E.aplicarImpacto(e, imp) : {};
     e.accionesRecon = (e.accionesRecon || 0) + 1;
     e.dia = Math.min(RECON_DIAS, 1 + e.accionesRecon);
-    return { tipo: tipo, impactos: reales, dia: e.dia, accionesRecon: e.accionesRecon };
+    // G6: explorar/hablar revela una comunidad oculta del pueblo (si está activo).
+    let comunidadRevelada = null;
+    if ((tipo === 'explorar' || tipo === 'hablar') && AJ.Gestion.Comunidades && AJ.Gestion.Comunidades.activo && AJ.Gestion.Comunidades.activo()) {
+      try { comunidadRevelada = AJ.Gestion.Comunidades.revelarUna(estado); } catch (e2) {}
+    }
+    return { tipo: tipo, impactos: reales, dia: e.dia, accionesRecon: e.accionesRecon, comunidadRevelada: comunidadRevelada };
   }
 
   // Aceptar el rol al cierre del recon: pasa a gestión (día 6). Sin Agencia → Referente solo.
@@ -180,17 +185,24 @@ AJ.Gestion.Actividades = (function () {
   // G6 lo sobrescribe para sumar bonus por comunidad conocida; en G5 es 0.
   function bonusComunidad(estado, act) { return 0; }
 
-  // Resuelve una actividad con tirada. Sin la infra → cuesta más (dificultad +4)
-  // hasta que G6 modele la cooperación regional.
-  function resolver(estado, actividadId) {
+  // Resuelve una actividad con tirada. Sin la infra → cuesta más (dificultad +4),
+  // salvo que pidas COOPERACIÓN REGIONAL (G6): te prestan la infra vecina pero
+  // cuesta coordinar (−Confianza), a cambio de tirar en dificultad normal.
+  function resolver(estado, actividadId, opts) {
+    opts = opts || {};
     const act = D.actividad(actividadId);
     if (!act) return null;
-    const base = BASE[actividadId] || {};
+    let base = BASE[actividadId] || {};
     const okInfra = infraOk(estado, act);
-    const dificultad = okInfra ? 12 : 16;
+    let dificultad = okInfra ? 12 : 16;
+    let cooperacion = false;
+    if (!okInfra && opts.cooperacion) {
+      dificultad = 12; cooperacion = true;
+      base = Object.assign({}, base, { confianza: (base.confianza || 0) - 3 }); // costo de coordinar
+    }
     const bonus = bonusComunidad(estado, act);
     const r = T.aplicar(estado, base, { dificultad: dificultad, medidores: ['conocimiento', 'confianza'], bonus: bonus });
-    return { actividad: act, infraOk: okInfra, dificultad: dificultad, bonus: bonus, tirada: r.tirada, impactosReales: r.impactosReales };
+    return { actividad: act, infraOk: okInfra, cooperacion: cooperacion, dificultad: dificultad, bonus: bonus, tirada: r.tirada, impactosReales: r.impactosReales };
   }
 
   return { BASE, infraOk, bonusComunidad, resolver };
@@ -239,8 +251,33 @@ AJ.Gestion.CicloUI = (function () {
     return cont;
   }
 
+  // G6: panel de comunidades (descubiertas / total) — sólo si el flag está on.
+  function comunidadesHTML(e) {
+    const CM = AJ.Gestion.Comunidades;
+    if (!CM || !CM.activo || !CM.activo()) return null;
+    const total = CM.delPueblo(estado).length;
+    const conoc = CM.delPueblo(estado).filter((id) => CM.conocida(estado, id));
+    const cont = _el('div', 'gestion-comunidades');
+    const tit = CM.esIntegracion(estado)
+      ? 'Comunidades (integración): ' + conoc.length + '/' + total
+      : 'Comunidades descubiertas: ' + conoc.length + '/' + total;
+    cont.appendChild(_el('p', 'gestion-com-tit', tit));
+    const chips = _el('div', 'gestion-com-chips');
+    CM.delPueblo(estado).forEach((id) => {
+      const c = D.comunidad(id); const vista = CM.conocida(estado, id);
+      const chip = _el('span', 'gestion-com-chip' + (vista ? ' vista' : ''), vista ? c.nombre : '???');
+      if (vista) chip.title = c.nota || '';
+      chips.appendChild(chip);
+    });
+    cont.appendChild(chips);
+    return cont;
+  }
+
   function render() {
     cerrar();
+    if (AJ.Gestion.Comunidades && AJ.Gestion.Comunidades.prepararPueblo) {
+      try { AJ.Gestion.Comunidades.prepararPueblo(estado); } catch (e) {}
+    }
     const e = C.ep(estado);
     const pueblo = D.pueblo(estado.gestion.actual);
     const ov = _el('div', 'modal-dom'); ov.id = 'gestion-ciclo';
@@ -252,6 +289,8 @@ AJ.Gestion.CicloUI = (function () {
     if (e.fase === 'gestion') sub += '  ·  ' + C.accionesRestantes(e) + ' acciones hoy';
     panel.appendChild(_el('p', 'gestion-sub', sub));
     panel.appendChild(medidoresHTML(e));
+    const comHTML = comunidadesHTML(e);
+    if (comHTML) panel.appendChild(comHTML);
 
     const cuerpo = _el('div', 'gestion-cuerpo'); panel.appendChild(cuerpo);
     if (e.fase === 'recon') renderRecon(cuerpo, e);
@@ -303,12 +342,26 @@ AJ.Gestion.CicloUI = (function () {
         });
       });
     }
-    _btn(cuerpo, 'Explorar el pueblo', '+Conocimiento (gasta un día)', () => {
+    _btn(cuerpo, 'Explorar el pueblo', '+Conocimiento, revela una comunidad (gasta un día)', () => {
       C.accionRecon(estado, 'explorar'); _sonido('click'); _guardar(); render();
     });
-    _btn(cuerpo, 'Hablar con la gente', '+Vínculo escolar (gasta un día)', () => {
+    _btn(cuerpo, 'Hablar con la gente', '+Vínculo escolar, revela una comunidad (gasta un día)', () => {
       C.accionRecon(estado, 'hablar'); _sonido('click'); _guardar(); render();
     });
+    // G6: activar una comunidad LATENTE (sembrar una movida nueva). No gasta día,
+    // pero cuesta capital político (−Confianza).
+    const CM = AJ.Gestion.Comunidades;
+    if (CM && CM.activo && CM.activo()) {
+      CM.latentes(estado).forEach((id) => {
+        const c = D.comunidad(id);
+        if (!c || CM.conocida(estado, id)) return;
+        _btn(cuerpo, 'Sembrar: ' + c.nombre, 'Activás una comunidad latente (−2 Confianza)', () => {
+          CM.activarLatente(estado, id);
+          AJ.Gestion.Estado.aplicarImpacto(C.ep(estado), { confianza: -2 });
+          _sonido('click'); _guardar(); render();
+        });
+      });
+    }
   }
 
   // ---- GESTIÓN ----
@@ -332,15 +385,33 @@ AJ.Gestion.CicloUI = (function () {
       });
     });
     // Actividades (las 5 líneas).
+    const CM = AJ.Gestion.Comunidades;
+    const conComunidades = !!(CM && CM.activo && CM.activo());
     D.ACTIVIDADES.forEach((act) => {
       const okInfra = A.infraOk(estado, act);
-      _btn(cuerpo, 'Actividad: ' + act.nombre, okInfra ? 'Tirada normal' : 'Sin la infra: cuesta más', () => {
+      const bonus = (A.bonusComunidad ? A.bonusComunidad(estado, act) : 0);
+      const usarCoop = !okInfra && conComunidades; // sin infra: cooperación regional
+      let sub = okInfra ? 'Tirada normal' : (usarCoop ? 'Con cooperación regional (−3 Confianza)' : 'Sin la infra: cuesta más');
+      if (bonus > 0) sub += '  ·  +' + bonus + ' por comunidad conocida';
+      _btn(cuerpo, 'Actividad: ' + act.nombre, sub, () => {
         C.consumirAccion(estado);
-        const res = A.resolver(estado, act.id);
+        const res = A.resolver(estado, act.id, { cooperacion: usarCoop });
         _sonido('mision');
         renderResultadoActividad(res);
       });
     });
+    // G6: actividad-puente (sólo en integración, nivel 4) — junta comunidades.
+    if (conComunidades && CM.esIntegracion(estado) && A.resolverPuente) {
+      const conoc = CM.delPueblo(estado).filter((id) => CM.conocida(estado, id));
+      if (conoc.length >= 2) {
+        _btn(cuerpo, 'Actividad-puente', 'Junta ' + conoc.length + ' comunidades; vale más, más difícil', () => {
+          C.consumirAccion(estado);
+          const res = A.resolverPuente(estado, conoc);
+          _sonido('mision');
+          renderResultadoActividad({ actividad: { nombre: 'Actividad-puente' }, infraOk: true, tirada: res.tirada, impactosReales: res.impactosReales });
+        });
+      }
+    }
   }
 
   function renderResultadoActividad(res) {

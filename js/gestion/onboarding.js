@@ -89,8 +89,17 @@ AJ.Gestion.Onboarding = (function () {
     const impactos = {};
     if (modo === 'charla') { impactos.conocimiento = 18; impactos.vinculoEscolar = 6; }
     else { modo = 'encuesta'; impactos.conocimiento = 12; }
-    // Revela las comunidades del pueblo (la versión gamificada llega en G6).
-    (p ? p.comunidades : []).forEach((c) => { ep.comunidadesDescubiertas[c] = true; });
+    // Revela comunidades del pueblo. Con G6 (CONFIG.comunidades) el diagnóstico
+    // revela sólo las 2 más comunes (el resto se descubre explorando); sin G6,
+    // revela todas como antes.
+    const coms = (p ? p.comunidades : []) || [];
+    const conDescubrimiento = !!(AJ.CONFIG && AJ.CONFIG.comunidades);
+    if (conDescubrimiento && AJ.Gestion.Comunidades && AJ.Gestion.Comunidades.delPueblo) {
+      // delPueblo viene ordenado por rareza (común primero).
+      AJ.Gestion.Comunidades.delPueblo(estado).slice(0, 2).forEach((c) => { ep.comunidadesDescubiertas[c] = true; });
+    } else {
+      coms.forEach((c) => { ep.comunidadesDescubiertas[c] = true; });
+    }
     // Ve las problemáticas NO sensibles (las sensibles van a mano, CONTENIDO_SENSIBLE.md).
     D.PROBLEMATICAS.filter((pr) => !pr.sensible).forEach((pr) => { ep.problematicasVistas[pr.id] = true; });
     E.aplicarImpacto(ep, impactos);

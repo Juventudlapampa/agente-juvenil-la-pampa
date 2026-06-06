@@ -191,6 +191,16 @@ html, body {
 .gestion-perfil-tit { font-family: Georgia, serif; font-size: 19px; color: #f5d020; font-weight: bold; }
 .gestion-perfil-desc { font-size: 14px; color: #f3e7c8; margin-top: 6px; line-height: 1.4; }
 
+/* ---------------- Modo Gestión: comunidades (G6) ------------------- */
+.gestion-comunidades { margin: 4px 0 12px; }
+.gestion-com-tit { font-size: 13px; color: #cdbfa0; margin: 0 0 6px; }
+.gestion-com-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gestion-com-chip {
+  font-size: 12px; padding: 3px 8px; border-radius: 10px;
+  background: #1c1a17; color: #7a6f5a; border: 1px dashed #4a3a1a;
+}
+.gestion-com-chip.vista { color: #f3d9a0; border: 1px solid #8a6a3a; background: #3a2c10; }
+
 /* ---------------------- Alto contraste (E2) ------------------------- */
 /* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,
    borde más fuerte). Sólo afecta si el jugador la activa. */
