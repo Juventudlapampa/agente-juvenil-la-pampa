@@ -1356,6 +1356,106 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 39. G7: robustez del Modo Gestión (bordes de extremo a extremo, sin flag).
+    //     Los round-trips usan una clave de guardado APARTE (no tocan el save real).
+    if (AJ.CONFIG.modoGestion && AJ.Gestion && AJ.Gestion.Ciclo) {
+      check('G7: el estado de gestión sobrevive guardar/recargar a mitad del día 12', () => {
+        const original = AJ.SAVE_KEY;
+        try {
+          AJ.SAVE_KEY = original + '__g7a';
+          const est = AJ.Guardado.estadoNuevo();
+          const C = AJ.Gestion.Ciclo, E = AJ.Gestion.Estado;
+          E.asegurar(est, null);
+          const ep = C.ep(est);
+          ep.fase = 'gestion'; ep.dia = 12; ep.accionesHoy = 2;
+          E.aplicarImpacto(ep, { confianza: 17, conocimiento: 9 });
+          ep.dilemasResueltos.push('poder_intendente_numero');
+          AJ.Guardado.guardar(est);
+          const leido = AJ.Guardado.cargar();
+          AJ.Guardado.borrar();
+          const ep2 = leido && leido.gestion && leido.gestion.pueblos[leido.gestion.actual];
+          if (!ep2) return 'no cargó gestion';
+          if (ep2.dia !== 12 || ep2.accionesHoy !== 2 || ep2.fase !== 'gestion') return 'día/acciones/fase no persistieron';
+          if (ep2.medidores.confianza !== ep.medidores.confianza) return 'medidores no persistieron';
+          if (ep2.dilemasResueltos.indexOf('poder_intendente_numero') < 0) return 'dilemas resueltos no persistieron';
+          return true;
+        } finally { AJ.SAVE_KEY = original; }
+      });
+      check('G7: tras mudarse, cada pueblo recuerda su gestión por separado (persistido)', () => {
+        const original = AJ.SAVE_KEY;
+        try {
+          AJ.SAVE_KEY = original + '__g7b';
+          const est = AJ.Guardado.estadoNuevo();
+          const C = AJ.Gestion.Ciclo, E = AJ.Gestion.Estado;
+          E.asegurar(est, null);
+          const origen = est.gestion.actual;
+          C.ep(est).dia = 20; C.ep(est).fase = 'gestion';
+          const destino = C.pueblosDisponibles(est)[0].id;
+          C.mudarse(est, destino);
+          C.ep(est).dia = 3;
+          AJ.Guardado.guardar(est);
+          const l = AJ.Guardado.cargar();
+          AJ.Guardado.borrar();
+          if (!l.gestion) return 'sin gestion';
+          if (l.gestion.actual !== destino) return 'no recordó el pueblo actual';
+          if (!l.gestion.pueblos[origen] || l.gestion.pueblos[origen].dia !== 20) return 'no recordó el origen (día 20)';
+          if (l.gestion.pueblos[destino].dia !== 3) return 'no recordó el destino (día 3)';
+          if (l.gestion.experiencia.mudanzas !== 1) return 'no recordó la experiencia';
+          return true;
+        } finally { AJ.SAVE_KEY = original; }
+      });
+      check('G7: completar los 30 días produce un perfil de gestor', () => {
+        const C = AJ.Gestion.Ciclo;
+        const test = {}; const ep = C.ep(test);
+        ep.fase = 'gestion'; ep.dia = 6; ep.accionesHoy = 0;
+        let guard = 0;
+        while (C.ep(test).fase === 'gestion' && guard++ < 60) C.cerrarDia(test);
+        const ep2 = C.ep(test);
+        if (ep2.fase !== 'cerrado') return 'no cerró tras 30 días: ' + ep2.fase + '/' + ep2.dia;
+        if (!ep2.perfil || !ep2.perfil.titulo) return 'sin perfil';
+        return true;
+      });
+      check('G7: recon sin Agencia → referente solo y se puede gestionar igual', () => {
+        const C = AJ.Gestion.Ciclo;
+        const test = {};
+        for (let i = 0; i < 5; i++) C.accionRecon(test, 'hablar');
+        C.aceptarRol(test);
+        const ep = C.ep(test);
+        if (!ep.onboarding.referenteSolo || ep.fase !== 'gestion') return 'no quedó referente solo en gestión';
+        C.consumirAccion(test); C.cerrarDia(test);
+        if (C.ep(test).dia !== 7) return 'no avanzó el día siendo referente solo';
+        return true;
+      });
+      check('G7: una comunidad revelada sobrevive el guardado', () => {
+        if (!AJ.Gestion.Comunidades) return true; // si G6 está off, no aplica
+        const original = AJ.SAVE_KEY;
+        try {
+          AJ.SAVE_KEY = original + '__g7c';
+          const est = AJ.Guardado.estadoNuevo();
+          AJ.Gestion.Estado.asegurar(est, null);
+          AJ.Gestion.Estado.actual(est).comunidadesDescubiertas = {};
+          const c = AJ.Gestion.Comunidades.revelarUna(est);
+          if (!c) return 'no reveló';
+          AJ.Guardado.guardar(est);
+          const l = AJ.Guardado.cargar();
+          AJ.Guardado.borrar();
+          const ep = l.gestion.pueblos[l.gestion.actual];
+          return ep.comunidadesDescubiertas[c.id] ? true : 'la comunidad revelada no persistió';
+        } finally { AJ.SAVE_KEY = original; }
+      });
+      check('G7: la tirada respeta los modificadores (con vs sin)', () => {
+        const T = AJ.Gestion.Tiradas, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null);
+        const ep = E.actual(test);
+        ep.medidores.conocimiento = 90; ep.onboarding.referenteSolo = false;
+        const con = T.tirar(test, { dificultad: 12, dadoForzado: 10, medidores: ['conocimiento'] });
+        const sin = T.tirar(test, { dificultad: 12, dadoForzado: 10, medidores: [] });
+        if (con.total <= sin.total) return 'el modificador no sumó: con=' + con.total + ' sin=' + sin.total;
+        if (sin.mods !== 0) return 'sin medidores, mods debería ser 0: ' + sin.mods;
+        return true;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
