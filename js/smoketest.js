@@ -886,6 +886,85 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 31. F5: robustez final — casos borde de la Capa F.
+    if (AJ.CONFIG.creadorAgente) {
+      check('F5: nombre de Agente vacío/en blanco no rompe el diálogo', () => {
+        const A = AJ.Agente;
+        if (!A) return 'sin Agente';
+        const nSnap = A.nombre();
+        try {
+          A.set('nombre', '');
+          const t1 = A.aplicarNombre('Buenas, Agente. Sos el nuevo Agente Juvenil.');
+          const okVacio = t1.indexOf('Buenas, Agente.') >= 0 && t1.indexOf('Agente Juvenil') >= 0;
+          A.set('nombre', '   '); // sólo espacios -> trim -> '' -> no sustituye
+          const t2 = A.aplicarNombre('Hola Agente');
+          const okBlancos = t2 === 'Hola Agente';
+          return (okVacio && okBlancos) ? true : 'vacio=' + okVacio + ' blancos=' + okBlancos;
+        } finally { A.set('nombre', nSnap); }
+      });
+
+      check('F5: variante visual persiste tras recargar y recolorea el sprite', () => {
+        const A = AJ.Agente;
+        if (!A) return 'sin Agente';
+        const vSnap = A.variante();
+        try {
+          // persistencia: set + "reload" (init re-lee localStorage) mantiene la variante
+          A.set('variante', 2); A.init(); // Verde
+          const okPersist = A.variante() === 2 && A.colores().camisa === 0x4aa86a;
+          A.set('variante', vSnap); A.init();
+          // el sprite vivo coincide con la variante ACTIVA (recoloreo real aplicado)
+          const want = A.colores().camisa;
+          const px = escena.textures.getPixel(16, 28, 'jugador_abajo_0');
+          const okPx = px && px.color === want;
+          return (okPersist && okPx) ? true
+            : 'persist=' + okPersist + ' px=' + (px ? px.color.toString(16) : 'null') + ' want=' + want.toString(16);
+        } finally { A.set('variante', vSnap); A.init(); }
+      });
+    }
+
+    if (AJ.CONFIG.capaArte) {
+      check('F5: generarTodo es idempotente (fallback tras cargar PNG no rompe nada)', () => {
+        // Tras cargar PNGs del manifiesto, preparar() llama generarTodo() para
+        // rellenar lo que falte; eso exige que re-ejecutarlo con texturas ya
+        // presentes sea seguro (cada generador saltea las claves existentes).
+        const claves = ['pasto', 'tierra', 'agua', 'calden', 'jugador_abajo_0', 'npc_cura_abajo_0', 'moneda'];
+        const antes = claves.filter((c) => !escena.textures.exists(c));
+        if (antes.length) return 'faltaban antes: ' + antes.join(',');
+        AJ.Art.generarTodo(escena); // no debe lanzar ni borrar texturas en uso
+        const despues = claves.filter((c) => !escena.textures.exists(c));
+        return despues.length === 0 ? true : 'desaparecieron: ' + despues.join(',');
+      });
+    }
+
+    if (AJ.CONFIG.estadisticas) {
+      check('F5: estadísticas acumulan entre sesiones (flush + reload + flush)', () => {
+        const S = AJ.Stats;
+        if (!S) return 'sin Stats';
+        const saved = window.localStorage.getItem('aj_stats_v1');
+        try {
+          S._reset();
+          // sesión 1
+          S.sumarTiempo(100); S.sumarPaso(); S.registrarMision(1);
+          S.flush(); S.init(); // "cerrar y reabrir el juego"
+          // sesión 2: acumula sobre lo guardado
+          S.sumarTiempo(50); S.sumarPaso(); S.registrarMision(1); S.registrarMision(2);
+          const d = S.datos();
+          const ok1 = Math.abs(d.tiempoTotal - 150) < 1e-6 && d.pasos === 2 &&
+            d.misionesPorPueblo[1] === 2 && d.misionesPorPueblo[2] === 1;
+          S.flush(); S.init(); // sesión 3: releer no pierde nada
+          const d2 = S.datos();
+          const ok2 = Math.abs(d2.tiempoTotal - 150) < 1e-6 && d2.pasos === 2 && d2.misionesTotal === 3;
+          return (ok1 && ok2) ? true : 's2=' + ok1 + ' s3=' + ok2;
+        } finally {
+          try {
+            if (saved === null) window.localStorage.removeItem('aj_stats_v1');
+            else window.localStorage.setItem('aj_stats_v1', saved);
+          } catch (e) {}
+          S.init();
+        }
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
