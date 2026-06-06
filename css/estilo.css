@@ -61,6 +61,16 @@ html, body {
 #btn-menu:hover { background: rgba(168, 90, 58, 0.85); }
 #btn-menu:active { transform: scale(0.94); }
 
+/* Botón de acceso al Modo Gestión (GP2), abajo a la izquierda del HUD. */
+#btn-gestion {
+  position: fixed; top: 46px; left: 10px; z-index: 60;
+  border-radius: 10px; border: 2px solid rgba(255, 243, 196, 0.7);
+  background: rgba(42, 31, 18, 0.78); color: #fff3c4;
+  font-family: Georgia, serif; font-size: 14px; padding: 6px 12px; cursor: pointer;
+}
+#btn-gestion:hover { background: rgba(168, 90, 58, 0.9); }
+#btn-gestion:active { transform: scale(0.96); }
+
 /* ---------------------- Creador de Agente (F1) ---------------------- */
 .modal-dom {
   position: fixed; inset: 0; z-index: 80;
@@ -200,6 +210,10 @@ html, body {
   background: #1c1a17; color: #7a6f5a; border: 1px dashed #4a3a1a;
 }
 .gestion-com-chip.vista { color: #f3d9a0; border: 1px solid #8a6a3a; background: #3a2c10; }
+
+/* Ayuda "¿cómo se juega?" (GP2) */
+.gestion-ayuda-txt { text-align: left; font-size: 14px; line-height: 1.45; color: #f3e7c8; margin: 0 0 12px; }
+.gestion-ayuda-cierre { text-align: left; font-style: italic; font-size: 14px; color: #cdbfa0; margin-top: 6px; }
 
 /* ---------------------- Alto contraste (E2) ------------------------- */
 /* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,

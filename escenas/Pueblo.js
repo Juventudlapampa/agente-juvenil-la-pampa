@@ -143,11 +143,19 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       (this.dialogo && this.dialogo.abierto) || (this.menu && this.menu.abierto) ||
       (AJ.Gestion && AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta());
     if (AJ.CONFIG.modoGestion && AJ.CONFIG.cicloGestion && AJ.Gestion && AJ.Gestion.CicloUI) {
-      this.input.keyboard.on('keydown-G', () => {
+      const abrirCiclo = () => {
         if (_gestionBloqueada()) return;
         try { AJ.Gestion.CicloUI.abrir(this, this.estado); }
         catch (e) { console.warn('[Pueblo] ciclo off', e); }
-      });
+      };
+      this.input.keyboard.on('keydown-G', abrirCiclo);
+      // GP2: botón DOM visible (también en celular) para entrar al Modo Gestión.
+      const bg = document.getElementById('btn-gestion');
+      if (bg) {
+        bg.style.display = 'block';
+        this._onBtnGestion = (e) => { e.preventDefault(); abrirCiclo(); };
+        bg.addEventListener('click', this._onBtnGestion);
+      }
     } else {
       if (AJ.CONFIG.modoGestion && AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
         this.input.keyboard.on('keydown-G', () => {
@@ -387,6 +395,12 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       const btn = document.getElementById('btn-menu');
       if (btn) btn.removeEventListener('click', this._onBtnMenu);
       this._onBtnMenu = null;
+    }
+    // GP2: limpiar el listener del botón de Modo Gestión (DOM persiste entre escenas).
+    if (this._onBtnGestion) {
+      const bg = document.getElementById('btn-gestion');
+      if (bg) { bg.removeEventListener('click', this._onBtnGestion); bg.style.display = 'none'; }
+      this._onBtnGestion = null;
     }
     // Red de seguridad: si la escena se reinicia (p. ej. viaje) con un modal de
     // gestión abierto, cerrarlo para no dejar overlays DOM huérfanos.

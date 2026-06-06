@@ -1286,6 +1286,22 @@ AJ.SmokeTest = (function () {
         const cerrado = !document.getElementById('gestion-ciclo') && !UI.abierta();
         return (abierto && cerrado) ? true : 'abierto=' + abierto + ' cerrado=' + cerrado;
       });
+      check('GP2: botón de acceso visible + ayuda "¿cómo se juega?" abre y vuelve al menú', () => {
+        const UI = AJ.Gestion && AJ.Gestion.CicloUI;
+        if (!UI || typeof UI.ayuda !== 'function') return 'sin CicloUI.ayuda';
+        const bg = document.getElementById('btn-gestion');
+        if (!bg || bg.style.display === 'none') return 'el botón de Modo Gestión no está visible';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        UI.abrir(escena, test);
+        UI.ayuda();
+        const enAyuda = !!document.getElementById('gestion-ayuda') && UI.abierta() && AJ.Gestion.modalAbierta();
+        const ov = document.getElementById('gestion-ayuda');
+        const volver = ov ? ov.querySelector('.creador-btn') : null;
+        if (volver) volver.click(); // "« Volver" vuelve al menú del día
+        const volvioAlMenu = !!document.getElementById('gestion-ciclo') && !document.getElementById('gestion-ayuda');
+        escena._cerrarModalesGestion();
+        return (enAyuda && volvioAlMenu) ? true : 'enAyuda=' + enAyuda + ' volvioAlMenu=' + volvioAlMenu;
+      });
     }
 
     // 38. G6: descubrimiento e integración de comunidades

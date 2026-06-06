@@ -236,6 +236,31 @@ AJ.Gestion.CicloUI = (function () {
 
   function abrir(sc, est) { scene = sc; estado = est; C.ep(estado); render(); }
 
+  // GP2: panel de ayuda "¿cómo se juega?" (vuelve al menú del día al cerrar).
+  function ayuda() {
+    cerrar();
+    const ov = _el('div', 'modal-dom'); ov.id = 'gestion-ayuda';
+    const panel = _el('div', 'modal-panel gestion-panel'); ov.appendChild(panel);
+    panel.appendChild(_el('h2', null, 'Cómo se juega'));
+    const lineas = [
+      ['Reconocimiento (días 1–5)', 'Leé el pueblo: explorá (revela comunidades), hablá con la gente y armá tu Agencia (los 4 pasos). Al cierre te ofrecen el rol según cómo te ganaste a la gente.'],
+      ['Gestión (días 6–30)', 'Tenés 3 acciones por día. Cada una es un dilema (decisión con consecuencias) o una actividad de las 5 líneas. Se resuelven con un dado: cuanto mejor gestionaste, menos dependés de la suerte.'],
+      ['Los 5 medidores', 'Agencia, Vínculo escolar, Conocimiento, Confianza y Convicción están en tensión: subir uno suele costar otro. Nunca quedan los cinco arriba.'],
+      ['Cierre y mudanza', 'Al día 30 sale tu perfil de gestor. Después podés mudarte a otro pueblo (más difícil) y empezar de nuevo, llevándote la experiencia.'],
+    ];
+    const cuerpo = _el('div', 'gestion-cuerpo'); panel.appendChild(cuerpo);
+    lineas.forEach((l) => {
+      cuerpo.appendChild(_el('p', 'gestion-paso-tit', l[0]));
+      cuerpo.appendChild(_el('p', 'gestion-ayuda-txt', l[1]));
+    });
+    cuerpo.appendChild(_el('p', 'gestion-ayuda-cierre', '«Gobernar es elegir a quién dejás afuera»: nadie queda del todo conforme.'));
+    const pie = _el('div', 'creador-fila acciones'); panel.appendChild(pie);
+    const bVolver = _el('button', 'creador-btn primario', '« Volver'); bVolver.type = 'button';
+    bVolver.addEventListener('click', () => { render(); });
+    pie.appendChild(bVolver);
+    document.body.appendChild(ov); overlay = ov;
+  }
+
   function _guardar() { if (scene && scene.guardar) { try { scene.guardar(); } catch (e) {} } }
   function _sonido(fn) { if (AJ.Sonido && AJ.Sonido[fn]) { try { AJ.Sonido[fn](); } catch (e) {} } }
 
@@ -304,9 +329,11 @@ AJ.Gestion.CicloUI = (function () {
     else renderCierre(cuerpo, e);
 
     const pie = _el('div', 'creador-fila acciones'); panel.appendChild(pie);
+    const bAyuda = _el('button', 'creador-btn', '¿Cómo se juega?'); bAyuda.type = 'button';
+    bAyuda.addEventListener('click', () => { ayuda(); });
     const bSalir = _el('button', 'creador-btn', 'Cerrar'); bSalir.type = 'button';
     bSalir.addEventListener('click', () => { _guardar(); cerrar(); });
-    pie.appendChild(bSalir);
+    pie.appendChild(bAyuda); pie.appendChild(bSalir);
 
     document.body.appendChild(ov); overlay = ov;
   }
@@ -474,7 +501,7 @@ AJ.Gestion.CicloUI = (function () {
     });
   }
 
-  return { abrir, cerrar, abierta, render };
+  return { abrir, cerrar, abierta, render, ayuda };
 })();
 
 // modalAbierta() ahora cubre TODOS los modales de gestión (ciclo + onboarding +
