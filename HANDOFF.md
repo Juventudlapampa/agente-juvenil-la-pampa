@@ -40,6 +40,21 @@ meta-progresión, accesibilidad y cierre.
 Verificado: smoke **Pueblo 81/81 PASS**, árbol limpio, **24 flags en true**, sin errores
 de consola. Objetivo de F: identidad del Agente (creador) + ganchos de arte (artist-ready).
 
+## Estado de partida que encontró el Modo Gestión (quinta noche)
+
+Verificado, no asumido:
+- Árbol git limpio; último commit `2ce3f80` (cierre de la Capa F). **Sin remote configurado.**
+- Smoke en vivo (reload limpio): **Pueblo 1 88/88, Colonia 89/89, El Puesto 79/79 PASS**,
+  sin errores de consola. **26 flags en true.**
+- Llega el GDD del **Modo Gestión** (`GDD_Agente_Juvenil_La_Pampa.md` en la raíz): sistema
+  NUEVO y aditivo sobre el RPG, detrás de flags nuevos. Objetivo de la noche: construir las
+  capas **G1 (datos) → G2 (onboarding) → G3 (dilemas) → G4 (tiradas)**, commit por capa, y
+  dejar G5–G7 en ROADMAP. El RPG existente NO se toca.
+- Restricciones críticas del GDD §11: pueblos jugables **ficticios** (los reales son sólo
+  modelo interno); contenido sensible (salud mental, consumos, violencias, bullying) **no se
+  autogenera** → va a `CONTENIDO_SENSIBLE.md` para revisión humana; sin apuestas/azar con
+  plata real (el dado es mecánica); genérico y reskinable.
+
 ## Capas construidas
 
 ### Capa 0 — Base (FASES 1–4 + Final)

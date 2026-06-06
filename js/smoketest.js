@@ -965,6 +965,50 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 32. G1: capa de datos del Modo Gestión (GDD)
+    if (AJ.CONFIG.modoGestion) {
+      check('G1: datos de gestión completos (5 medidores / 10 comunidades / 5 actividades)', () => {
+        const D = AJ.Gestion && AJ.Gestion.Datos;
+        if (!D) return 'sin Gestion.Datos';
+        if (D.MEDIDORES.length !== 5) return 'medidores=' + D.MEDIDORES.length;
+        if (D.COMUNIDADES.length !== 10) return 'comunidades=' + D.COMUNIDADES.length;
+        if (!D.PUEBLOS.length) return 'sin pueblos';
+        if (D.ACTIVIDADES.length !== 5) return 'actividades=' + D.ACTIVIDADES.length;
+        if (!D.NIVELES[1] || !D.NIVELES[4]) return 'faltan niveles';
+        // las problemáticas sensibles están marcadas (su contenido NO se autogenera)
+        const sens = D.PROBLEMATICAS.filter((p) => p.sensible).map((p) => p.id);
+        const okSens = ['saludMental', 'consumos', 'bullying', 'violencias'].every((x) => sens.indexOf(x) >= 0);
+        if (!okSens) return 'flags sensibles mal: ' + sens.join(',');
+        // integridad referencial: cada comunidad de cada pueblo existe en el catálogo
+        const malas = [];
+        D.PUEBLOS.forEach((p) => (p.comunidades || []).forEach((c) => { if (!D.comunidad(c)) malas.push(p.id + ':' + c); }));
+        if (malas.length) return 'comunidad inexistente: ' + malas.join(',');
+        return true;
+      });
+      check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
+        const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+        if (!E) return 'sin Gestion.Estado';
+        const test = {}; // estado de prueba APARTE (no toca el save real)
+        E.asegurar(test, null);
+        if (!test.gestion || !test.gestion.actual) return 'asegurar no armó gestion';
+        const ep = E.actual(test);
+        if (!ep) return 'sin EstadoPueblo';
+        const falt = D.MEDIDORES.filter((m) => typeof ep.medidores[m.id] !== 'number');
+        if (falt.length) return 'medidores faltan: ' + falt.map((m) => m.id).join(',');
+        // clamp: agencia tope 20, convicción piso 0
+        E.aplicarImpacto(ep, { agencia: 999 });
+        if (ep.medidores.agencia !== 20) return 'no clampó agencia: ' + ep.medidores.agencia;
+        E.aplicarImpacto(ep, { conviccion: -999 });
+        if (ep.medidores.conviccion !== 0) return 'no clampó convicción: ' + ep.medidores.conviccion;
+        // impacto con clave desconocida se ignora sin romper
+        const r = E.aplicarImpacto(ep, { noExiste: 5, confianza: -10 });
+        if (typeof r.confianza !== 'number' || ('noExiste' in r)) return 'impacto no robusto';
+        return true;
+      });
+      check('G1: la escena inicializó estado.gestion del save', () =>
+        (escena.estado.gestion && escena.estado.gestion.actual) ? true : 'gestion no inicializada en el save');
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

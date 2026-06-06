@@ -40,6 +40,7 @@ AJ.Guardado = (function () {
       afinidad: {},        // id de NPC -> afinidad 0..100 (FASE A)
       registro: { vecinos: {}, pueblos: {} }, // Registro del Agente (D3)
       tiempoJugado: 0,     // segundos reales jugados (E1)
+      gestion: {},         // estado del Modo Gestión por pueblo (G1; lo arma AJ.Gestion)
     };
   }
 
@@ -82,6 +83,7 @@ AJ.Guardado = (function () {
           ? { vecinos: est.registro.vecinos || {}, pueblos: est.registro.pueblos || {} }
           : { vecinos: {}, pueblos: {} },
         tiempoJugado: est.tiempoJugado || 0,
+        gestion: (est.gestion && typeof est.gestion === 'object') ? est.gestion : {},
       });
     } catch (e) {
       console.warn('[Guardado] Save corrupto, ignoro:', e);

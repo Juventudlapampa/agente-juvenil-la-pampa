@@ -93,6 +93,10 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     this._iniciarSistema('crafteo', () => {
       if (AJ.Crafteo) { this.crafteo = new AJ.Crafteo(this, this.estado); this.crafteo.init(); }
     });
+    // MODO GESTIÓN (GDD): capa de datos/estado (G1). Aditivo; sin UI propia.
+    this._iniciarSistema('modoGestion', () => {
+      if (AJ.Gestion && AJ.Gestion.init) AJ.Gestion.init(this, this.estado);
+    });
 
     // --- Diálogo (UI compartida por NPCs/misiones) ---
     if (AJ.CONFIG.npcsDialogo && AJ.Dialogo) {
