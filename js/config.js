@@ -52,6 +52,8 @@ AJ.CONFIG = {
   onboarding:     true,  // G2: armar la Agencia (4 pasos de la Hoja de Ruta)
   dilemas:        true,  // G3: motor de dilemas (situación/opciones/impactos)
   tiradas:        true,  // G4: dado + modificadores + resultados graduados
+  cicloGestion:   true,  // G5: ciclo de 30 días + mudanza (menú del día)
+  comunidades:    false, // G6: descubrimiento/integración de comunidades
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,

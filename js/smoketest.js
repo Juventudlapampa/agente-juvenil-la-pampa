@@ -1204,6 +1204,90 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 37. G5: ciclo de 30 días + mudanza
+    if (AJ.CONFIG.cicloGestion) {
+      check('G5: recon → oferta de rol → gestión (transición de fases)', () => {
+        const C = AJ.Gestion && AJ.Gestion.Ciclo;
+        if (!C) return 'sin Ciclo';
+        const test = {}; const ep = C.ep(test);
+        if (ep.fase !== 'recon') return 'no arranca en recon';
+        AJ.Gestion.Onboarding.correrTodo(test, { canales: ['bocaAboca'], nMiembros: 5 });
+        C.ep(test).fase = 'recon'; // el ciclo manda la fase
+        for (let i = 0; i < 5; i++) C.accionRecon(test, 'explorar');
+        if (!C.puedeOfrecerRol(C.ep(test))) return 'no ofrece rol tras 5 días';
+        C.aceptarRol(test);
+        const e2 = C.ep(test);
+        if (e2.fase !== 'gestion' || e2.dia !== 6) return 'no pasó a gestión día 6: ' + e2.fase + '/' + e2.dia;
+        return true;
+      });
+      check('G5: 3 acciones por día y cierre de día', () => {
+        const C = AJ.Gestion.Ciclo;
+        const test = {}; const e = C.ep(test);
+        e.fase = 'gestion'; e.dia = 6; e.accionesHoy = 0;
+        if (C.accionesRestantes(e) !== 3) return 'no son 3 acciones';
+        C.consumirAccion(test); C.consumirAccion(test); C.consumirAccion(test);
+        if (C.accionesRestantes(C.ep(test)) !== 0) return 'no consumió las 3';
+        if (C.consumirAccion(test)) return 'dejó consumir una 4ta';
+        C.cerrarDia(test);
+        const e2 = C.ep(test);
+        if (e2.dia !== 7 || e2.accionesHoy !== 0) return 'cerrarDia mal: dia=' + e2.dia;
+        return true;
+      });
+      check('G5: al día 30 se cierra con un perfil de gestor', () => {
+        const C = AJ.Gestion.Ciclo;
+        const test = {}; const e = C.ep(test);
+        e.fase = 'gestion'; e.dia = 30; e.accionesHoy = 3;
+        C.cerrarDia(test);
+        const e2 = C.ep(test);
+        if (e2.fase !== 'cerrado') return 'no cerró: ' + e2.fase;
+        if (!e2.perfil || !e2.perfil.titulo) return 'sin perfil';
+        return true;
+      });
+      check('G5: recon sin armar Agencia → Referente solo', () => {
+        const C = AJ.Gestion.Ciclo;
+        const test = {};
+        for (let i = 0; i < 5; i++) C.accionRecon(test, 'explorar');
+        C.aceptarRol(test);
+        const e2 = C.ep(test);
+        if (!e2.onboarding.referenteSolo) return 'no quedó referente solo';
+        if (e2.medidores.agencia !== 0) return 'agencia no es 0';
+        if (e2.fase !== 'gestion') return 'no pasó a gestión';
+        return true;
+      });
+      check('G5: mudanza crea estado nuevo, hereda experiencia y conserva el origen', () => {
+        const C = AJ.Gestion.Ciclo, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null);
+        const origen = test.gestion.actual;
+        C.ep(test).dia = 12; // marcar el origen
+        const destino = C.pueblosDisponibles(test)[0].id;
+        const e = C.mudarse(test, destino);
+        if (test.gestion.actual !== destino) return 'no cambió de pueblo';
+        if (!e || e.fase !== 'recon') return 'destino no arranca en recon';
+        if (test.gestion.experiencia.mudanzas !== 1) return 'no contó la mudanza';
+        if (e.medidores.confianza < 48) return 'no aplicó piso de confianza: ' + e.medidores.confianza;
+        if (!test.gestion.pueblos[origen] || test.gestion.pueblos[origen].dia !== 12) return 'no conservó el origen';
+        return true;
+      });
+      check('G5: una actividad se resuelve con el dado', () => {
+        const A = AJ.Gestion.Actividades;
+        if (!A) return 'sin Actividades';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const res = A.resolver(test, AJ.Gestion.Datos.ACTIVIDADES[0].id);
+        if (!res || !res.tirada || typeof res.tirada.dado !== 'number') return 'no rodó el dado';
+        return true;
+      });
+      check('G5: el menú del día abre/cierra y modalAbierta lo detecta', () => {
+        const UI = AJ.Gestion && AJ.Gestion.CicloUI;
+        if (!UI) return 'sin CicloUI';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        UI.abrir(escena, test);
+        const abierto = !!document.getElementById('gestion-ciclo') && UI.abierta() && AJ.Gestion.modalAbierta();
+        UI.cerrar();
+        const cerrado = !document.getElementById('gestion-ciclo') && !UI.abierta();
+        return (abierto && cerrado) ? true : 'abierto=' + abierto + ' cerrado=' + cerrado;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

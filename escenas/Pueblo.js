@@ -136,31 +136,35 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       } catch (e) { console.warn('[Pueblo] menú off', e); this.menu = null; }
     }
 
-    // --- G2: armar la Agencia (tecla G). Entrada temporal hasta el ciclo de
-    //     30 días (G5), que lo dispara solo en los días 1–5. Gated por flag. ---
-    if (AJ.CONFIG.modoGestion && AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
+    // --- Modo Gestión: tecla G. Con el ciclo de 30 días (G5) activo, G abre el
+    //     "menú del día" (hub que reparte onboarding/dilemas/actividades). Sin el
+    //     ciclo, G/H son las entradas sueltas de G2/G3 (compatibilidad). ---
+    const _gestionBloqueada = () =>
+      (this.dialogo && this.dialogo.abierto) || (this.menu && this.menu.abierto) ||
+      (AJ.Gestion && AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta());
+    if (AJ.CONFIG.modoGestion && AJ.CONFIG.cicloGestion && AJ.Gestion && AJ.Gestion.CicloUI) {
       this.input.keyboard.on('keydown-G', () => {
-        if (this.dialogo && this.dialogo.abierto) return;
-        if (this.menu && this.menu.abierto) return;
-        // No reabrir/reiniciar si ya hay un modal de gestión abierto (p. ej. al
-        // tipear la letra "g" en el nombre de la Agencia).
-        if (AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta()) return;
-        try { AJ.Gestion.OnboardingUI.abrir(this, this.estado); }
-        catch (e) { console.warn('[Pueblo] onboarding off', e); }
+        if (_gestionBloqueada()) return;
+        try { AJ.Gestion.CicloUI.abrir(this, this.estado); }
+        catch (e) { console.warn('[Pueblo] ciclo off', e); }
       });
-    }
-    // --- G3: presentar el próximo dilema elegible (tecla H). Entrada temporal
-    //     hasta que el ciclo de 30 días (G5) los reparta. Gated por flag. ---
-    if (AJ.CONFIG.modoGestion && AJ.CONFIG.dilemas && AJ.Gestion && AJ.Gestion.DilemasUI) {
-      this.input.keyboard.on('keydown-H', () => {
-        if (this.dialogo && this.dialogo.abierto) return;
-        if (this.menu && this.menu.abierto) return;
-        if (AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta()) return;
-        try {
-          const lista = AJ.Gestion.Dilemas.elegibles(this.estado);
-          if (lista.length) AJ.Gestion.DilemasUI.abrir(this, this.estado, lista[0], () => this.guardar());
-        } catch (e) { console.warn('[Pueblo] dilemas off', e); }
-      });
+    } else {
+      if (AJ.CONFIG.modoGestion && AJ.CONFIG.onboarding && AJ.Gestion && AJ.Gestion.OnboardingUI) {
+        this.input.keyboard.on('keydown-G', () => {
+          if (_gestionBloqueada()) return;
+          try { AJ.Gestion.OnboardingUI.abrir(this, this.estado); }
+          catch (e) { console.warn('[Pueblo] onboarding off', e); }
+        });
+      }
+      if (AJ.CONFIG.modoGestion && AJ.CONFIG.dilemas && AJ.Gestion && AJ.Gestion.DilemasUI) {
+        this.input.keyboard.on('keydown-H', () => {
+          if (_gestionBloqueada()) return;
+          try {
+            const lista = AJ.Gestion.Dilemas.elegibles(this.estado);
+            if (lista.length) AJ.Gestion.DilemasUI.abrir(this, this.estado, lista[0], () => this.guardar());
+          } catch (e) { console.warn('[Pueblo] dilemas off', e); }
+        });
+      }
     }
 
     // --- Guardado automático periódico + al cerrar la pestaña ---
@@ -201,6 +205,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
   _cerrarModalesGestion() {
     try {
       if (AJ.Gestion) {
+        if (AJ.Gestion.CicloUI && AJ.Gestion.CicloUI.cerrar) AJ.Gestion.CicloUI.cerrar();
         if (AJ.Gestion.OnboardingUI && AJ.Gestion.OnboardingUI.cerrar) AJ.Gestion.OnboardingUI.cerrar();
         if (AJ.Gestion.DilemasUI && AJ.Gestion.DilemasUI.cerrar) AJ.Gestion.DilemasUI.cerrar();
       }

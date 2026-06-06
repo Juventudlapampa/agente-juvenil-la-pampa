@@ -166,6 +166,31 @@ html, body {
 .gestion-res-parcial { color: #e6cf9f; border-left-color: #e0a85a; }
 .gestion-res-fracaso { color: #e69f9f; border-left-color: #d06a6a; }
 
+/* ---------------- Modo Gestión: ciclo / menú del día (G5) ----------- */
+.gestion-medidores { margin: 4px 0 12px; }
+.gestion-med-row { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+.gestion-med-nom { font-family: monospace; font-size: 12px; color: #cdbfa0; width: 34px; }
+.gestion-med-bar {
+  flex: 1; height: 12px; background: #1c1a17; border-radius: 6px; overflow: hidden;
+  border: 1px solid #3a2c10;
+}
+.gestion-med-fill { height: 100%; background: linear-gradient(90deg, #7a5a2a, #d0a85a); }
+.gestion-med-val { font-family: monospace; font-size: 12px; color: #f3d9a0; width: 26px; text-align: right; }
+.gestion-accion {
+  display: block; width: 100%; text-align: left; margin: 7px 0; padding: 10px 12px;
+  border-radius: 9px; border: 2px solid #8a6a3a; background: #3a2c10; color: #fff7e6;
+  cursor: pointer; font-family: Georgia, serif;
+}
+.gestion-accion:hover { background: #4a3815; border-color: #f3d9a0; }
+.gestion-accion-tit { display: block; font-size: 15px; font-weight: bold; }
+.gestion-accion-sub { display: block; font-size: 12px; color: #b7a98a; margin-top: 2px; }
+.gestion-perfil {
+  background: #1c1a17; border-radius: 10px; padding: 14px; margin: 8px 0 12px;
+  border-left: 4px solid #f5d020; text-align: left;
+}
+.gestion-perfil-tit { font-family: Georgia, serif; font-size: 19px; color: #f5d020; font-weight: bold; }
+.gestion-perfil-desc { font-size: 14px; color: #f3e7c8; margin-top: 6px; line-height: 1.4; }
+
 /* ---------------------- Alto contraste (E2) ------------------------- */
 /* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,
    borde más fuerte). Sólo afecta si el jugador la activa. */

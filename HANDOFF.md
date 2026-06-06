@@ -40,6 +40,17 @@ meta-progresión, accesibilidad y cierre.
 Verificado: smoke **Pueblo 81/81 PASS**, árbol limpio, **24 flags en true**, sin errores
 de consola. Objetivo de F: identidad del Agente (creador) + ganchos de arte (artist-ready).
 
+## Estado de partida que encontró G5–G7 (sexta noche)
+
+Verificado, no asumido:
+- Árbol git limpio; último commit `379e850` (cierre G1–G4 + review). **Sin remote.**
+- Smoke en vivo: **Pueblo 1 105/105, Colonia 106/106, El Puesto 96/96 PASS**, sin errores.
+  **30 flags en true.** API de gestión presente: `AJ.Gestion.Datos/Estado/Onboarding/
+  Dilemas/Tiradas`, flags `modoGestion/onboarding/dilemas/tiradas` en true.
+- Objetivo de la noche: **G5 (ciclo 30 días + mudanza), G6 (descubrimiento/integración de
+  comunidades), G7 (robustez)**. Las teclas temporales G/H de G2/G3 pasan a vivir dentro del
+  ciclo (menú del día). El RPG y el motor de gestión existentes NO se tocan.
+
 ## Estado de partida que encontró el Modo Gestión (quinta noche)
 
 Verificado, no asumido:
