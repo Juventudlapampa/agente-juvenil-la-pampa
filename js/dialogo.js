@@ -93,6 +93,7 @@ AJ.Dialogo = class {
       this.abierto = true;
       this.cont.setVisible(true);
       this._render();
+      if (AJ.Stats) { try { AJ.Stats.sumarDialogo(); } catch (e) {} } // F4: primer tramo leído
       if (AJ.Sonido) { try { AJ.Sonido.dialogo(); } catch (e) {} }
       // P1 (juice): el panel entra con un fade + leve deslizamiento.
       if (AJ.Juice && AJ.Juice.activo()) {
@@ -160,6 +161,7 @@ AJ.Dialogo = class {
     this.indice++;
     if (this.indice >= this.tramos.length) { this.cerrar(); return false; }
     this._render();
+    if (AJ.Stats) { try { AJ.Stats.sumarDialogo(); } catch (e) {} } // F4: tramo siguiente leído
     if (AJ.Sonido) { try { AJ.Sonido.dialogo(); } catch (e) {} }
     return true;
   }

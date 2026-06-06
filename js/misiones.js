@@ -352,6 +352,8 @@ AJ.Misiones = class {
 
   _completar(m) {
     this.estado.misiones[m.id] = 'completada';
+    // F4: misión completada por pueblo (estadísticas acumuladas).
+    if (AJ.Stats) { try { AJ.Stats.registrarMision(m.pueblo || 1); } catch (e) {} }
     if (AJ.Sonido) { try { AJ.Sonido.mision(); } catch (e) {} }
     // P1 (juice): celebración breve al cumplir una misión.
     if (AJ.Juice) {

@@ -223,6 +223,7 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       this.estado.jugador.y = p.y;
       this.estado.jugador.dir = this.jugador.dir;
       AJ.Guardado.guardar(this.estado);
+      if (AJ.Stats) { try { AJ.Stats.flush(); } catch (e) {} } // F4: persistir stats junto al autoguardado
     } catch (e) { console.warn('[Pueblo] no se pudo guardar', e); }
   }
 
@@ -232,6 +233,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     const menuAbierto = !!(this.menu && this.menu.abierto);
     // E1: contar tiempo jugado (segundos reales), salvo en pausa.
     if (!menuAbierto) this.estado.tiempoJugado = (this.estado.tiempoJugado || 0) + dt;
+    // F4: estadísticas de sesión (tiempo total acumulado entre partidas).
+    if (!menuAbierto && AJ.Stats) { try { AJ.Stats.sumarTiempo(dt); } catch (e) {} }
     // ¿Hay un diálogo, el menú de crafteo o la pausa abiertos? -> sin movimiento.
     const dialogoAbierto = (this.dialogo && this.dialogo.abierto) ||
                            (this.crafteo && this.crafteo.menuAbierto) || menuAbierto;
@@ -239,6 +242,14 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (!dialogoAbierto) {
       try { this.jugador.update(dt, AJ.Input.estado); }
       catch (e) { console.warn('[Pueblo] update jugador', e); }
+      // F4: contar un "paso" cada vez que el jugador entra a un tile nuevo.
+      if (AJ.Stats) {
+        try {
+          const tp = this.jugador.tilePos();
+          if (!this._statTile) this._statTile = tp.x + ',' + tp.y;
+          else if (this._statTile !== tp.x + ',' + tp.y) { this._statTile = tp.x + ',' + tp.y; AJ.Stats.sumarPaso(); }
+        } catch (e) {}
+      }
       // P2: pasos (con throttle) mientras camina.
       if (AJ.Sonido && this.jugador.moviendo) {
         this._tPaso = (this._tPaso || 0) + dt;
@@ -307,6 +318,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (AJ.Juice && npc && npc.sprite) AJ.Juice.pulso(this, npc.sprite);
     // D3: conociste a este vecino (queda en el Registro).
     if (this.registro && npc) { try { this.registro.registrarVecino(npc.id); } catch (e) {} }
+    // F4: NPCs conocidos (distintos) en las estadísticas acumuladas.
+    if (AJ.Stats && npc) { try { AJ.Stats.registrarNpc(npc.id); } catch (e) {} }
     // FASE A: hablar sube la afinidad (una vez por día por NPC).
     if (this.afinidad) { try { this.afinidad.alHablar(npc); } catch (e) {} }
     if (this.misiones) { this.misiones.alHablar(npc, this.dialogo); }

@@ -852,6 +852,40 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 30. F4: estadísticas de sesión (acumuladas, sólo lectura)
+    if (AJ.CONFIG.estadisticas) {
+      check('Estadísticas: cuentan y acumulan (pasos/diálogos/NPCs/misiones)', () => {
+        const S = AJ.Stats;
+        if (!S || typeof S.datos !== 'function') return 'sin Stats';
+        const saved = window.localStorage.getItem('aj_stats_v1');
+        try {
+          S._reset();
+          S.sumarPaso(); S.sumarPaso();
+          S.sumarDialogo();
+          S.registrarNpc('npc_x'); S.registrarNpc('npc_x'); S.registrarNpc('npc_y'); // repetido NO recuenta
+          S.registrarMision(1); S.registrarMision(2); S.registrarMision(1);
+          S.sumarTiempo(5);
+          const d = S.datos();
+          const okMem = d.pasos === 2 && d.dialogos === 1 && d.npcsConocidos === 2 &&
+            d.misionesTotal === 3 && d.misionesPorPueblo[1] === 2 && d.misionesPorPueblo[2] === 1 &&
+            Math.abs(d.tiempoTotal - 5) < 0.001;
+          // persistencia: flush + recarga desde localStorage mantiene los valores
+          S.flush();
+          S.init();
+          const d2 = S.datos();
+          const okPers = d2.pasos === 2 && d2.npcsConocidos === 2 && d2.misionesTotal === 3;
+          return (okMem && okPers) ? true : 'mem=' + okMem + ' pers=' + okPers;
+        } finally {
+          // restaurar las estadísticas reales (localStorage + memoria)
+          try {
+            if (saved === null) window.localStorage.removeItem('aj_stats_v1');
+            else window.localStorage.setItem('aj_stats_v1', saved);
+          } catch (e) {}
+          S.init();
+        }
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {

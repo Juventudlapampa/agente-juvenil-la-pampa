@@ -36,7 +36,7 @@ AJ.Progreso = class {
     const W = this.scene.scale.width, H = this.scene.scale.height;
     this.cont = this.scene.add.container(0, 0).setScrollFactor(0).setDepth(13000).setVisible(false);
     this.fondo = this.scene.add.rectangle(0, 0, W, H, 0x000000, 0.6).setOrigin(0, 0).setInteractive();
-    const pw = 480, ph = 410;
+    const pw = 480, ph = 540;
     const g = this.scene.add.graphics();
     g.fillStyle(0x14202a, 0.98); g.fillRoundedRect((W - pw) / 2, (H - ph) / 2, pw, ph, 14);
     g.lineStyle(3, 0x7bb8e0, 1); g.strokeRoundedRect((W - pw) / 2, (H - ph) / 2, pw, ph, 14);
@@ -71,15 +71,28 @@ AJ.Progreso = class {
   _refrescar() {
     if (!this.cuerpo) return;
     const pct = (this.scene.registro && this.scene.registro.datos) ? this.scene.registro.datos().porcentaje : 0;
-    const lineas = [
-      'Avance global:  ' + pct + '%',
-      'Tiempo jugado:  ' + this._fmtTiempo(this.estado.tiempoJugado),
-      'Día de juego:   ' + ((this.estado.tiempo && this.estado.tiempo.dia) || 1),
-      'Monedas:        ¢ ' + ((this.estado.inventario && this.estado.inventario.monedas) || 0),
-      '',
-      'Misiones por pueblo:',
-    ];
     const nombres = { 1: 'El pueblo', 2: 'La Colonia', 3: 'El Puesto' };
+    const lineas = [
+      'Avance global:    ' + pct + '%',
+      'Tiempo (partida): ' + this._fmtTiempo(this.estado.tiempoJugado),
+      'Día de juego:     ' + ((this.estado.tiempo && this.estado.tiempo.dia) || 1),
+      'Monedas:          ¢ ' + ((this.estado.inventario && this.estado.inventario.monedas) || 0),
+    ];
+    // F4: estadísticas acumuladas entre todas las partidas (sólo lectura).
+    if (AJ.Stats && AJ.Stats.activo()) {
+      try {
+        const d = AJ.Stats.datos();
+        const porPueblo = Object.keys(d.misionesPorPueblo)
+          .map((pu) => (nombres[pu] || ('P' + pu)) + ' ' + d.misionesPorPueblo[pu]).join('  ·  ');
+        lineas.push('');
+        lineas.push('— Estadísticas (todas tus partidas) —');
+        lineas.push('  Tiempo total: ' + this._fmtTiempo(d.tiempoTotal) + '   ·   Pasos: ' + d.pasos);
+        lineas.push('  Diálogos leídos: ' + d.dialogos + '   ·   Vecinos: ' + d.npcsConocidos);
+        lineas.push('  Misiones cumplidas: ' + d.misionesTotal + (porPueblo ? '  (' + porPueblo + ')' : ''));
+      } catch (e) {}
+    }
+    lineas.push('');
+    lineas.push('Misiones por pueblo:');
     const mpp = this._misionesPorPueblo();
     Object.keys(mpp).forEach((pu) => {
       lineas.push('  ' + (nombres[pu] || ('Pueblo ' + pu)).padEnd(12, ' ') + mpp[pu].de + ' / ' + mpp[pu].total);
@@ -89,11 +102,11 @@ AJ.Progreso = class {
     const roster = AJ.roster ? AJ.roster() : [];
     const conocidos = roster.filter((n) => this.estado.registro && this.estado.registro.vecinos && this.estado.registro.vecinos[n.id]);
     if (conocidos.length === 0) lineas.push('  (todavía no conocés a nadie)');
-    else conocidos.slice(0, 8).forEach((n) => {
+    else conocidos.slice(0, 6).forEach((n) => {
       const af = (this.estado.afinidad && this.estado.afinidad[n.id]) || 0;
       lineas.push('  ' + (n.nombre + '').slice(0, 20).padEnd(20, ' ') + ' ' + this._corazones(af));
     });
-    if (conocidos.length > 8) lineas.push('  ...y ' + (conocidos.length - 8) + ' más');
+    if (conocidos.length > 6) lineas.push('  ...y ' + (conocidos.length - 6) + ' más');
     this.cuerpo.setText(lineas.join('\n'));
   }
 
