@@ -167,7 +167,8 @@ AJ.Gestion.Dilemas = (function () {
   }
 
   // Resuelve un dilema: aplica los impactos de la opción y lo marca resuelto.
-  // Devuelve { reaccion, impactosReales, opcion } (o null si algo no existe).
+  // Si la opción requiereTirada y G4 está activo, el dado modula los impactos
+  // (resultado graduado). Devuelve { reaccion, impactosReales, opcion, tirada }.
   function resolver(estado, dilemaId, opcionId) {
     const ep = E.actual(estado);
     if (!ep) return null;
@@ -175,9 +176,16 @@ AJ.Gestion.Dilemas = (function () {
     if (!d) return null;
     const op = d.opciones.find((o) => o.id === opcionId);
     if (!op) return null;
-    const reales = E.aplicarImpacto(ep, op.impactos);
+    let reales, tirada = null;
+    if (op.requiereTirada && AJ.CONFIG && AJ.CONFIG.tiradas && AJ.Gestion.Tiradas) {
+      const r = AJ.Gestion.Tiradas.aplicar(estado, op.impactos,
+        { dificultad: op.dificultad || 12, medidores: op.medidores || ['conocimiento'] });
+      reales = r.impactosReales; tirada = r.tirada;
+    } else {
+      reales = E.aplicarImpacto(ep, op.impactos);
+    }
     if (ep.dilemasResueltos.indexOf(d.id) < 0) ep.dilemasResueltos.push(d.id);
-    return { reaccion: op.reaccion || '', impactosReales: reales, opcion: op, dilema: d };
+    return { reaccion: op.reaccion || '', impactosReales: reales, opcion: op, dilema: d, tirada: tirada };
   }
 
   return {
@@ -234,9 +242,24 @@ AJ.Gestion.DilemasUI = (function () {
       b.addEventListener('click', () => {
         const res = M.resolver(estado, dilema.id, op.id);
         if (AJ.Sonido) { try { AJ.Sonido.click(); } catch (e) {} }
-        // Mostrar reacción + impactos y un botón para seguir.
+        // Mostrar (si hubo) la tirada, la reacción + impactos y un botón para seguir.
         cont.innerHTML = '';
-        panel.appendChild(_el('p', 'gestion-reaccion', (res && res.reaccion) || ''));
+        if (res && res.tirada) {
+          const t = res.tirada;
+          const linea = '🎲 ' + t.dado + (t.mods >= 0 ? ' + ' + t.mods : ' − ' + Math.abs(t.mods)) +
+            ' = ' + t.total + '  vs  ' + t.dificultad + '   →   ' + (t.info ? t.info.nombre : t.resultado);
+          panel.appendChild(_el('p', 'gestion-tirada gestion-res-' + t.resultado, linea));
+        }
+        // Enmarca la reacción según el resultado de la tirada (si hubo), para
+        // que no suene a éxito cuando el dado dijo otra cosa.
+        let reaccionTxt = (res && res.reaccion) || '';
+        if (res && res.tirada) {
+          const rr = res.tirada.resultado;
+          if (rr === 'fracaso') reaccionTxt = 'No salió como esperabas; quedó para otra vez.';
+          else if (rr === 'parcial') reaccionTxt = reaccionTxt + '  …aunque salió a medias.';
+          else if (rr === 'critico') reaccionTxt = reaccionTxt + '  ¡Y salió incluso mejor de lo esperado!';
+        }
+        panel.appendChild(_el('p', 'gestion-reaccion', reaccionTxt));
         panel.appendChild(_el('p', 'gestion-deltas', _fmtImpactos(res && res.impactosReales)));
         const seguir = _el('button', 'creador-btn primario', 'Seguir »'); seguir.type = 'button';
         seguir.addEventListener('click', () => { cerrar(); if (onResuelto) { try { onResuelto(res); } catch (e) {} } });

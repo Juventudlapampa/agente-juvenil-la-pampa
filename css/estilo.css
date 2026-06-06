@@ -155,6 +155,16 @@ html, body {
   text-align: left; font-family: monospace; font-size: 14px; color: #9fd6a0;
   background: #1c1a17; padding: 8px 12px; border-radius: 8px; margin-bottom: 14px;
 }
+/* G4: línea de tirada del dado */
+.gestion-tirada {
+  text-align: left; font-family: monospace; font-size: 15px; font-weight: bold;
+  background: #1c1a17; padding: 9px 12px; border-radius: 8px; margin: 6px 0 10px;
+  border-left: 4px solid #8a6a3a;
+}
+.gestion-res-critico { color: #9fe6a0; border-left-color: #6ad06a; }
+.gestion-res-exito   { color: #cfe6a0; border-left-color: #b8d05a; }
+.gestion-res-parcial { color: #e6cf9f; border-left-color: #e0a85a; }
+.gestion-res-fracaso { color: #e69f9f; border-left-color: #d06a6a; }
 
 /* ---------------------- Alto contraste (E2) ------------------------- */
 /* Opción de accesibilidad: botones DOM más marcados (fondo más opaco,

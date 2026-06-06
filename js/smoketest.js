@@ -1111,6 +1111,62 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 35. G4: sistema de tiradas (dado con arco)
+    if (AJ.CONFIG.tiradas) {
+      check('G4: clasificación graduada del dado (crítico/éxito/parcial/fracaso)', () => {
+        const T = AJ.Gestion && AJ.Gestion.Tiradas;
+        if (!T) return 'sin Tiradas';
+        const test = {}; AJ.Gestion.Estado.asegurar(test, null);
+        const r = (dado) => T.tirar(test, { dificultad: 12, dadoForzado: dado, medidores: [] }).resultado;
+        if (r(20) !== 'critico') return 'nat20 no es crítico';
+        if (r(1) !== 'fracaso') return 'nat1 no es fracaso';
+        if (r(15) !== 'exito') return 'margen +3 no es éxito';
+        if (r(9) !== 'parcial') return 'margen -3 no es parcial';
+        if (r(5) !== 'fracaso') return 'margen -7 no es fracaso';
+        return true;
+      });
+      check('G4: arco suerte→competencia (los modificadores crecen con los medidores)', () => {
+        const T = AJ.Gestion.Tiradas, E = AJ.Gestion.Estado;
+        const bajo = {}; E.asegurar(bajo, null); const epB = E.actual(bajo);
+        epB.medidores.conocimiento = 10; epB.medidores.confianza = 10;
+        const alto = {}; E.asegurar(alto, null); const epA = E.actual(alto);
+        epA.medidores.conocimiento = 90; epA.medidores.confianza = 90;
+        const mB = T.modificadores(epB, ['conocimiento', 'confianza'], 0);
+        const mA = T.modificadores(epA, ['conocimiento', 'confianza'], 0);
+        return (mB < 0 && mA > 0 && mA > mB) ? true : 'arco mal: bajo=' + mB + ' alto=' + mA;
+      });
+      check('G4: escalado de impactos por resultado (crítico mejora, fracaso castiga)', () => {
+        const T = AJ.Gestion.Tiradas;
+        const base = { confianza: 10, conviccion: -8 };
+        const crit = T.escalarImpactos(base, 'critico');
+        const frac = T.escalarImpactos(base, 'fracaso');
+        if (!(crit.confianza > 10)) return 'crítico no mejoró el positivo';
+        if (frac.confianza) return 'fracaso no anuló el positivo';
+        if (!(Math.abs(frac.conviccion) >= 8)) return 'fracaso no mantuvo el costo';
+        return true;
+      });
+      check('G4: referente solo paga más (penalidad en los modificadores)', () => {
+        const T = AJ.Gestion.Tiradas, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null); const ep = E.actual(test);
+        ep.medidores.conocimiento = 50;
+        const normal = T.modificadores(ep, ['conocimiento'], 0);
+        ep.onboarding.referenteSolo = true;
+        const solo = T.modificadores(ep, ['conocimiento'], 0);
+        return (solo < normal) ? true : 'referente solo no penaliza: ' + solo + ' vs ' + normal;
+      });
+      check('G4: un dilema con tirada usa el dado al resolver', () => {
+        const M = AJ.Gestion.Dilemas, E = AJ.Gestion.Estado;
+        const test = {}; E.asegurar(test, null);
+        const con = M.BANCO_GENERICO.find((d) => d.opciones.some((o) => o.requiereTirada));
+        if (!con) return 'no hay dilema con tirada en el banco';
+        const op = con.opciones.find((o) => o.requiereTirada);
+        const res = M.resolver(test, con.id, op.id);
+        if (!res) return 'resolver null';
+        if (!res.tirada || typeof res.tirada.dado !== 'number') return 'no rodó el dado';
+        return true;
+      });
+    }
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
