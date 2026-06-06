@@ -94,6 +94,24 @@
 - ¿La **brújula** (flecha hacia la misión) ayuda sin molestar, o la sentís invasiva?
   Se puede apagar con `CONFIG.brujula`.
 
+## 13. Identidad del Agente (creador) — Capa F
+- Al "Jugar" se elige nombre, pronombre y **variante visual** (4 colores del sprite).
+- **¿Las 4 variantes de color se distinguen bien** entre sí en pantalla (no que dos
+  parezcan iguales)? Si alguna se confunde, los colores están en `js/agente.js` →
+  `VARIANTES` (camisa + gorra de cada una).
+- **¿El nombre del Agente en los diálogos se siente natural o forzado?** (los NPCs lo usan
+  como vocativo donde antes decían "Agente"). ¿Hay alguna línea donde queda raro?
+- Probá también **sin nombre** (dejarlo vacío): debe quedar "Agente" como antes, sin
+  huecos. (Ya verificado en el smoke; igual mirá que se lea natural.)
+
+## 14. Estadísticas de sesión (F4) — ¿motivan?
+- En el panel de Progreso (menú → Progreso) hay una sección "Estadísticas (todas tus
+  partidas)": tiempo total, pasos, diálogos leídos, vecinos conocidos, misiones por pueblo.
+  Se acumulan entre partidas (localStorage).
+- **¿Las estadísticas motivan a seguir jugando** (dan ganas de subir los números) o son
+  relleno que se ignora? Si motivan poco, se podría sumar alguna meta/medalla más adelante
+  (queda en ROADMAP). Se apaga con `CONFIG.estadisticas`.
+
 ---
 
 ### Cómo apagar cualquier cosa que no te guste

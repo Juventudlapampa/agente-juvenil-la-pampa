@@ -61,9 +61,12 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `progreso` | pantalla de progreso/estadísticas (E1) |
 | `accesibilidad` | vel. de texto / tamaño / contraste, elegibles (E2) |
 | `creditos` | título pulido + créditos (E3) |
+| `creadorAgente` | crear Agente (nombre/pronombre/variante visual) al empezar (F1) |
+| `capaArte` | cargar PNG de `/assets` si existen, fallback procedural (F2) |
+| `estadisticas` | estadísticas de sesión acumuladas entre partidas (F4) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 79/79, Colonia ~80, El Puesto 70/70 PASS**. 24 flags en true.
+Hoy: **Pueblo 1 88/88, Colonia 89/89, El Puesto 79/79 PASS**. 26 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
@@ -108,6 +111,9 @@ js/registro.js          AJ.Registro (colección estilo Pokédex, D3) + AJ.roster
 js/progreso.js          AJ.Progreso (stats: tiempo/afinidad/misiones, E1)
 js/accesibilidad.js     AJ.Accesibilidad (vel. texto/tamaño/contraste, E2)
 js/creditos.js          AJ.Creditos (overlay de créditos, E3)
+js/agente.js            AJ.Agente (creador: nombre/pronombre/variante + recoloreo, F1)
+assets/manifest.js      AJ.ASSET_MANIFEST (lista de PNG reales para la capa de arte, F2)
+js/estadisticas.js      AJ.Stats (estadísticas de sesión acumuladas, F4)
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título
@@ -122,8 +128,8 @@ escenas/Final.js        Pantalla de cierre
   O server local: `node` con un static server (¡OJO! `python` en esta máquina es el
   stub de Windows Store, no Python real — usar Node).
 - **Smoke-test:** abrí la consola del navegador (F12). Con `dev:true` corre solo al
-  entrar al pueblo e imprime PASS/FAIL. Hoy: **55/55 PASS** (Pueblo 1), 47/47 (Colonia).
-  Programáticamente: `AJ.SmokeTest.correr(AJ.juego.scene.getScene('Pueblo'))`.
+  entrar al pueblo e imprime PASS/FAIL. Hoy: **Pueblo 1 88/88, Colonia 89/89, El Puesto
+  79/79 PASS**. Programáticamente: `AJ.SmokeTest.correr(AJ.juego.scene.getScene('Pueblo'))`.
 
 ## Dónde retomar
 

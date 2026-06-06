@@ -339,6 +339,47 @@ generador procedural rellena lo que falte (cada generador saltea claves ya exist
   tile `pasto` se cargó del PNG (4×4 magenta), overrideando el procedural; al quitar el
   PNG, volvió a procedural. Sin tocar el arte generado (sólo se agregó el gancho de carga).
 
+### D37 — F4: estadísticas de sesión acumuladas (localStorage aparte del save)
+**Por qué:** `CONFIG.estadisticas` agrega `js/estadisticas.js` (`AJ.Stats`): contadores
+**acumulados entre TODAS las partidas** (tiempo total, pasos, NPCs conocidos distintos,
+diálogos leídos, misiones por pueblo), de sólo lectura en el panel de Progreso (E1).
+- **localStorage propio (`aj_stats_v1`), separado del save del juego.** Igual que las
+  preferencias de accesibilidad/agente: son datos del jugador que valen para todas las
+  partidas, no parte de una partida. Así, "Reiniciar partida" borra el save pero NO la
+  vida estadística (decisión: las estadísticas son historia personal, no progreso de save).
+  Distinto del `estado.tiempoJugado` (E1), que es **por partida**; el panel ahora muestra
+  ambos: "Tiempo (partida)" y "Tiempo total (todas tus partidas)".
+- **Escritura con throttle:** los contadores se acumulan en memoria y `flush()` escribe a
+  localStorage sólo en el autoguardado del Pueblo y en `beforeunload` (no en cada frame).
+  Evita castigar el disco con el conteo de tiempo/pasos por frame.
+- **Hooks aditivos y guardados** (no-op si el flag está off): `Pueblo.update` (tiempo salvo
+  en pausa; un paso por tile nuevo), `dialogo` (+1 por tramo leído, NO al completar el
+  typewriter), `_hablarCon` (NPC distinto), `misiones._completar` (misión por pueblo).
+- **Panel:** se subió el alto (540) y se capeó la lista de amistad a 6 para que la sección
+  nueva entre sin desbordar ni en el peor caso (verificado: 17 vecinos + 3 pueblos no
+  solapan el botón Volver).
+- Verificado: smoke 84/84 con un check no destructivo (snapshot/restore de `aj_stats_v1`);
+  caminar suma pasos, hablar registra NPCs distintos, diálogos cuentan por tramo, y los
+  valores **persisten y acumulan tras recargar** (123.5s → sobrevive el reload).
+
+### D38 — F5: robustez final de la Capa F (bordes en el smoke, no destructivos)
+**Por qué:** el smoke (sin flag) sumó 4 bordes sobre lo nuevo: (1) **nombre de Agente
+vacío/en blanco** no rompe el diálogo (deja "Agente"; ya lo cubría el guard de `nombre()`,
+ahora con aserto); (2) **variante visual** persiste tras un "reload" (init re-lee
+localStorage) y el sprite vivo coincide con la variante activa (verificado por pixel);
+(3) **capa de arte:** `generarTodo` es **idempotente** — el camino real del fallback es
+"cargó PNGs → generarTodo rellena lo que falte", así que re-ejecutarlo con texturas
+presentes no debe borrar ni romper nada; (4) **estadísticas** acumulan entre 3 sesiones
+simuladas (flush + reload + flush).
+- **Bug de verificación atrapado (no de producción):** la primera versión del check de arte
+  **removía `pasto`** (textura en uso por los tiles en pantalla) para probar el relleno →
+  los sprites quedaban con `glTexture` null y el render crasheaba. Se reemplazó por el check
+  de idempotencia (no remueve texturas vivas), que prueba la MISMA propiedad sin el hazard.
+  Lección: en el smoke, nunca remover una textura que la escena está renderizando.
+- Resultado honesto: **ninguno de los 4 bordes reveló un bug de producción** — el código de
+  F1/F2/F4 ya se comportaba bien. Smoke al cierre: **Pueblo 1 88/88, Colonia 89/89, El
+  Puesto 79/79**, sin errores de consola.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

@@ -72,6 +72,18 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **E4** (sin flag): bordes sobre D/E.
 - Smoke al cierre: **Pueblo 1 79/79, El Puesto 70/70**. 24 flags en true.
 
+### Capa F — Identidad del Agente y ganchos de arte
+
+- [x] **F1 `creadorAgente`**: crear Agente (nombre/pronombre/variante visual) al empezar;
+      el nombre aparece en los diálogos; sprite recoloreado (4 variantes, sin arte nuevo).
+- [x] **F2 `capaArte`**: juego artist-ready (PNG-first vía `assets/manifest.js`, fallback
+      procedural). Ver `ARTE.md`.
+- [x] **F3** (sin flag, docs): fichas de arte de referencia en `assets/tiles|sprites/`.
+- [x] **F4 `estadisticas`**: estadísticas de sesión acumuladas entre partidas (panel de
+      Progreso, sólo lectura).
+- [x] **F5** (sin flag): robustez final — 4 bordes sobre la Capa F en el smoke.
+- Smoke al cierre de F: **Pueblo 1 88/88, Colonia 89/89, El Puesto 79/79**. 26 flags en true.
+
 ## Futuras noches (bolt-on previsto, todo detrás de flags)
 
 - **Más misiones/recetas/economía entre pueblos** (precios distintos por pueblo;

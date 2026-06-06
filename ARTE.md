@@ -78,3 +78,8 @@ Con `CONFIG.capaArte` en `true` y `assets/manifest.js` **vacío**, el juego se v
 igual que siempre (todo procedural, cero PNG, cero 404). Agregá un PNG + su nombre al
 manifiesto y vas a verlo en pantalla al recargar. El smoke-test confirma que el
 fallback procedural sigue cubriendo todo lo no provisto.
+
+> **Nota de robustez (F5):** el generador procedural (`generarTodo`) es **idempotente**
+> — cada generador saltea las claves que ya existen. Por eso el orden real "cargo los
+> PNG del manifiesto → relleno lo que falta con procedural" es seguro: rellenar nunca
+> pisa ni rompe un PNG ya cargado. El smoke lo verifica en cada arranque.

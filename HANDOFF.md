@@ -85,6 +85,27 @@ economía); pantalla final. Todo commiteado y verificado.
 - Smoke al cierre de E: Pueblo 1 **79/79**, El Puesto **70/70**. Sin errores de consola.
 - **Git sigue sin remote: el push lo hace el humano** (crear repo en GitHub + push).
 
+### Capa F — Identidad del Agente y ganchos de arte (cuarta noche) — CERRADA
+- **F1 `creadorAgente`**: al "Jugar" se crea el Agente — nombre (máx 12), pronombre
+  (él/ella/elle) y **variante visual** (4 recoloreos del sprite base, sin arte nuevo).
+  Se guarda en localStorage; el nombre reemplaza el vocativo "Agente" en los diálogos
+  (sin tocar "Agente Juvenil"). Overlay DOM (fiable en celular). Commit `7aaa983`.
+- **F2 `capaArte`**: el juego queda **artist-ready**. `art.js` expone `preparar(scene)`:
+  si hay PNG listados en `assets/manifest.js` los carga (`assets/tiles|sprites/<n>.png`),
+  y el procedural rellena lo que falte. Manifiesto vacío → todo procedural, idéntico,
+  **cero 404s**. Commit `afb71b7`.
+- **F3** (sin flag, sólo docs): fichas de arte de referencia (`assets/tiles/README.md`,
+  `assets/sprites/README.md`) con convención de nombres, dimensiones y paleta. Commit `1c45888`.
+- **F4 `estadisticas`**: estadísticas de sesión **acumuladas entre partidas** (localStorage
+  `aj_stats_v1`, aparte del save): tiempo total, pasos, NPCs conocidos, diálogos leídos,
+  misiones por pueblo. Sección de sólo lectura en el panel de Progreso (E1). Commit `87ad467`.
+- **F5** (sin flag): robustez final — 4 casos de borde nuevos en el smoke (nombre de Agente
+  vacío, variante persiste tras recargar, `generarTodo` idempotente = fallback de arte
+  seguro, estadísticas acumulan entre sesiones). **Ningún borde reveló un bug.** Commit `7ea4b67`.
+- Smoke al cierre de F: **Pueblo 1 88/88, Colonia 89/89, El Puesto 79/79 PASS**, sin errores
+  de consola. **26 flags en true.**
+- **Git sigue sin remote: el push lo hace el humano** (ver sección "Push" abajo).
+
 ### Capa 2 — Pulido (primera noche)
 > Se completa abajo a medida que avanza. Flags nuevos arrancan en `false` y pasan a
 > `true` sólo al verificar con el smoke-test.
