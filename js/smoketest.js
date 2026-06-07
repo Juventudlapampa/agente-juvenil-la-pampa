@@ -1100,6 +1100,34 @@ AJ.SmokeTest = (function () {
           return true;
         });
       }
+      // N5: misiones por región (zonas productivas con su set de misiones/recursos).
+      if (AJ.CONFIG.misionesPorRegion && AJ.Gestion.Regiones) {
+        check('N5: misiones por región — 6 zonas válidas, region→zona, resuelve con dado', () => {
+          const R = AJ.Gestion.Regiones, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+          if (!R.activo()) return 'Regiones no activo';
+          const zonas = R.todas();
+          if (zonas.length !== 6) return 'zonas=' + zonas.length;
+          const malos = []; const zonaIds = {};
+          zonas.forEach((z) => {
+            zonaIds[z.id] = true;
+            if (!z.misiones || !z.misiones.length) malos.push(z.id + ':sin-misiones');
+            (z.comunidadesDestacadas || []).forEach((c) => { if (!D.comunidad(c)) malos.push(z.id + ':com:' + c); });
+            (z.misiones || []).forEach((m) => {
+              Object.keys(m.impactos || {}).forEach((k) => { if (!D.medidor(k)) malos.push(z.id + ':' + m.id + ':' + k); });
+            });
+          });
+          if (malos.length) return 'datos inválidos: ' + malos.slice(0, 4).join(',');
+          const badMap = Object.keys(R.REGION_ZONA).filter((r) => !zonaIds[R.REGION_ZONA[r]]);
+          if (badMap.length) return 'region→zona inválido: ' + badMap.join(',');
+          const est = {}; E.asegurar(est, D.puebloInicial().id);
+          if (!R.zona(est)) return 'zona del pueblo inicial nula';
+          const ms = R.misionesDe(est);
+          if (!ms.length) return 'sin misiones en la zona inicial';
+          const res = R.resolverMision(est, ms[0].id);
+          if (!res || !res.tirada || res.mision.id !== ms[0].id) return 'resolverMision falló';
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';

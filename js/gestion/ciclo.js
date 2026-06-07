@@ -475,6 +475,8 @@ AJ.Gestion.CicloUI = (function () {
         });
       }
     }
+    // N5: misión de la REGIÓN también en el ciclo por días (consume una acción).
+    _misionRegion(cuerpo, e, false);
   }
 
   function renderResultadoActividad(res) {
@@ -541,6 +543,12 @@ AJ.Gestion.CicloUI = (function () {
         const ta = An.temporadaActual(estado);
         cuerpo.appendChild(_el('p', 'gestion-hint', '🗓️ ' + ta.nombre + ' (' + ta.meses + '): ' + ta.clima));
       }
+      // N5: sabor de la región (zona productiva) — qué se juega acá.
+      const Rg = AJ.Gestion.Regiones;
+      if (Rg && Rg.activo && Rg.activo()) {
+        const z = Rg.zona(estado);
+        if (z) cuerpo.appendChild(_el('p', 'gestion-hint', '📍 ' + z.nombre + ': ' + z.sabor));
+      }
       if (rest > 0) {
         cuerpo.appendChild(_el('p', 'gestion-hint', 'Armás el finde (' + rest + ' gestiones esta semana):'));
         T.PREP.forEach((p) => {
@@ -597,6 +605,25 @@ AJ.Gestion.CicloUI = (function () {
         });
       }
     }
+    // N5: una misión de la REGIÓN (zona productiva) para este finde. Avanza el finde.
+    _misionRegion(cuerpo, e, true);
+  }
+
+  // Botón de misión de la región (N5). avanzaFinde=true → un finde; false → consume
+  // una acción del día (modo G5). Reusa el dado (Regiones.resolverMision) y el panel.
+  function _misionRegion(cuerpo, e, avanzaFinde) {
+    const R = AJ.Gestion.Regiones;
+    if (!(R && R.activo && R.activo())) return;
+    const m = R.misionDelFinde(estado, e);
+    if (!m) return;
+    const z = R.zona(estado);
+    _btn(cuerpo, 'Misión de la región: ' + m.titulo, (z ? z.nombre + ' · ' : '') + m.situacion.slice(0, 56) + '…', () => {
+      if (!avanzaFinde && !C.consumirAccion(estado)) return;
+      const res = R.resolverMision(estado, m.id);
+      _sonido('mision');
+      if (avanzaFinde) { try { AJ.Gestion.Temporadas.avanzarFinde(estado); } catch (err) {} }
+      renderResultadoActividad({ actividad: { nombre: m.titulo }, infraOk: true, tirada: res.tirada, impactosReales: res.impactosReales });
+    });
   }
 
   function renderFindeCierre(cuerpo, e) {
