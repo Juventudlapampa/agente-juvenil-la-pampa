@@ -72,7 +72,7 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `comunidades` | descubrimiento (pueblo chico) e integración (capital) de comunidades (G6) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 127/127, Colonia 128/128, El Puesto 118/118 PASS**. 32 flags en true.
+Hoy: **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**. 32 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 

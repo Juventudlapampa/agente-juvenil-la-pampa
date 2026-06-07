@@ -5,6 +5,31 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Arte: el repo está LISTO para recibir PNGs (el arte es trabajo HUMANO + Cowork)
+
+El juego dibuja todo por código (procedural). La **Capa de Arte** (F2,
+`CONFIG.capaArte`) ya permite reemplazar cualquier textura por un PNG real sin tocar
+código. Se dejó el repo **artist-ready** con 4 piezas (commits `c9454cd`, `55e1de1`,
+`9cea510`, `8c2e382`):
+- **`assets/MANIFIESTO.md`** — las **170** texturas reemplazables (38 tiles + 132
+  sprites), nombre exacto + carpeta + dimensión + estado, y 4 discrepancias listado vs
+  código (`mesa_crafteo` en crafteo.js, `brujula_flecha` 32×28 en brujula.js, `jugador_*`
+  recoloreado, abreviaturas).
+- **`js/verificar_assets.js`** — dev tool que mide la **cobertura de arte** (PASS/FALTA
+  por pieza + %). `AJ.VerificarAssets.correr()` o `CONFIG.verificarAssets`. OFF por
+  defecto (no ensucia la consola).
+- **`CREDITS.txt`** — plantilla de créditos/licencias (priorizar CC0; evitar CC-BY-SA/
+  GPL; IA sin copyright). Banco vacío.
+- **`assets/README.md`** — cómo meter un PNG (nombre exacto, carpeta, dimensión,
+  recolorear a una paleta única).
+
+> **NO es tarea de Claude Code** conseguir, elegir, descargar ni recolorear el arte
+> (las descargas están bloqueadas, y la curaduría visual/legal es decisión humana). Eso
+> lo hace el **humano + Cowork**: buscar packs CC0, elegir estilo, recolorear a la paleta
+> única, poner los PNG en `/assets/`, listarlos en `assets/manifest.js` y anotar
+> `CREDITS.txt`. El juego los levanta solo; lo que falte sigue procedural. **Cero PNGs
+> hoy → todo procedural, 0 regresión.**
+
 ## Estado de partida que encontró la Capa de Pulido (noche del 5 jun 2026)
 
 Verificado, no asumido:
@@ -175,8 +200,10 @@ Todo cuelga de `AJ.Gestion` (scripts clásicos `js/gestion/*`), detrás de flags
   PASS**, sin errores de consola. **32 flags en true.**
 - **GP — pulido de gestión (sin flags nuevos):** GP1 (`dilemas_banco2.js`) sumó 12 dilemas
   genéricos (banco **38**, commit `e9351ca`); GP2 (commit `988a20c`) hizo el modo encontrable
-  (botón **🗂 Modo Gestión** + ayuda "¿cómo se juega?"), sin tocar balance. Smoke al cierre:
-  **Pueblo 1 127/127, Colonia 128/128, El Puesto 118/118 PASS**, consola limpia.
+  (botón **🗂 Modo Gestión** + ayuda "¿cómo se juega?"), sin tocar balance.
+- **Artist-ready (4 piezas):** `assets/MANIFIESTO.md`, `js/verificar_assets.js`,
+  `CREDITS.txt`, `assets/README.md` (ver sección "Arte" arriba). Smoke al cierre:
+  **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**, consola limpia.
 - **Modo Gestión G1–G7 completo.** El **balance fino** (medidores, ritmo de 30 días, feel del dado)
   necesita **playtest humano** (ver `PLAYTEST.md` §15–16). El banco de **dilemas sensibles**
   (`CONTENIDO_SENSIBLE.md`) y los **dilemas con voz propia / bajada institucional** los escribe y
