@@ -1025,6 +1025,30 @@ AJ.SmokeTest = (function () {
           return true;
         });
       }
+      // N2: Mesa Provincial (arranque narrativo + visitable).
+      if (AJ.CONFIG.mesaProvincial && AJ.Gestion.Mesa) {
+        check('N2: Mesa Provincial — intro pendiente, marca visto, intro/hub abren/cierran', () => {
+          const Me = AJ.Gestion.Mesa, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+          if (!Me.INTRO || !Me.INTRO.length) return 'sin INTRO';
+          if (!Me.HUB || !Me.HUB.secciones || !Me.HUB.secciones.length) return 'sin HUB';
+          const est = {}; E.asegurar(est, D.puebloInicial().id);
+          if (!Me.pendiente(est)) return 'intro no arranca pendiente';
+          Me.marcarVista(est);
+          if (Me.pendiente(est) || !Me.vista(est)) return 'marcarVista no funcionó';
+          if (AJ.Gestion.MesaUI) {
+            AJ.Gestion.MesaUI.abrirIntro(escena, est, null);
+            const aIntro = !!document.getElementById('gestion-mesa') && AJ.Gestion.modalAbierta();
+            AJ.Gestion.MesaUI.cerrar();
+            if (!aIntro) return 'intro no abrió / modalAbierta no lo detecta';
+            AJ.Gestion.MesaUI.abrirHub(escena, est, null);
+            const aHub = !!document.getElementById('gestion-mesa') && AJ.Gestion.modalAbierta();
+            AJ.Gestion.MesaUI.cerrar();
+            if (!aHub) return 'hub no abrió';
+            if (document.getElementById('gestion-mesa')) return 'quedó overlay de mesa';
+          }
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';

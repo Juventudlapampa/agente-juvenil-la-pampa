@@ -143,19 +143,29 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       (this.dialogo && this.dialogo.abierto) || (this.menu && this.menu.abierto) ||
       (AJ.Gestion && AJ.Gestion.modalAbierta && AJ.Gestion.modalAbierta());
     if (AJ.CONFIG.modoGestion && AJ.CONFIG.cicloGestion && AJ.Gestion && AJ.Gestion.CicloUI) {
+      // Arranque encadenado (capa narrativa-temporal): origen (N1) → Mesa intro (N2)
+      //  → menú del día (G5). Cada paso sólo aparece la primera vez; después G va directo.
+      const abrirMenuDia = () => {
+        try { AJ.Gestion.CicloUI.abrir(this, this.estado); }
+        catch (e) { console.warn('[Pueblo] ciclo off', e); }
+      };
+      const trasOrigen = () => {
+        if (AJ.Gestion.Mesa && AJ.Gestion.Mesa.pendiente && AJ.Gestion.Mesa.pendiente(this.estado) &&
+            AJ.Gestion.MesaUI) {
+          AJ.Gestion.MesaUI.abrirIntro(this, this.estado, () => { try { this.guardar(); } catch (e) {} abrirMenuDia(); });
+          return;
+        }
+        abrirMenuDia();
+      };
       const abrirCiclo = () => {
         if (_gestionBloqueada()) return;
         try {
-          // N1: la primera vez (origen pendiente) se elige el origen y reparte los
-          // medidores; al cerrar, se abre el menú del día. Después va directo al ciclo.
           if (AJ.Gestion.Origen && AJ.Gestion.Origen.pendiente && AJ.Gestion.Origen.pendiente(this.estado) &&
               AJ.Gestion.OrigenUI) {
-            AJ.Gestion.OrigenUI.abrir(this, this.estado, () => {
-              try { this.guardar(); AJ.Gestion.CicloUI.abrir(this, this.estado); } catch (e) {}
-            });
+            AJ.Gestion.OrigenUI.abrir(this, this.estado, () => { try { this.guardar(); } catch (e) {} trasOrigen(); });
             return;
           }
-          AJ.Gestion.CicloUI.abrir(this, this.estado);
+          trasOrigen();
         } catch (e) { console.warn('[Pueblo] ciclo off', e); }
       };
       this.input.keyboard.on('keydown-G', abrirCiclo);

@@ -331,9 +331,16 @@ AJ.Gestion.CicloUI = (function () {
     const pie = _el('div', 'creador-fila acciones'); panel.appendChild(pie);
     const bAyuda = _el('button', 'creador-btn', '¿Cómo se juega?'); bAyuda.type = 'button';
     bAyuda.addEventListener('click', () => { ayuda(); });
+    pie.appendChild(bAyuda);
+    // N2: la Mesa Provincial es visitable (el "mundo de arriba"). Aditivo, gated.
+    if (AJ.Gestion.Mesa && AJ.Gestion.Mesa.activo && AJ.Gestion.Mesa.activo() && AJ.Gestion.MesaUI) {
+      const bMesa = _el('button', 'creador-btn', '↑ Mesa Provincial'); bMesa.type = 'button';
+      bMesa.addEventListener('click', () => { cerrar(); AJ.Gestion.MesaUI.abrirHub(null, estado, () => { render(); }); });
+      pie.appendChild(bMesa);
+    }
     const bSalir = _el('button', 'creador-btn', 'Cerrar'); bSalir.type = 'button';
     bSalir.addEventListener('click', () => { _guardar(); cerrar(); });
-    pie.appendChild(bAyuda); pie.appendChild(bSalir);
+    pie.appendChild(bSalir);
 
     document.body.appendChild(ov); overlay = ov;
   }
