@@ -66,6 +66,50 @@ AJ.Gestion.Datos = (function () {
       sube: 'Plantarte por los pibes, decisiones íntegras.',
       baja: 'Ceder al intendente/concejal/Provincia por conveniencia.',
     },
+    {
+      // 6º medidor (capa narrativa-temporal, GDD §2.bis). Aptitud para CONVENCER:
+      // destrabar con la palabra, no con el cargo. Alimenta las tiradas de persuasión.
+      id: 'carisma', nombre: 'Carisma / Persuasión', abrev: 'CAR', min: 0, max: 100, inicial: 40,
+      desc: 'Aptitud para convencer: leer al otro y construir acuerdos.',
+      sube: 'Hablar bien, escuchar, ceder en lo chico para ganar en lo grande.',
+      baja: 'Imponer, prometer de más, quedar en offside.',
+    },
+  ];
+
+  /* ------------------------------------------------------------------ *
+   * §2.bis — ORÍGENES DEL JUGADOR (capa narrativa-temporal, FASE N1).
+   * Cómo llegaste a estar a cargo de la Agencia. Reparte los medidores de
+   * inicio (selector de dificultad blando). `medidores` = valores ABSOLUTOS
+   * de arranque (el resto queda en su `inicial`). `findesMenos` = la temporada
+   * arranca con ese tanto de findes menos (lo usa N3). Sin opción "mala".
+   * ------------------------------------------------------------------ */
+  const ORIGENES = [
+    {
+      id: 'merito', nombre: 'Por mérito entre los jóvenes',
+      desc: 'Te eligieron los pibes. Tenés equipo y convicción, pero el intendente te mira de reojo.',
+      medidores: { agencia: 8, vinculoEscolar: 35, conocimiento: 45, confianza: 25, conviccion: 80, carisma: 55 },
+    },
+    {
+      id: 'intendente', nombre: 'Te conoce el intendente',
+      desc: 'Llegás por arriba: confianza política y recursos de sobra, pero los pibes no te registran.',
+      medidores: { agencia: 3, vinculoEscolar: 40, conocimiento: 15, confianza: 80, conviccion: 45, carisma: 50 },
+    },
+    {
+      id: 'comodin', nombre: 'No había más, tenías perfil',
+      desc: 'Caíste de comodín. Nada sobra, nada falta: todo medio. El recon define todo.',
+      medidores: { agencia: 5, vinculoEscolar: 40, conocimiento: 40, confianza: 45, conviccion: 55, carisma: 50 },
+    },
+    {
+      id: 'urgencia', nombre: 'Convocado de urgencia',
+      desc: 'El anterior se mudó o se fue a estudiar y te llamaron a las apuradas. Modo bombero: menos tiempo y todo a medias.',
+      medidores: { agencia: 2, vinculoEscolar: 30, conocimiento: 25, confianza: 35, conviccion: 45, carisma: 40 },
+      findesMenos: 1,
+    },
+    {
+      id: 'barrio', nombre: 'Venís del barrio',
+      desc: 'Venís de organizar la murga, el club, el merendero. Carisma y calle de sobra; caja propia, cero.',
+      medidores: { agencia: 6, vinculoEscolar: 45, conocimiento: 65, confianza: 20, conviccion: 65, carisma: 80 },
+    },
   ];
 
   /* ------------------------------------------------------------------ *
@@ -264,6 +308,7 @@ AJ.Gestion.Datos = (function () {
   const _pro = _index(PROBLEMATICAS);
   const _inf = _index(INFRA);
   const _reg = _index(REGIONES);
+  const _ori = _index(ORIGENES);
 
   function medidor(id) { return _med[id] || null; }
   function comunidad(id) { return _com[id] || null; }
@@ -272,13 +317,14 @@ AJ.Gestion.Datos = (function () {
   function problematica(id) { return _pro[id] || null; }
   function infra(id) { return _inf[id] || null; }
   function region(id) { return _reg[id] || null; }
+  function origen(id) { return _ori[id] || null; }
   function nivel(n) { return NIVELES[n] || null; }
   function puebloInicial() { return PUEBLOS[0]; } // nivel 1 = arranque fácil
 
   return {
     MEDIDORES, COMUNIDADES, NIVELES, MODELO_NIVEL, PUEBLOS, INFRA,
-    ACTIVIDADES, PROBLEMATICAS, MOTIVOS_PODER, REGIONES,
-    medidor, comunidad, pueblo, actividad, problematica, infra, region, nivel, puebloInicial,
+    ACTIVIDADES, PROBLEMATICAS, MOTIVOS_PODER, REGIONES, ORIGENES,
+    medidor, comunidad, pueblo, actividad, problematica, infra, region, origen, nivel, puebloInicial,
   };
 })();
 
@@ -334,6 +380,7 @@ AJ.Gestion.Estado = (function () {
       problematicasVistas: {},
       dilemasResueltos: [],
       onboarding: { paso: 0, hecho: false },
+      origen: null,                // capa narrativa-temporal (N1): cómo llegó el jugador
     };
   }
 
@@ -366,6 +413,7 @@ AJ.Gestion.Estado = (function () {
     if (!ep.problematicasVistas) ep.problematicasVistas = {};
     if (!Array.isArray(ep.dilemasResueltos)) ep.dilemasResueltos = [];
     if (!ep.onboarding) ep.onboarding = { paso: 0, hecho: false };
+    if (typeof ep.origen === 'undefined') ep.origen = null; // N1 (migración defensiva)
     return g;
   }
 

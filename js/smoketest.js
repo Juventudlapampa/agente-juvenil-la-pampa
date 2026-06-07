@@ -978,10 +978,12 @@ AJ.SmokeTest = (function () {
 
     // 32. G1: capa de datos del Modo Gestión (GDD)
     if (AJ.CONFIG.modoGestion) {
-      check('G1: datos de gestión completos (5 medidores / 10 comunidades / 5 actividades)', () => {
+      check('G1: datos de gestión completos (6 medidores / 10 comunidades / 5 actividades)', () => {
         const D = AJ.Gestion && AJ.Gestion.Datos;
         if (!D) return 'sin Gestion.Datos';
-        if (D.MEDIDORES.length !== 5) return 'medidores=' + D.MEDIDORES.length;
+        // 6 medidores: los 5 del GDD §4 + carisma (capa narrativa-temporal §2.bis, N1).
+        if (D.MEDIDORES.length !== 6) return 'medidores=' + D.MEDIDORES.length;
+        if (!D.medidor('carisma')) return 'falta el medidor carisma';
         if (D.COMUNIDADES.length !== 10) return 'comunidades=' + D.COMUNIDADES.length;
         if (!D.PUEBLOS.length) return 'sin pueblos';
         if (D.ACTIVIDADES.length !== 5) return 'actividades=' + D.ACTIVIDADES.length;
@@ -996,6 +998,33 @@ AJ.SmokeTest = (function () {
         if (malas.length) return 'comunidad inexistente: ' + malas.join(',');
         return true;
       });
+      // N1: origen del jugador (capa narrativa-temporal) reparte los medidores.
+      if (AJ.CONFIG.origenJugador && AJ.Gestion.Origen) {
+        check('N1: origen reparte medidores, se aplica una sola vez, UI abre/cierra', () => {
+          const O = AJ.Gestion.Origen, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+          if (typeof O.elegir !== 'function') return 'sin Origen.elegir';
+          if (!D.ORIGENES || D.ORIGENES.length < 5) return 'faltan orígenes';
+          const est = {}; E.asegurar(est, D.puebloInicial().id);
+          const ep = E.actual(est);
+          if (ep.origen) return 'origen no arranca null';
+          const o = D.ORIGENES[0];
+          const id = O.elegir(est, o.id);
+          if (id !== o.id || ep.origen !== o.id) return 'no marcó el origen';
+          const malo = Object.keys(o.medidores).find((k) => ep.medidores[k] !== E.clampMedidor(k, o.medidores[k]));
+          if (malo) return 'medidor mal aplicado: ' + malo;
+          O.elegir(est, D.ORIGENES[1].id); // re-aplicar NO debe pisar
+          if (ep.origen !== o.id) return 're-aplicó origen (debe ser idempotente)';
+          if (O.pendiente(est)) return 'pendiente() sigue true tras elegir';
+          if (AJ.Gestion.OrigenUI) {
+            AJ.Gestion.OrigenUI.abrir(escena, est, null);
+            const abierto = !!document.getElementById('gestion-origen') && AJ.Gestion.modalAbierta();
+            AJ.Gestion.OrigenUI.cerrar();
+            if (!abierto) return 'OrigenUI no abrió / modalAbierta no lo detecta';
+            if (document.getElementById('gestion-origen')) return 'quedó overlay de origen';
+          }
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';

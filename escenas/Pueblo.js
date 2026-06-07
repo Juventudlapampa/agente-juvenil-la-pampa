@@ -145,8 +145,18 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (AJ.CONFIG.modoGestion && AJ.CONFIG.cicloGestion && AJ.Gestion && AJ.Gestion.CicloUI) {
       const abrirCiclo = () => {
         if (_gestionBloqueada()) return;
-        try { AJ.Gestion.CicloUI.abrir(this, this.estado); }
-        catch (e) { console.warn('[Pueblo] ciclo off', e); }
+        try {
+          // N1: la primera vez (origen pendiente) se elige el origen y reparte los
+          // medidores; al cerrar, se abre el menú del día. Después va directo al ciclo.
+          if (AJ.Gestion.Origen && AJ.Gestion.Origen.pendiente && AJ.Gestion.Origen.pendiente(this.estado) &&
+              AJ.Gestion.OrigenUI) {
+            AJ.Gestion.OrigenUI.abrir(this, this.estado, () => {
+              try { this.guardar(); AJ.Gestion.CicloUI.abrir(this, this.estado); } catch (e) {}
+            });
+            return;
+          }
+          AJ.Gestion.CicloUI.abrir(this, this.estado);
+        } catch (e) { console.warn('[Pueblo] ciclo off', e); }
       };
       this.input.keyboard.on('keydown-G', abrirCiclo);
       // GP2: botón DOM visible (también en celular) para entrar al Modo Gestión.
@@ -216,6 +226,8 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
         if (AJ.Gestion.CicloUI && AJ.Gestion.CicloUI.cerrar) AJ.Gestion.CicloUI.cerrar();
         if (AJ.Gestion.OnboardingUI && AJ.Gestion.OnboardingUI.cerrar) AJ.Gestion.OnboardingUI.cerrar();
         if (AJ.Gestion.DilemasUI && AJ.Gestion.DilemasUI.cerrar) AJ.Gestion.DilemasUI.cerrar();
+        if (AJ.Gestion.OrigenUI && AJ.Gestion.OrigenUI.cerrar) AJ.Gestion.OrigenUI.cerrar();
+        if (AJ.Gestion.MesaUI && AJ.Gestion.MesaUI.cerrar) AJ.Gestion.MesaUI.cerrar();
       }
     } catch (e) {}
   }

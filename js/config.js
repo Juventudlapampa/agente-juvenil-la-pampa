@@ -54,6 +54,12 @@ AJ.CONFIG = {
   tiradas:        true,  // G4: dado + modificadores + resultados graduados
   cicloGestion:   true,  // G5: ciclo de 30 días + mudanza (menú del día)
   comunidades:    true,  // G6: descubrimiento/integración de comunidades
+  // --- Capa Narrativa-Temporal (GDD §2.bis; aditiva sobre el Modo Gestión) ---
+  origenJugador:  true,  // N1: pantalla de origen que reparte los medidores (+6º medidor carisma)
+  mesaProvincial: false, // N2: arranque narrativo en la Mesa Provincial (visitable)
+  relojTemporadas: false,// N3: reloj de findes (1 temporada = 12 findes); envuelve G5
+  modoAnual:      false, // N4: 4 temporadas + Mes de las Juventudes (modo largo)
+  misionesPorRegion: false, // N5: cada zona productiva con su set de misiones/recursos
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
