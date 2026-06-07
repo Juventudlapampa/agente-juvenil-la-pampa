@@ -912,9 +912,10 @@ AJ.SmokeTest = (function () {
           A.set('variante', 2); A.init(); // Verde
           const okPersist = A.variante() === 2 && A.colores().camisa === 0x4aa86a;
           A.set('variante', vSnap); A.init();
-          // el sprite vivo coincide con la variante ACTIVA (recoloreo real aplicado)
+          // el sprite vivo coincide con la variante ACTIVA (recoloreo real aplicado).
+          // Coordenada sobre la CAMISA en el sprite 16×24 (la camisa va y11–15).
           const want = A.colores().camisa;
-          const px = escena.textures.getPixel(16, 28, 'jugador_abajo_0');
+          const px = escena.textures.getPixel(8, 13, 'jugador_abajo_0');
           const okPx = px && px.color === want;
           return (okPersist && okPx) ? true
             : 'persist=' + okPersist + ' px=' + (px ? px.color.toString(16) : 'null') + ' want=' + want.toString(16);

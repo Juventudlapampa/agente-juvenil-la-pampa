@@ -80,11 +80,14 @@ AJ.NPC = class {
     this.sprite = scene.add.sprite(this.tx * T + T / 2, this.ty * T + T / 2,
       this.tex + '_' + this.dir + '_0');
     this.sprite.setOrigin(0.5, 0.75);
+    // Textura 16×24 nativa mostrada a 32×48 (×2), igual que el jugador.
+    this.sprite.setDisplaySize(AJ.CONFIG.JUGADOR_W, AJ.CONFIG.JUGADOR_H);
     this.sprite.setDepth(this.ty * T + T);
 
-    // Globito con "!" sobre el NPC (se prende/apaga según misiones).
+    // Globito con "!" sobre el NPC (se prende/apaga según misiones). La textura
+    // 'exclamacion' es 16×16 (antes 32): por eso la escala se dobla (0.7 -> 1.4).
     this.marca = scene.add.image(this.tx * T + T / 2, this.ty * T - 14, 'exclamacion')
-      .setDepth(9000).setScale(0.7).setVisible(false);
+      .setDepth(9000).setScale(1.4).setVisible(false);
     // Guardamos la referencia del tween: la FASE A (rutinas) la pausa para
     // posicionar la marca a mano cuando el NPC camina.
     this.marcaTween = scene.tweens.add({ targets: this.marca, y: this.marca.y - 4,

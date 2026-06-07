@@ -241,7 +241,9 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
       for (let x = 0; x < M.ANCHO; x++) {
         const clave = M.tex[y][x];
         if (!this.textures.exists(clave)) continue;
-        const img = this.add.image(x * T + T / 2, y * T + T / 2, clave);
+        // Textura 16-nativa mostrada a T×T (32 px) en pantalla → ×2 nearest-neighbor.
+        // setDisplaySize es robusto: cualquier tamaño de PNG real cae igual a T×T.
+        const img = this.add.image(x * T + T / 2, y * T + T / 2, clave).setDisplaySize(T, T);
         if (suelo.has(clave)) {
           img.setDepth(-1000);
         } else {

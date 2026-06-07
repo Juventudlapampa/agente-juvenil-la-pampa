@@ -34,6 +34,7 @@ AJ.Granja = class {
     for (let y = p.y; y < p.y + p.h; y++) {
       for (let x = p.x; x < p.x + p.w; x++) {
         const s = this.scene.add.image(x * T + T / 2, y * T + T / 2, 'cultivo_0')
+          .setDisplaySize(T, T) // textura 16×16 mostrada a 32 (×2)
           .setDepth(y * T + 8).setVisible(false);
         this.cropSprites[x + ',' + y] = s;
       }

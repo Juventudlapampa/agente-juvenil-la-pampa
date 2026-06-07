@@ -2,17 +2,15 @@
  * art.js — Generación de TODO el arte por código (cero descargas)
  * ---------------------------------------------------------------------
  * Usa Phaser.Graphics + generateTexture() para crear texturas en memoria.
- * Tiles 32x32, personaje 32x48, paleta tipo 16 bits y costumbrista.
+ * Render NATIVO 16×16 (tiles) y 16×24 (personaje/NPCs), estilo GBA. Se
+ * muestra escalado ×2 (nearest-neighbor, pixelArt:true) → 32×32 / 32×48 en
+ * pantalla. La grilla/colisión/cámara siguen en 32 px de pantalla: sólo las
+ * TEXTURAS son 16-nativas y cada objeto del mundo usa setDisplaySize al
+ * dibujarse. Así un PNG real (Kenney 16×16 CC0) entra directo.
  *
- * CÓMO REEMPLAZAR POR PNG REALES MÁS ADELANTE:
- *   1. Poné los PNG en /assets (tile 32x32, sprite-sheet del personaje).
- *   2. En la escena Pueblo, en preload(), cargá:
- *        this.load.image('pasto', 'assets/pasto.png');
- *        this.load.spritesheet('jugador', 'assets/jugador.png',
- *            { frameWidth: 32, frameHeight: 48 });
- *   3. Borrá (o salteá) la llamada a AJ.Art.generarTodo() para esa clave.
- *      Las claves de textura son las mismas que se usan acá, así que el
- *      resto del juego sigue funcionando sin tocar nada.
+ * CÓMO REEMPLAZAR POR PNG REALES: ver ARTE.md / assets/README.md. Las claves
+ * de textura son las de acá; un PNG 16×16 (tile) o 16×24 (personaje) se levanta
+ * solo vía assets/manifest.js y se escala ×2 igual que el procedural.
  * ===================================================================== */
 
 window.AJ = window.AJ || {};
@@ -40,8 +38,14 @@ AJ.Art = (function () {
   };
   AJ.PAL = PAL;
 
-  // Ruido pseudo-aleatorio determinístico (sin Math.random para que el
-  // arte sea idéntico en cada carga).
+  // Tamaños NATIVOS (se muestran ×2 en pantalla).
+  const TW = 16, TH = 16;      // tile
+  const PW = 16, PH = 24;      // personaje / NPC
+
+  function darken(c, n) { return Phaser.Display.Color.IntegerToColor(c).darken(n).color; }
+  function lighten(c, n) { return Phaser.Display.Color.IntegerToColor(c).lighten(n).color; }
+
+  // Ruido pseudo-aleatorio determinístico (sin Math.random: arte idéntico siempre).
   function picotear(g, color, x, y, ancho, alto, cantidad, semilla) {
     let s = semilla || 7;
     g.fillStyle(color, 1);
@@ -50,16 +54,16 @@ AJ.Art = (function () {
       const px = x + (s % ancho);
       s = (s * 1103515245 + 12345) & 0x7fffffff;
       const py = y + (s % alto);
-      g.fillRect(px, py, 2, 2);
+      g.fillRect(px, py, 1, 1);
     }
   }
 
-  // Crea una textura de tile 32x32 con una función de dibujo.
+  // Crea una textura de tile 16×16 con una función de dibujo.
   function tile(scene, clave, dibujar) {
     if (scene.textures.exists(clave)) return;
     const g = scene.make.graphics({ x: 0, y: 0, add: false });
     dibujar(g);
-    g.generateTexture(clave, 32, 32);
+    g.generateTexture(clave, TW, TH);
     g.destroy();
   }
 
@@ -67,190 +71,160 @@ AJ.Art = (function () {
 
   function pasto(scene) {
     tile(scene, 'pasto', (g) => {
-      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 32, 32);
+      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 16, 16);
       g.fillStyle(PAL.pastoB, 1);
-      for (let y = 0; y < 32; y += 8) g.fillRect(0, y, 32, 4);
-      picotear(g, PAL.pastoDetalle, 0, 0, 30, 30, 18, 11);
+      for (let y = 0; y < 16; y += 4) g.fillRect(0, y, 16, 2);
+      picotear(g, PAL.pastoDetalle, 0, 0, 15, 15, 10, 11);
     });
   }
 
   function tierra(scene) {
     tile(scene, 'tierra', (g) => {
-      g.fillStyle(PAL.tierraA, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.tierraB, 1);
-      g.fillRect(0, 6, 32, 3); g.fillRect(0, 20, 32, 3);
-      picotear(g, PAL.tierraDetalle, 0, 0, 30, 30, 22, 23);
+      g.fillStyle(PAL.tierraA, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.tierraB, 1); g.fillRect(0, 3, 16, 2); g.fillRect(0, 10, 16, 2);
+      picotear(g, PAL.tierraDetalle, 0, 0, 15, 15, 12, 23);
     });
   }
 
   function vereda(scene) {
     tile(scene, 'vereda', (g) => {
-      g.fillStyle(PAL.veredaA, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.veredaB, 1); g.fillRect(0, 0, 32, 2); g.fillRect(0, 0, 2, 32);
-      g.lineStyle(1, PAL.veredaLinea, 1);
-      g.strokeRect(0.5, 0.5, 31, 31);
-      g.beginPath(); g.moveTo(16, 0); g.lineTo(16, 32); g.strokePath();
+      g.fillStyle(PAL.veredaA, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.veredaB, 1); g.fillRect(0, 0, 16, 1); g.fillRect(0, 0, 1, 16);
+      g.lineStyle(1, PAL.veredaLinea, 1); g.strokeRect(0.5, 0.5, 15, 15);
+      g.beginPath(); g.moveTo(8, 0); g.lineTo(8, 16); g.strokePath();
     });
   }
 
   function agua(scene) {
     tile(scene, 'agua', (g) => {
-      g.fillStyle(PAL.aguaA, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.aguaB, 1);
-      for (let y = 4; y < 32; y += 10) g.fillRect(0, y, 32, 4);
-      g.fillStyle(PAL.aguaBrillo, 1);
-      g.fillRect(5, 7, 8, 2); g.fillRect(18, 18, 9, 2); g.fillRect(10, 25, 6, 2);
+      g.fillStyle(PAL.aguaA, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.aguaB, 1); g.fillRect(0, 2, 16, 2); g.fillRect(0, 9, 16, 2);
+      g.fillStyle(PAL.aguaBrillo, 1); g.fillRect(2, 4, 4, 1); g.fillRect(9, 9, 4, 1); g.fillRect(5, 13, 3, 1);
     });
   }
 
   function calden(scene) {
     // Monte de caldén (árbol). Colisiona.
     tile(scene, 'calden', (g) => {
-      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.caldenTronco, 1); g.fillRect(14, 18, 5, 12);
-      g.fillStyle(PAL.caldenHoja, 1); g.fillCircle(16, 13, 13);
-      g.fillStyle(PAL.caldenHojaB, 1); g.fillCircle(12, 11, 7); g.fillCircle(21, 14, 6);
-      picotear(g, 0x415a2b, 4, 2, 24, 18, 14, 31);
+      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.caldenTronco, 1); g.fillRect(7, 9, 2, 6);
+      g.fillStyle(PAL.caldenHoja, 1); g.fillCircle(8, 7, 6);
+      g.fillStyle(PAL.caldenHojaB, 1); g.fillCircle(6, 6, 3); g.fillCircle(11, 7, 3);
+      picotear(g, 0x415a2b, 2, 1, 12, 9, 8, 31);
     });
   }
 
   function plaza(scene) {
     tile(scene, 'plaza', (g) => {
-      g.fillStyle(PAL.plazaA, 1); g.fillRect(0, 0, 32, 32);
-      g.lineStyle(1, PAL.plazaB, 1);
-      g.strokeRect(0.5, 0.5, 31, 31);
-      g.beginPath(); g.moveTo(0, 16); g.lineTo(32, 16);
-      g.moveTo(16, 0); g.lineTo(16, 32); g.strokePath();
+      g.fillStyle(PAL.plazaA, 1); g.fillRect(0, 0, 16, 16);
+      g.lineStyle(1, PAL.plazaB, 1); g.strokeRect(0.5, 0.5, 15, 15);
+      g.beginPath(); g.moveTo(0, 8); g.lineTo(16, 8); g.moveTo(8, 0); g.lineTo(8, 16); g.strokePath();
     });
   }
 
   // Genera un tile de edificio parametrizado (pared con ventana/puerta).
   function edificioTiles(scene, prefijo, colPared, colTecho) {
-    // pared
     tile(scene, prefijo + '_pared', (g) => {
-      g.fillStyle(colPared, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(Phaser.Display.Color.IntegerToColor(colPared).darken(12).color, 1);
-      g.fillRect(0, 28, 32, 4);
+      g.fillStyle(colPared, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(darken(colPared, 12), 1); g.fillRect(0, 14, 16, 2);
     });
-    // techo
     tile(scene, prefijo + '_techo', (g) => {
-      g.fillStyle(colTecho, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(Phaser.Display.Color.IntegerToColor(colTecho).darken(15).color, 1);
-      for (let x = 0; x < 32; x += 8) g.fillRect(x, 0, 4, 32);
+      g.fillStyle(colTecho, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(darken(colTecho, 15), 1); for (let x = 0; x < 16; x += 4) g.fillRect(x, 0, 2, 16);
     });
-    // ventana
     tile(scene, prefijo + '_ventana', (g) => {
-      g.fillStyle(colPared, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.marco, 1); g.fillRect(8, 8, 16, 16);
-      g.fillStyle(PAL.ventana, 1); g.fillRect(10, 10, 12, 12);
-      g.fillStyle(0xffffff, 0.4); g.fillRect(11, 11, 4, 11);
+      g.fillStyle(colPared, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.marco, 1); g.fillRect(4, 4, 8, 8);
+      g.fillStyle(PAL.ventana, 1); g.fillRect(5, 5, 6, 6);
+      g.fillStyle(0xffffff, 0.4); g.fillRect(6, 5, 2, 5);
     });
-    // puerta
     tile(scene, prefijo + '_puerta', (g) => {
-      g.fillStyle(colPared, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.marco, 1); g.fillRect(8, 4, 16, 28);
-      g.fillStyle(PAL.puerta, 1); g.fillRect(10, 6, 12, 26);
-      g.fillStyle(0xd4af37, 1); g.fillRect(19, 18, 2, 2);
+      g.fillStyle(colPared, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.marco, 1); g.fillRect(4, 2, 8, 14);
+      g.fillStyle(PAL.puerta, 1); g.fillRect(5, 3, 6, 13);
+      g.fillStyle(0xd4af37, 1); g.fillRect(9, 9, 1, 1);
     });
   }
 
   function monumento(scene) {
     // Monumento de plaza (busto sobre pedestal). Colisiona.
     tile(scene, 'monumento', (g) => {
-      g.fillStyle(PAL.plazaA, 1); g.fillRect(0, 0, 32, 32);
-      g.fillStyle(PAL.monumentoBase, 1); g.fillRect(8, 22, 16, 8);
-      g.fillStyle(PAL.monumento, 1); g.fillRect(12, 8, 8, 16);
-      g.fillStyle(Phaser.Display.Color.IntegerToColor(PAL.monumento).lighten(20).color, 1);
-      g.fillCircle(16, 8, 5);
+      g.fillStyle(PAL.plazaA, 1); g.fillRect(0, 0, 16, 16);
+      g.fillStyle(PAL.monumentoBase, 1); g.fillRect(4, 11, 8, 4);
+      g.fillStyle(PAL.monumento, 1); g.fillRect(6, 4, 4, 8);
+      g.fillStyle(lighten(PAL.monumento, 20), 1); g.fillCircle(8, 4, 2);
     });
   }
 
   function aguada(scene) {
     // Borde de aguada (junco/barro). Decorativo, no colisiona.
     tile(scene, 'junco', (g) => {
-      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 32, 32);
+      g.fillStyle(PAL.pastoA, 1); g.fillRect(0, 0, 16, 16);
       g.fillStyle(0x5a7a3a, 1);
-      for (let x = 4; x < 30; x += 6) {
-        g.fillRect(x, 14, 2, 14);
-        g.fillRect(x + 2, 18, 2, 10);
-      }
+      for (let x = 2; x < 15; x += 3) { g.fillRect(x, 7, 1, 7); g.fillRect(x + 1, 9, 1, 5); }
     });
   }
 
   // --- Tiles de granja (FASE 4) ---------------------------------------
 
   function granjaTiles(scene) {
-    // Tierra arada
-    tile(scene, 'arado', (g) => {
-      g.fillStyle(0x7a5a38, 1); g.fillRect(0, 0, 32, 32);
+    const aradoBase = (g) => {
+      g.fillStyle(0x7a5a38, 1); g.fillRect(0, 0, 16, 16);
       g.fillStyle(0x6a4c2e, 1);
-      for (let y = 2; y < 32; y += 7) g.fillRect(0, y, 32, 3);
-    });
-    // 4 etapas de cultivo (brote -> maduro), sobre tierra arada
+      for (let y = 1; y < 16; y += 4) g.fillRect(0, y, 16, 1);
+    };
+    tile(scene, 'arado', (g) => { aradoBase(g); });
+    // 4 etapas de cultivo (semilla -> maduro), sobre tierra arada
     const etapas = [
-      (g) => { g.fillStyle(0x6a4c2e, 1); g.fillRect(13, 18, 3, 6); }, // semilla
-      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(14, 14, 3, 12); g.fillRect(10, 18, 5, 2); }, // brote
-      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(14, 8, 3, 18); g.fillStyle(0x66b84d,1); g.fillCircle(15,10,5); }, // crece
-      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(14, 8, 3, 18); g.fillStyle(0xe0b53a,1); g.fillCircle(15,9,6); g.fillCircle(11,13,3); g.fillCircle(20,13,3);}, // maduro
+      (g) => { g.fillStyle(0x6a4c2e, 1); g.fillRect(7, 10, 1, 3); }, // semilla
+      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(7, 7, 1, 6); g.fillRect(5, 9, 3, 1); }, // brote
+      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(7, 4, 1, 9); g.fillStyle(0x66b84d, 1); g.fillCircle(7, 5, 2); }, // crece
+      (g) => { g.fillStyle(0x4f8f3a, 1); g.fillRect(7, 4, 1, 9); g.fillStyle(0xe0b53a, 1); g.fillCircle(7, 4, 3); g.fillCircle(5, 6, 1); g.fillCircle(10, 6, 1); }, // maduro
     ];
     etapas.forEach((dib, i) => {
-      tile(scene, 'cultivo_' + i, (g) => {
-        g.fillStyle(0x7a5a38, 1); g.fillRect(0, 0, 32, 32);
-        g.fillStyle(0x6a4c2e, 1);
-        for (let y = 2; y < 32; y += 7) g.fillRect(0, y, 32, 3);
-        dib(g);
-      });
+      tile(scene, 'cultivo_' + i, (g) => { aradoBase(g); dib(g); });
     });
   }
 
-  // --- Personaje: Agente Juvenil 32x48, 4 dir x 3 frames ---------------
+  // --- Personaje: Agente Juvenil 16×24, 4 dir x 3 frames --------------
 
   // Dibuja al agente mirando una dirección con un frame de paso.
   // dir: 'abajo'|'arriba'|'izq'|'der'  paso: 0 (quieto) | 1 | 2
   function dibujarAgente(g, dir, paso) {
     g.clear();
-    const cx = 16;
+    const cx = 8;
     // Sombra
-    g.fillStyle(0x000000, 0.18); g.fillEllipse(cx, 46, 22, 6);
-
-    // Piernas (con leve desfase según paso para caminata)
-    const desf = paso === 1 ? 3 : paso === 2 ? -3 : 0;
+    g.fillStyle(0x000000, 0.18); g.fillEllipse(cx, 23, 11, 3);
+    // Piernas (con leve desfase de caminata)
+    const desf = paso === 1 ? 2 : paso === 2 ? -2 : 0;
     g.fillStyle(PAL.pantalon, 1);
-    g.fillRect(cx - 7, 34, 6, 9 + (paso === 1 ? 0 : 0));
-    g.fillRect(cx + 1, 34, 6, 9);
+    g.fillRect(cx - 3, 17, 3, 5); g.fillRect(cx, 17, 3, 5);
     g.fillStyle(PAL.zapato, 1);
-    g.fillRect(cx - 7 - (desf > 0 ? desf : 0), 42, 7, 4);
-    g.fillRect(cx + 1 + (desf < 0 ? -desf : 0), 42, 7, 4);
-
+    g.fillRect(cx - 3 - (desf > 0 ? desf : 0), 21, 3, 2);
+    g.fillRect(cx + (desf < 0 ? -desf : 0), 21, 3, 2);
     // Cuerpo / camisa
-    g.fillStyle(PAL.camisa, 1); g.fillRect(cx - 8, 22, 16, 14);
-    g.fillStyle(PAL.camisaB, 1); g.fillRect(cx - 8, 32, 16, 4);
-
+    g.fillStyle(PAL.camisa, 1); g.fillRect(cx - 4, 11, 8, 7);
+    g.fillStyle(PAL.camisaB, 1); g.fillRect(cx - 4, 16, 8, 2);
     // Brazos
-    g.fillStyle(PAL.piel, 1);
-    g.fillRect(cx - 10, 23, 3, 10);
-    g.fillRect(cx + 7, 23, 3, 10);
-
+    g.fillStyle(PAL.piel, 1); g.fillRect(cx - 5, 12, 1, 5); g.fillRect(cx + 4, 12, 1, 5);
     // Cabeza
-    g.fillStyle(PAL.piel, 1); g.fillRect(cx - 6, 8, 12, 13);
+    g.fillStyle(PAL.piel, 1); g.fillRect(cx - 3, 4, 6, 7);
     // Gorra de agente
-    g.fillStyle(PAL.gorra, 1); g.fillRect(cx - 7, 6, 14, 5);
-    g.fillStyle(Phaser.Display.Color.IntegerToColor(PAL.gorra).darken(15).color, 1);
-    g.fillRect(cx - 7, 10, 14, 2);
-
+    g.fillStyle(PAL.gorra, 1); g.fillRect(cx - 4, 3, 8, 3);
+    g.fillStyle(darken(PAL.gorra, 15), 1); g.fillRect(cx - 4, 5, 8, 1);
     // Rasgos según dirección
     g.fillStyle(0x2a2018, 1);
     if (dir === 'abajo') {
-      g.fillRect(cx - 4, 13, 2, 2); g.fillRect(cx + 2, 13, 2, 2);
-      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 6, 11, 2, 4); g.fillRect(cx + 4, 11, 2, 4);
+      g.fillRect(cx - 2, 7, 1, 1); g.fillRect(cx + 1, 7, 1, 1);
+      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 3, 6, 1, 2); g.fillRect(cx + 2, 6, 1, 2);
     } else if (dir === 'arriba') {
-      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 6, 11, 12, 6);
+      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 3, 6, 6, 3);
     } else if (dir === 'izq') {
-      g.fillRect(cx - 4, 13, 2, 2);
-      g.fillStyle(PAL.pelo, 1); g.fillRect(cx + 3, 11, 3, 5);
+      g.fillRect(cx - 2, 7, 1, 1);
+      g.fillStyle(PAL.pelo, 1); g.fillRect(cx + 2, 6, 1, 3);
     } else if (dir === 'der') {
-      g.fillRect(cx + 2, 13, 2, 2);
-      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 6, 11, 3, 5);
+      g.fillRect(cx + 1, 7, 1, 1);
+      g.fillStyle(PAL.pelo, 1); g.fillRect(cx - 3, 6, 1, 3);
     }
   }
 
@@ -270,7 +244,7 @@ AJ.Art = (function () {
         if (scene.textures.exists(clave)) continue;
         const g = scene.make.graphics({ x: 0, y: 0, add: false });
         dibujarAgente(g, dir, paso);
-        g.generateTexture(clave, 32, 48);
+        g.generateTexture(clave, PW, PH);
         g.destroy();
       }
     });
@@ -292,8 +266,7 @@ AJ.Art = (function () {
         if (scene.textures.exists(k)) continue;
         const g = scene.make.graphics({ x: 0, y: 0, add: false });
         dibujarAgente(g, dir, paso);
-        // Tapar la gorra para que parezca pelo (redibujo simple).
-        g.generateTexture(k, 32, 48);
+        g.generateTexture(k, PW, PH);
         g.destroy();
       }
     });
@@ -304,30 +277,29 @@ AJ.Art = (function () {
 
   function iconos(scene) {
     tile(scene, 'moneda', (g) => {
-      g.fillStyle(0xd4af37, 1); g.fillCircle(16, 16, 12);
-      g.fillStyle(0xf0d060, 1); g.fillCircle(16, 16, 8);
-      g.fillStyle(0xb8941f, 1); g.fillRect(14, 9, 4, 14);
+      g.fillStyle(0xd4af37, 1); g.fillCircle(8, 8, 6);
+      g.fillStyle(0xf0d060, 1); g.fillCircle(8, 8, 4);
+      g.fillStyle(0xb8941f, 1); g.fillRect(7, 4, 2, 8);
     });
     tile(scene, 'exclamacion', (g) => {
-      g.fillStyle(0xf5d020, 1); g.fillCircle(16, 16, 11);
-      g.fillStyle(0x3a2c10, 1); g.fillRect(14, 7, 4, 11); g.fillRect(14, 21, 4, 4);
+      g.fillStyle(0xf5d020, 1); g.fillCircle(8, 8, 6);
+      g.fillStyle(0x3a2c10, 1); g.fillRect(7, 3, 2, 6); g.fillRect(7, 11, 2, 2);
     });
     tile(scene, 'check', (g) => {
-      g.fillStyle(0x4caf50, 1); g.fillCircle(16, 16, 11);
-      g.lineStyle(3, 0xffffff, 1);
-      g.beginPath(); g.moveTo(10, 16); g.lineTo(14, 21); g.lineTo(23, 10); g.strokePath();
+      g.fillStyle(0x4caf50, 1); g.fillCircle(8, 8, 6);
+      g.lineStyle(2, 0xffffff, 1);
+      g.beginPath(); g.moveTo(5, 8); g.lineTo(7, 11); g.lineTo(12, 5); g.strokePath();
     });
   }
 
   // --- F2: Capa de arte (PNG de /assets con fallback procedural) -------
   //
-  // preparar(scene) es el NUEVO punto de entrada (lo llama Pueblo.preload):
-  //   - Sin CONFIG.capaArte (o manifiesto vacío): genera todo procedural,
-  //     sincrónico, EXACTAMENTE como siempre. Cero cambios.
+  // preparar(scene) es el punto de entrada (lo llama Pueblo.preload):
+  //   - Sin CONFIG.capaArte (o manifiesto vacío): genera todo procedural
+  //     (16-nativo), sincrónico, idéntico a siempre.
   //   - Con capaArte y PNGs listados en AJ.ASSET_MANIFEST: encola la carga de
-  //     esos PNG; cuando termina, generarTodo() rellena procedural lo que falte
-  //     (cada generador saltea las claves que ya existen). Si un PNG listado
-  //     falla (404), se ignora y cae a procedural.
+  //     esos PNG (esperados 16×16 tile / 16×24 personaje); al terminar,
+  //     generarTodo() rellena procedural lo que falte. PNG faltante (404) -> procedural.
   function preparar(scene) {
     const usarCapa = !!(AJ.CONFIG && AJ.CONFIG.capaArte);
     const man = (window.AJ && AJ.ASSET_MANIFEST) || { tiles: [], sprites: [] };
@@ -339,9 +311,7 @@ AJ.Art = (function () {
     try {
       tiles.forEach((k) => { if (!scene.textures.exists(k)) scene.load.image(k, 'assets/tiles/' + k + '.png'); });
       sprites.forEach((k) => { if (!scene.textures.exists(k)) scene.load.image(k, 'assets/sprites/' + k + '.png'); });
-      // PNG faltante -> se ignora; el procedural lo cubre.
       scene.load.on('loaderror', function () {});
-      // Cuando termina la carga, rellenar lo que falte con el generador.
       scene.load.once('complete', function () {
         try { generarTodo(scene); } catch (e) { console.warn('[Art] generarTodo (capa)', e); }
       });
@@ -378,5 +348,5 @@ AJ.Art = (function () {
     iconos(scene);
   }
 
-  return { preparar, generarTodo, dibujarAgente, PAL };
+  return { preparar, generarTodo, dibujarAgente, PAL, TW: TW, TH: TH, PW: PW, PH: PH };
 })();

@@ -5,6 +5,13 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Estado que encontró la conversión a 16×16 (séptima noche)
+
+Verificado: smoke **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**, árbol
+limpio (último commit `e9f995f`), sin remote. Decisión tomada: arte CC0 estilo Kenney
+16×16 → pasar el render de 32×32 a **16×16 nativo escalado ×2** (32 px en pantalla),
+look GBA. Objetivo de la noche: convertir el render base sin romper colisiones/cámara/UI.
+
 ## Arte: el repo está LISTO para recibir PNGs (el arte es trabajo HUMANO + Cowork)
 
 El juego dibuja todo por código (procedural). La **Capa de Arte** (F2,

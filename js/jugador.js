@@ -20,6 +20,9 @@ AJ.Jugador = class {
 
     this.sprite = scene.add.sprite(this.x, this.y, 'jugador_' + this.dir + '_0');
     this.sprite.setOrigin(0.5, 0.75); // pies cerca de la base del tile
+    // Textura 16×24 nativa, mostrada a 32×48 (×2). La escala persiste entre
+    // frames (todos 16×24), así que la caminata se ve bien.
+    this.sprite.setDisplaySize(AJ.CONFIG.JUGADOR_W, AJ.CONFIG.JUGADOR_H);
     this.sprite.setDepth(this.y);
 
     this._crearAnimaciones();

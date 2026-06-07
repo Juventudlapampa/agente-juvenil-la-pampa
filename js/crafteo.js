@@ -54,13 +54,13 @@ AJ.Crafteo = class {
       const g = this.scene.make.graphics({ x: 0, y: 0, add: false });
       dibujar(g); g.generateTexture(clave, w, h); g.destroy();
     };
-    mk('mesa_crafteo', 32, 32, (g) => {
-      g.fillStyle(0x7ba349, 1); g.fillRect(0, 0, 32, 32);           // pasto base
-      g.fillStyle(0x8a5a2f, 1); g.fillRect(4, 10, 24, 14);          // tabla
-      g.fillStyle(0x6b4423, 1); g.fillRect(4, 10, 24, 3);           // borde
-      g.fillRect(6, 22, 4, 8); g.fillRect(22, 22, 4, 8);            // patas
-      g.fillStyle(0xb0884f, 1); g.fillRect(8, 14, 6, 5);            // herramientas
-      g.fillStyle(0x9a9486, 1); g.fillRect(18, 14, 7, 4);
+    mk('mesa_crafteo', 16, 16, (g) => {
+      g.fillStyle(0x7ba349, 1); g.fillRect(0, 0, 16, 16);          // pasto base
+      g.fillStyle(0x8a5a2f, 1); g.fillRect(2, 5, 12, 7);           // tabla
+      g.fillStyle(0x6b4423, 1); g.fillRect(2, 5, 12, 2);           // borde
+      g.fillRect(3, 11, 2, 4); g.fillRect(11, 11, 2, 4);           // patas
+      g.fillStyle(0xb0884f, 1); g.fillRect(4, 7, 3, 3);            // herramientas
+      g.fillStyle(0x9a9486, 1); g.fillRect(9, 7, 4, 2);
     });
   }
 
@@ -82,6 +82,7 @@ AJ.Crafteo = class {
     this.mesaTile = elegido;
     const T = AJ.CONFIG.TILE;
     this.sprite = this.scene.add.image(elegido.x * T + T / 2, elegido.y * T + T / 2, 'mesa_crafteo')
+      .setDisplaySize(T, T) // textura 16×16 mostrada a 32 (×2)
       .setDepth(elegido.y * T + T);
     // Cartelito.
     this.scene.add.text(elegido.x * T + T / 2, elegido.y * T - 4, 'Mesa de oficios', {
