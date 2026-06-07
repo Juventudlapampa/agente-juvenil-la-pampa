@@ -233,6 +233,35 @@ Topeada por los personajes (sin pack). Con un pack de personajes saltaría a ~90
 
 ---
 
+## Capa narrativa-temporal del Modo Gestión (N1–N6) — criterio humano
+
+Esto es nuevo y **el feel hay que jugarlo** (la corrida nocturna verificó que funciona y
+no rompe, no que "se sienta bien"). Entrá al Modo Gestión (tecla **G** o botón 🗂) y:
+
+- **¿El ORIGEN cambia bien la sensación de partida?** Probá los 5 (mérito / intendente /
+  comodín / urgencia / barrio). ¿Se nota que arrancás distinto? ¿Alguno se siente regalado
+  o injugable? ¿El 6º medidor **Carisma** aporta o sobra? (presets en `datos.js` → `ORIGENES`).
+- **¿El RITMO DE FINDES engancha?** Semana = preparación (2 gestiones), finde = ejecución
+  (1 actividad/dilema/misión con dado). 12 findes por temporada. ¿12 findes es largo/corto?
+  ¿La preparación suma o es trámite? ¿El cap de 2 preparaciones está bien? (`temporadas.js`:
+  `FINDES_TEMPORADA`, `PREP_CAP`, `PREP`). **Ojo balance:** las preparaciones dan medidores
+  modestos directos — si inflan de más, bajales el impacto.
+- **¿SEPTIEMBRE se siente como clímax?** En el modo anual (verano→laburo→invierno→segunda
+  mitad), el último finde de la segunda mitad es el **Mes de las Juventudes** (banner ⭐).
+  ¿Se siente que "todo se juega ahí" o pasa de largo? Hoy el clímax es narrativo (no hay
+  multiplicador mecánico, para no tocar el balance) — ¿alcanza, o querés que pese más?
+- **¿Las REGIONES se juegan distinto?** Mudate entre zonas (este cerealero / caldenal / oeste
+  árido / salinas / Colorado-Sur / hub centro). ¿El sabor + las misiones de cada zona se sienten
+  propios? ¿El agua/Atuel del oeste quedó **educativo y apartidario** (no militante)? Las
+  misiones son plantillas genéricas (`regiones.js` → `ZONAS`); reskinables.
+- **Mesa Provincial:** ¿el arranque (viaje → Mesa → vuelta) sienta bien el tono institucional?
+  ¿Volver a la Mesa (botón en el menú del día) aporta?
+
+> Todo esto es **aditivo y apagable**: si algo no te cierra, poné su flag en `false`
+> (`origenJugador`, `mesaProvincial`, `relojTemporadas`, `modoAnual`, `misionesPorRegion`)
+> y el Modo Gestión vuelve al ciclo de 30 días de antes. **Contenido sensible sigue a mano**
+> (no se autogeneró nada). El balance fino de los nuevos números es criterio humano.
+
 ### Cómo apagar cualquier cosa que no te guste
 Todos los sistemas tienen un flag en `js/config.js`. Poné en `false` el que no
 quieras (`juice`, `sonido`, `uiPulida`, etc.) y el juego sigue andando sin esa parte.

@@ -80,6 +80,11 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `tiradas` | dado 1–20 + modificadores, arco suerte→competencia (G4) |
 | `cicloGestion` | ciclo de 30 días (recon/gestión) + mudanza + menú del día (G5) |
 | `comunidades` | descubrimiento (pueblo chico) e integración (capital) de comunidades (G6) |
+| `origenJugador` | **N1**: pantalla de origen que reparte los medidores (+6º medidor `carisma`) |
+| `mesaProvincial` | **N2**: arranque narrativo en la Mesa Provincial (visitable) |
+| `relojTemporadas` | **N3**: reloj de findes (1 temporada = 12 findes); envuelve G5 |
+| `modoAnual` | **N4**: 4 temporadas + Mes de las Juventudes (septiembre = clímax) |
+| `misionesPorRegion` | **N5**: cada zona productiva con su set de misiones/recursos |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
 Hoy: **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**. 32 flags en true.
@@ -137,6 +142,11 @@ js/gestion/dilemas_banco.js 20 dilemas genéricos validados (banco de contenido,
 js/gestion/tiradas.js   Dado con arco suerte→competencia (AJ.Gestion.Tiradas, G4)
 js/gestion/ciclo.js     Ciclo 30 días + mudanza + actividades + menú del día (AJ.Gestion.Ciclo/Actividades/CicloUI, G5)
 js/gestion/comunidades.js Descubrimiento/integración de comunidades (AJ.Gestion.Comunidades, G6)
+js/gestion/origen.js     Capa narrativa-temporal N1: origen del jugador + 6º medidor carisma (AJ.Gestion.Origen/OrigenUI)
+js/gestion/mesa.js       N2: Mesa Provincial (arranque narrativo + visitable) (AJ.Gestion.Mesa/MesaUI)
+js/gestion/temporadas.js N3: reloj de findes (1 temporada = 12 findes) — lógica (AJ.Gestion.Temporadas)
+js/gestion/anio.js       N4: 4 temporadas del año + Mes de las Juventudes (AJ.Gestion.Anio)
+js/gestion/regiones.js   N5: misiones por zona productiva (AJ.Gestion.Regiones); contenido validado por workflow
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título

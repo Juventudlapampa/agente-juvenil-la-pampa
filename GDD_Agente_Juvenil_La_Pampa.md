@@ -418,6 +418,15 @@ fino) va a `PLAYTEST.md` para ojo humano, no se adivina.
 > (`CONTENIDO_SENSIBLE.md`, vacío para revisión), darle **voz propia / bajada institucional** a
 > dilemas y actividades, y el **balance fino + playtest** (ver `PLAYTEST.md` §15–16). El diseño de
 > este GDD no se modificó: se implementó fiel.
+>
+> **CAPA NARRATIVA-TEMPORAL (§2.bis) — N1–N6 COMPLETAS (décima noche).** Aditiva, sin tocar el
+> motor G1–G7. N1 origen + 6º medidor `carisma` · N2 Mesa Provincial · N3 reloj de findes
+> (1 temporada = 12 findes; envuelve G5) · N4 4 temporadas + Mes de las Juventudes (septiembre =
+> clímax) · N5 misiones por zona productiva (contenido validado por workflow, Atuel apartidario) ·
+> N6 robustez (save/reload real verificado). Flags: `origenJugador`, `mesaProvincial`,
+> `relojTemporadas`, `modoAnual`, `misionesPorRegion` (todos en true). Smoke Pueblo 1 **134/134
+> PASS**. Pendiente humano: **balance/feel** del ritmo de findes, el peso de cada origen, si
+> septiembre se siente clímax, si las regiones se juegan distinto (ver `PLAYTEST.md`).
 
 ---
 

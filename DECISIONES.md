@@ -549,6 +549,30 @@ nativo escalado ×2** (look GBA). Había dos formas:
   siguen andando; el verificador de assets no crashea. **El pueblo 128/128, Colonia 129/129, El Puesto
   119/119 PASS**, consola limpia.
 
+### D49 — Capa Narrativa-Temporal del Modo Gestión (N1–N6, aditiva)
+**Por qué:** sumarle al Modo Gestión un *antes* (origen), un *arriba* (Mesa Provincial),
+un *reloj* (findes/temporadas) y un *territorio* (regiones), **sin reescribir** el motor G1–G7.
+- **6º medidor `carisma`:** el origen pedía una aptitud de "convencer" distinta de Convicción
+  (integridad). El HUD **itera** `D.MEDIDORES`, así que el 6º aparece solo; único costo: smoke
+  `5→6`. Decisión: agregarlo, no conflarlo.
+- **Los findes ENVUELVEN G5 (no lo reescriben):** `Temporadas` es lógica pura; el render del
+  finde es `CicloUI.renderFinde` (función nueva que reusa `_btn`/`A.resolver`/`renderResultado`).
+  Con `relojTemporadas` off, `renderGestion` (días 6–30) queda intacto. El único check que
+  chocaba (dilema "no es gratis", que asumía la vista por días) se hizo **mode-aware**, no se rompió.
+- **Zonas productivas por mapa, sin tocar pueblos:** las 6 zonas (cerealero/caldenal/oeste árido/
+  salinas/Colorado-Sur/hub) se mapean desde las 9 regiones direccionales con `REGION_ZONA`
+  (regiones.js), usando el `region` que ya tenía cada pueblo. Cero duplicación.
+- **Clímax de septiembre narrativo, no mecánico:** el Mes de las Juventudes muestra banner y
+  enmarca el cierre como "balance del año", pero **no multiplica impactos** (tocar la escala de
+  tiradas habría alterado el balance — regla "no toques balance"). El peso viene de los medidores
+  acumulados. Peso mecánico opcional → ROADMAP.
+- **Regiones por workflow + compliance:** 6 zonas generadas por agentes (6 generan, 6 revisan)
+  con reglas estrictas (sin marcas/programas reales, sin apuestas, Atuel **educativo y apartidario**).
+  El revisor cazó un impacto inválido (`conectividad`) corregido a mano; `resolverMision` filtra
+  impactos a medidores válidos.
+- Verificado: smoke Pueblo 1 **134/134 PASS**; **save/reload REAL** del navegador conserva origen,
+  Mesa, finde a mitad, temporada del año y zona; el menú renderiza el estado cargado sin crashear.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

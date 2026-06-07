@@ -5,20 +5,41 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
-## Capa Narrativa-Temporal del Modo Gestión (décima noche) — EN CURSO
+## Capa Narrativa-Temporal del Modo Gestión (décima noche) — CERRADA
 
-Baseline: smoke Pueblo 1 **128/128 PASS**, 5 medidores, Modo Gestión G1–G7 completo.
-Objetivo: capa narrativa-temporal aditiva sobre el Modo Gestión (sin reescribir RPG ni
-motor): **origen del jugador** (reparte medidores), **Mesa Provincial** (arranque narrativo),
-**reloj de findes por temporada** (12 findes = 1 temporada; envuelve el ciclo G5),
-**temporadas + Mes de las Juventudes** (modo anual), **misiones por región** (zonas
-productivas). Todo detrás de flags nuevos, try/catch, commit por fase. (Detalle por fase: abajo.)
+Capa **aditiva** sobre el Modo Gestión (sin reescribir RPG ni motor G1–G7). Arranque:
+smoke 128/128, 5 medidores. Cierre: smoke Pueblo 1 **134/134 PASS**, 6 medidores. Todo
+detrás de flags nuevos + try/catch + commit por fase. Documentado en GDD §2.bis. Sin
+remote (push = humano). Resultado por fase:
 
-Mapas de partida (verificados por agentes): el HUD de medidores ITERA `D.MEDIDORES` (un 6º
-medidor aparece solo); estado en `estado.gestion` separado del RPG; `ciclo.js` expone
-`Ciclo`/`Actividades`/`CicloUI`; el smoke hardcodea `MEDIDORES.length===5`, `acciones===3`,
-`dia===30` (a actualizar con cuidado). Las regiones del GDD son DIRECCIONALES (no productivas):
-se agrega una capa de zonas productivas para N5.
+- **GDD primero** (commit `16c3587`): nueva sección §2.bis "Capa Narrativa-Temporal".
+- **N1 — Origen + 6º medidor (commit `f6de29c`).** `origen.js`: pantalla de 5 orígenes que
+  reparten los medidores de inicio (mérito/intendente/comodín/urgencia/barrio). Se agregó el
+  **6º medidor `carisma`** (el HUD itera `D.MEDIDORES`, aparece solo). La 1ª vez que abrís
+  Modo Gestión aparece el origen. CONFIG.origenJugador.
+- **N2 — Mesa Provincial (commit `0e80d09`).** `mesa.js`: arranque narrativo (viaje→Mesa→
+  vuelta, 5 beats) + Mesa **visitable** (botón en el menú del día). Texto genérico/reskinable.
+  Cadena: G → origen → Mesa intro → menú del día. CONFIG.mesaProvincial.
+- **N3 — Reloj de findes (commit `76b9de0`).** `temporadas.js` (lógica) + `ciclo.js`
+  (`renderFinde`/`renderFindeCierre`, aditivos). 1 temporada = 12 findes; semana=preparación,
+  finde=ejecución (actividad/dilema con dado). **Envuelve** G5 (con el flag off, sigue por
+  días). Origen "urgencia" resta 1 finde. CONFIG.relojTemporadas.
+- **N4 — 4 temporadas + Mes de las Juventudes (commit `27ea6f8`).** `anio.js`: el año son 4
+  temporadas (verano/laburo/invierno/segunda mitad), con clima; **septiembre = clímax** (faro
+  en el último finde de la segunda mitad). El cierre ofrece "Seguir el año → X". CONFIG.modoAnual.
+- **N5 — Misiones por región (commit `ffc2805`).** `regiones.js`: 9 regiones direccionales →
+  **6 zonas productivas** (este cerealero/caldenal/oeste árido/salinas/Colorado-Sur/hub centro).
+  Cada zona: sabor + recursos + comunidades + misiones plantilla. **Contenido generado por
+  workflow** (6 generar + 6 revisar compliance): sin marcas reales, sin apuestas, Atuel en
+  clave EDUCATIVA y APARTIDARIA. CONFIG.misionesPorRegion.
+- **N6 — Robustez (commit `0bc1911`).** Check integral + **save/reload REAL** verificado:
+  origen, Mesa, finde a mitad, temporada del año y zona persisten; el menú renderiza el estado
+  cargado sin crashear.
+
+**Notas de integración (para la próxima sesión):** el smoke ya NO hardcodea 5 medidores
+(ahora 6); el check G7 de "dilema no es gratis" es **mode-aware** (día vs finde). Todos los
+módulos nuevos encadenan `modalAbierta` (congela movimiento) y se cierran en
+`_cerrarModalesGestion`. Pendientes/ideas → ROADMAP.md.
 
 ## Pasada de cobertura y coherencia (novena noche) — CERRADA
 

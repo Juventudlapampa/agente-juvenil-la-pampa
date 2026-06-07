@@ -113,6 +113,20 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - Smoke al cierre de G7 (con fixes del review adversarial): **Pueblo 1 126/126, Colonia 127/127,
   El Puesto 117/117**. 32 flags en true.
 
+#### Capa Narrativa-Temporal (N1–N6) — CERRADA (décima noche)
+> Aditiva sobre el Modo Gestión (no toca el motor G1–G7). Documentada en GDD §2.bis.
+- [x] **N1 `origenJugador`**: pantalla de 5 orígenes que reparten los medidores + **6º medidor
+      `carisma`** (el HUD itera `D.MEDIDORES`).
+- [x] **N2 `mesaProvincial`**: arranque narrativo (viaje → Mesa → vuelta) + Mesa visitable.
+- [x] **N3 `relojTemporadas`**: reloj de findes (1 temporada = 12 findes; semana=preparación,
+      finde=ejecución). **Envuelve** G5 (con el flag off, sigue por días).
+- [x] **N4 `modoAnual`**: 4 temporadas (verano/laburo/invierno/segunda mitad) + **Mes de las
+      Juventudes** (septiembre = clímax).
+- [x] **N5 `misionesPorRegion`**: 6 zonas productivas (cerealero/caldenal/oeste árido/salinas/
+      Colorado-Sur/hub) con sabor + misiones plantilla. Contenido por workflow + compliance
+      (Atuel apartidario).
+- [x] **N6 robustez**: bordes + **save/reload real** verificado. **Smoke Pueblo 1 134/134 PASS** (+5 flags nuevos: origenJugador/mesaProvincial/relojTemporadas/modoAnual/misionesPorRegion).
+
 #### Pendiente — trabajo HUMANO (no automatizable)
 - [ ] **Contenido sensible** (salud mental, consumos, violencias, bullying): redacción + revisión
       humana en `CONTENIDO_SENSIBLE.md` (banco vacío; el motor lo soporta vía `registrarSensibles`).
@@ -129,6 +143,19 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
   `AJ.MISIONES_COLONIA` — decisión del humano, no automatizable).
 - **Tercer pueblo / más mapa** (la fábrica `AJ.Mapa.cargar(id)` ya lo soporta).
 - **Arreglo de fondo del mapa**: ver "Bug latente" abajo.
+
+### Capa narrativa-temporal — ideas diferidas (todo opcional)
+- **Peso mecánico del clímax de septiembre:** hoy el Mes de las Juventudes es narrativo (sin
+  multiplicador, para no tocar el balance). Se podría amplificar los impactos de su finde-faro
+  detrás de un flag, una vez validado el balance jugando.
+- **Temporadas de largo variable:** hoy las 4 temporadas tienen 12 findes; el receso de invierno
+  podría ser más corto (`anio.js`/`temporadas.js` ya soportan `totalFindes` por temporada).
+- **Pueblos para todas las zonas:** salinas y Colorado-Sur tienen zona definida pero ningún pueblo
+  jugable todavía (`datos.js` → `PUEBLOS`). Agregar pueblos ficticios para esas zonas.
+- **Preparación → bono de tirada:** las gestiones de la semana podrían dar un bonus al dado del
+  finde (en vez de impacto directo de medidor), atando mejor preparación↔ejecución.
+- **Más misiones por zona / voz propia:** hoy 2–3 plantillas por zona (`regiones.js` → `ZONAS`).
+  Sumar más y darles bajada local (humano). El contenido SENSIBLE sigue a mano.
 
 ## Bug latente conocido (no rompe nada, queda anotado)
 
