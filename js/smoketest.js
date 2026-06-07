@@ -1049,6 +1049,34 @@ AJ.SmokeTest = (function () {
           return true;
         });
       }
+      // N3: reloj de findes (una temporada = 12 findes; semana/finde; cierre con perfil).
+      if (AJ.CONFIG.relojTemporadas && AJ.Gestion.Temporadas) {
+        check('N3: findes — semana/finde, avanza, cierra con perfil, urgencia resta', () => {
+          const T = AJ.Gestion.Temporadas, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+          if (!T.activo()) return 'Temporadas no activo';
+          const est = {}; E.asegurar(est, D.puebloInicial().id);
+          const ep = E.actual(est); ep.fase = 'gestion'; T.asegurar(ep);
+          if (ep.finde !== 1 || ep.sub !== 'preparacion') return 'no arranca finde1/preparación';
+          if (ep.totalFindes !== T.FINDES_TEMPORADA) return 'totalFindes=' + ep.totalFindes;
+          const prep0 = T.prepRestantes(ep);
+          T.hacerPrep(est, 'permisos'); T.hacerPrep(est, 'escuela');
+          if (T.prepRestantes(ep) !== Math.max(0, prep0 - 2)) return 'prep no decrementa';
+          if (T.hacerPrep(est, 'recursos') !== null) return 'prep pasó el cap';
+          T.pasarAEjecucion(est);
+          if (ep.sub !== 'ejecucion') return 'no pasó a ejecución';
+          const r1 = T.avanzarFinde(est);
+          if (r1.cerrado || ep.finde !== 2 || ep.sub !== 'preparacion' || ep.findePrep !== 0) return 'avanzarFinde mal';
+          let guard = 0, cerr = null;
+          while (guard++ < 40) { const r = T.avanzarFinde(est); if (r.cerrado) { cerr = r; break; } }
+          if (!cerr || ep.fase !== 'cerrado' || !ep.perfil || !ep.perfil.titulo) return 'no cerró con perfil';
+          T.nuevaTemporada(est);
+          if (ep.fase !== 'gestion' || ep.finde !== 1) return 'nuevaTemporada no reinició';
+          const est2 = {}; E.asegurar(est2, D.puebloInicial().id);
+          const ep2 = E.actual(est2); ep2.findesMenos = 1; ep2.totalFindes = undefined; T.asegurar(ep2);
+          if (ep2.totalFindes !== T.FINDES_TEMPORADA - 1) return 'urgencia no resta finde';
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';
@@ -1551,17 +1579,28 @@ AJ.SmokeTest = (function () {
         if (test.gestion.experiencia.mudanzas !== 1) return 'contó una mudanza de más: ' + test.gestion.experiencia.mudanzas;
         return true;
       });
-      check('G7: abrir un dilema desde el menú del día consume la acción (no es gratis)', () => {
-        const C = AJ.Gestion.Ciclo, UI = AJ.Gestion.CicloUI;
+      check('G7: abrir un dilema en gestión no es gratis (consume acción por día / avanza al resolver en finde)', () => {
+        const C = AJ.Gestion.Ciclo, UI = AJ.Gestion.CicloUI, T = AJ.Gestion.Temporadas;
         if (!UI || !AJ.CONFIG.cicloGestion) return true;
+        const findes = !!(T && T.activo && T.activo());
         const test = {}; const ep = C.ep(test);
-        ep.fase = 'gestion'; ep.dia = 6; ep.accionesHoy = 0; ep.dilemasResueltos = [];
+        ep.fase = 'gestion'; ep.dilemasResueltos = [];
+        // N3: con findes, los dilemas viven en la EJECUCIÓN del finde (no en la previa).
+        if (findes) { T.asegurar(ep); ep.sub = 'ejecucion'; } else { ep.dia = 6; ep.accionesHoy = 0; }
         UI.abrir(escena, test);
         const ov = document.getElementById('gestion-ciclo');
         const btns = ov ? Array.prototype.slice.call(ov.querySelectorAll('.gestion-accion')) : [];
         const bDil = btns.filter((b) => b.textContent.indexOf('Dilema:') >= 0)[0];
-        if (!bDil) { escena._cerrarModalesGestion(); return 'no había dilema en el menú'; }
-        bDil.click(); // abre el dilema y debe consumir la acción
+        if (!bDil) { escena._cerrarModalesGestion(); return 'no había dilema en ' + (findes ? 'el finde' : 'el menú'); }
+        if (findes) {
+          const findeAntes = C.ep(test).finde;
+          bDil.click(); // abre DilemasUI; el finde NO avanza hasta resolver
+          const abrio = !!document.getElementById('gestion-dilema');
+          const noAvanzo = (C.ep(test).finde === findeAntes);
+          escena._cerrarModalesGestion();
+          return (abrio && noAvanzo) ? true : 'finde: dilema no abrió DilemasUI o avanzó al abrir';
+        }
+        bDil.click(); // por día: abre el dilema y debe consumir la acción
         const restantes = C.accionesRestantes(C.ep(test));
         escena._cerrarModalesGestion();
         return (restantes === 2) ? true : 'no consumió la acción al abrir el dilema: restantes=' + restantes;

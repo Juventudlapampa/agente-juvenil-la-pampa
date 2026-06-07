@@ -57,7 +57,7 @@ AJ.CONFIG = {
   // --- Capa Narrativa-Temporal (GDD §2.bis; aditiva sobre el Modo Gestión) ---
   origenJugador:  true,  // N1: pantalla de origen que reparte los medidores (+6º medidor carisma)
   mesaProvincial: true,  // N2: arranque narrativo en la Mesa Provincial (visitable)
-  relojTemporadas: false,// N3: reloj de findes (1 temporada = 12 findes); envuelve G5
+  relojTemporadas: true, // N3: reloj de findes (1 temporada = 12 findes); envuelve G5
   modoAnual:      false, // N4: 4 temporadas + Mes de las Juventudes (modo largo)
   misionesPorRegion: false, // N5: cada zona productiva con su set de misiones/recursos
 

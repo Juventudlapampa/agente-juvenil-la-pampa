@@ -315,9 +315,20 @@ AJ.Gestion.CicloUI = (function () {
     const panel = _el('div', 'modal-panel gestion-panel'); ov.appendChild(panel);
 
     panel.appendChild(_el('h2', null, pueblo.nombre));
+    // N3: con el reloj de findes activo, el cuerpo de la temporada se mide en findes.
+    const T = AJ.Gestion.Temporadas;
+    const findes = !!(T && T.activo && T.activo());
     const faseTxt = e.fase === 'recon' ? 'Reconocimiento' : (e.fase === 'gestion' ? 'Gestión' : 'Cierre');
-    let sub = 'Día ' + e.dia + '/' + C.TOTAL_DIAS + ' · ' + faseTxt;
-    if (e.fase === 'gestion') sub += '  ·  ' + C.accionesRestantes(e) + ' acciones hoy';
+    let sub;
+    if (findes && e.fase === 'gestion') {
+      T.asegurar(e);
+      sub = 'Finde ' + e.finde + '/' + e.totalFindes + ' · ' + (e.sub === 'ejecucion' ? 'El finde' : 'Semana de preparación');
+    } else if (findes && e.fase === 'cerrado') {
+      sub = 'Temporada cerrada';
+    } else {
+      sub = 'Día ' + e.dia + '/' + C.TOTAL_DIAS + ' · ' + faseTxt;
+      if (e.fase === 'gestion') sub += '  ·  ' + C.accionesRestantes(e) + ' acciones hoy';
+    }
     panel.appendChild(_el('p', 'gestion-sub', sub));
     panel.appendChild(medidoresHTML(e));
     const comHTML = comunidadesHTML(e);
@@ -325,8 +336,8 @@ AJ.Gestion.CicloUI = (function () {
 
     const cuerpo = _el('div', 'gestion-cuerpo'); panel.appendChild(cuerpo);
     if (e.fase === 'recon') renderRecon(cuerpo, e);
-    else if (e.fase === 'gestion') renderGestion(cuerpo, e);
-    else renderCierre(cuerpo, e);
+    else if (e.fase === 'gestion') (findes ? renderFinde(cuerpo, e) : renderGestion(cuerpo, e));
+    else (findes ? renderFindeCierre(cuerpo, e) : renderCierre(cuerpo, e));
 
     const pie = _el('div', 'creador-fila acciones'); panel.appendChild(pie);
     const bAyuda = _el('button', 'creador-btn', '¿Cómo se juega?'); bAyuda.type = 'button';
@@ -506,6 +517,79 @@ AJ.Gestion.CicloUI = (function () {
         C.mudarse(estado, p.id); _sonido('viaje'); _guardar(); render();
       });
     });
+  }
+
+  // ---- FINDE (N3): cuerpo de la temporada medido en findes. Sólo se usa con
+  //      CONFIG.relojTemporadas; reusa las MISMAS mecánicas (actividades/dilemas/
+  //      dado) que la gestión por días, pero "un finde = una ejecución". ----
+  function renderFinde(cuerpo, e) {
+    const T = AJ.Gestion.Temporadas; T.asegurar(e);
+    if (e.sub !== 'ejecucion') {
+      // LA SEMANA: preparación (gratis, capada) + jugar el finde.
+      const rest = T.prepRestantes(e);
+      cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'Semana de preparación — Finde ' + e.finde + '/' + e.totalFindes));
+      if (rest > 0) {
+        cuerpo.appendChild(_el('p', 'gestion-hint', 'Armás el finde (' + rest + ' gestiones esta semana):'));
+        T.PREP.forEach((p) => {
+          _btn(cuerpo, p.nombre, p.sub, () => { T.hacerPrep(estado, p.id); _sonido('click'); _guardar(); render(); });
+        });
+      } else {
+        cuerpo.appendChild(_el('p', 'gestion-hint', 'Ya hiciste la previa. Es hora del finde.'));
+      }
+      _btn(cuerpo, 'Jugar el finde »', 'Ejecutás la actividad / resolvés lo que caiga (con el dado)', () => {
+        T.pasarAEjecucion(estado); _sonido('click'); _guardar(); render();
+      });
+      return;
+    }
+    // EL FINDE: ejecución. Resolver una actividad o un dilema AVANZA el finde.
+    cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'El finde — elegí qué se hace'));
+    const dilemas = M ? M.elegibles(estado).slice(0, 2) : [];
+    dilemas.forEach((d) => {
+      const pro = D.problematica(d.problematica);
+      _btn(cuerpo, 'Dilema: ' + (pro ? pro.nombre : d.problematica), d.situacion.slice(0, 70) + '…', () => {
+        cerrar();
+        AJ.Gestion.DilemasUI.abrir(scene, estado, d, () => { T.avanzarFinde(estado); _guardar(); render(); });
+      });
+    });
+    const CM = AJ.Gestion.Comunidades;
+    const conComunidades = !!(CM && CM.activo && CM.activo());
+    D.ACTIVIDADES.forEach((act) => {
+      const okInfra = A.infraOk(estado, act);
+      const bonus = (A.bonusComunidad ? A.bonusComunidad(estado, act) : 0);
+      const usarCoop = !okInfra && conComunidades;
+      let sub = okInfra ? 'Tirada normal' : (usarCoop ? 'Con cooperación regional (−3 Confianza)' : 'Sin la infra: cuesta más');
+      if (bonus > 0) sub += '  ·  +' + bonus + ' por comunidad conocida';
+      _btn(cuerpo, 'Actividad: ' + act.nombre, sub, () => {
+        const res = A.resolver(estado, act.id, { cooperacion: usarCoop });
+        _sonido('mision');
+        T.avanzarFinde(estado);
+        renderResultadoActividad(res);
+      });
+    });
+    if (conComunidades && CM.esIntegracion(estado) && A.resolverPuente) {
+      const conoc = CM.delPueblo(estado).filter((id) => CM.conocida(estado, id));
+      if (conoc.length >= 2) {
+        _btn(cuerpo, 'Actividad-puente', 'Junta ' + conoc.length + ' comunidades; vale más, más difícil', () => {
+          const res = A.resolverPuente(estado, conoc);
+          _sonido('mision');
+          T.avanzarFinde(estado);
+          renderResultadoActividad({ actividad: { nombre: 'Actividad-puente' }, infraOk: true, tirada: res.tirada, impactosReales: res.impactosReales });
+        });
+      }
+    }
+  }
+
+  function renderFindeCierre(cuerpo, e) {
+    const p = e.perfil || C.calcularPerfil(e);
+    cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'Cierre de la temporada (' + (e.totalFindes || 12) + ' findes)'));
+    const card = _el('div', 'gestion-perfil');
+    card.appendChild(_el('div', 'gestion-perfil-tit', p.titulo));
+    card.appendChild(_el('div', 'gestion-perfil-desc', p.desc));
+    cuerpo.appendChild(card);
+    _btn(cuerpo, 'Seguir otra temporada acá', 'Profundizás en el mismo pueblo (conservás medidores)', () => {
+      AJ.Gestion.Temporadas.nuevaTemporada(estado); _sonido('click'); _guardar(); render();
+    });
+    renderMudanza(cuerpo, 'Mudarte a otro pueblo / región y empezar otra temporada');
   }
 
   return { abrir, cerrar, abierta, render, ayuda };
