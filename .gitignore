@@ -3,3 +3,9 @@
 *.log
 Thumbs.db
 .DS_Store
+
+# Pipeline de arte: los packs originales (terceros, pesados) y la salida
+# recoloreada NO se versionan. El arte final SÍ va (assets/tiles, assets/sprites).
+assets/raw/*
+!assets/raw/README.md
+assets/recolor/

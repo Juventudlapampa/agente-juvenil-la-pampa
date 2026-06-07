@@ -21,6 +21,29 @@ Decisión tomada: arte CC0 estilo Kenney 16×16 → render de 32×32 a **16-nati
 - Smoke: **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**, consola limpia. Sin remote
   (push = humano).
 
+## Pipeline de recoloreo automático (séptima noche, parte 2)
+
+Herramientas **aparte** (no tocan el runtime) para pasar packs CC0 a una paleta única,
+sin recolorear a mano. **Python + Pillow.** Ver `README_PIPELINE.md`.
+- **`recolorear.py`** — recolorea todos los PNG de `assets/raw/` a la paleta de
+  `assets/paleta.hex` (mapeo al color más cercano por **ΔE Lab**, preserva transparencia
+  y tamaño, sin suavizado) → `assets/recolor/`. Reporta colores fuera de paleta y archivos
+  "embarrados".
+- **`recortar.py`** — recorta un spritesheet (grilla configurable arriba del script) según
+  `assets/mapa_recorte.json` y exporta cada celda recoloreada con el **nombre exacto del
+  MANIFIESTO** a `assets/tiles/` o `assets/sprites/`.
+- **`assets/paleta.hex`** — paleta activa: **DawnBringer 32** (32 colores; la eligió el
+  humano). Editable: pegá otra paleta (un hex por línea) si querés.
+- **`assets/raw/`** ya tiene los packs de Kenney que bajó el humano (tiny-town, roguelike-rpg,
+  pixel-ui, mobile-controls). `raw/` y `recolor/` están **gitignoreados** (terceros/generado);
+  el arte final (`assets/tiles`, `assets/sprites`) sí se versiona.
+
+> **OJO (entorno):** en esta máquina **no hay Python real** (sólo el stub de Microsoft Store),
+> así que **no se pudieron ejecutar los `.py` acá**. Se validó el **algoritmo** de recoloreo con
+> un port a Node sobre un PNG dummy 16×16 (tamaño/transparencia preservados, todos los pixeles
+> opacos quedan en la paleta DB32, reporte de embarrados OK). **El humano corre los `.py`** tras
+> `python -m pip install pillow` (pasos en `README_PIPELINE.md`).
+
 ## Arte: el repo está LISTO para recibir PNGs (el arte es trabajo HUMANO + Cowork)
 
 El juego dibuja todo por código (procedural). La **Capa de Arte** (F2,
