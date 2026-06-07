@@ -1,0 +1,71 @@
+================================================================================
+ CREDITS.txt — Créditos y licencias del arte (Agente Juvenil – La Pampa)
+================================================================================
+
+Esta planilla registra el ORIGEN y la LICENCIA de cada PNG que reemplace al arte
+procedural. Hoy el juego se dibuja 100% por código (cero descargas), así que el
+banco de abajo está VACÍO: se completa a medida que entran PNGs reales.
+
+  >> Completá una fila por cada PNG que pongas en /assets/tiles o /assets/sprites.
+  >> Mantené esto al día: es lo que te cubre legalmente al publicar el juego.
+
+--------------------------------------------------------------------------------
+ QUÉ LICENCIAS ELEGIR (importante)
+--------------------------------------------------------------------------------
+
+  ✓ PRIORIZAR  CC0 / Dominio público  (Creative Commons Zero)
+       - Sin atribución obligatoria, sin restricciones. Lo más simple y seguro.
+       - Igual: anotá el autor acá por respeto y trazabilidad, aunque no lo exija.
+       - Buenas fuentes CC0: OpenGameArt (filtrá por CC0), Kenney.nl, itch.io (CC0).
+
+  ✓ ACEPTABLE  CC-BY  (Creative Commons Attribution)
+       - Se puede usar, PERO obliga a dar crédito al autor. Por eso esta planilla:
+         si usás CC-BY, el crédito tiene que figurar (acá y/o en los créditos del juego).
+
+  ✗ EVITAR  CC-BY-SA  y  licencias "virales" (GPL, etc.)
+       - "SA" = ShareAlike: te obliga a licenciar TODO tu juego bajo la misma licencia.
+       - GPL en assets puede "contagiar" el código. No conviene para un proyecto
+         institucional reskinable. Si dudás de una licencia, NO la uses.
+
+  ℹ ARTE 100% GENERADO POR IA  →  sin copyright (no es obra protegida).
+       - No requiere licencia ni atribución legal. Igual, por transparencia,
+         anotá la herramienta usada en "autor" (p. ej. "IA: <herramienta>") y
+         poné licencia = "CC0 / IA (sin copyright)".
+       - OJO: que el GENERADOR no tenga copyright no significa que el PROMPT o el
+         resultado no copie estilo de un tercero. Usá prompts genéricos, sin
+         "al estilo de <artista/marca>".
+
+  Regla práctica: ante la duda, CC0. Si una pieza no es CC0 ni CC-BY claro, no la metas.
+
+--------------------------------------------------------------------------------
+ CÓMO LLENAR EL BANCO
+--------------------------------------------------------------------------------
+
+  Una fila por PNG. Campos separados por " | " (barra). Columnas:
+
+    autor        = quién lo hizo (o "IA: <herramienta>" si es generado).
+    titulo       = nombre de la obra/pack (o "—" si no tiene).
+    licencia     = CC0 | CC-BY | CC-BY 4.0 | IA (sin copyright) | ...
+    url          = de dónde salió (link a la fuente/pack). "—" si no aplica.
+    pieza        = nombre EXACTO de la textura que reemplaza (sin .png),
+                   p. ej. pasto, casa_techo, jugador_abajo_0, npc_cura_der_2.
+                   Para un set entero usá comodín: jugador_* , npc_cura_* .
+
+  Ver /assets/MANIFIESTO.md para la lista completa de piezas y sus nombres exactos.
+
+================================================================================
+ BANCO DE CRÉDITOS  (vacío — completar)
+================================================================================
+
+# autor | titulo | licencia | url | pieza
+# ---------------------------------------------------------------------------
+# (ejemplos del formato, borrá o reemplazá por filas reales:)
+# Kenney            | Tiny Town        | CC0              | https://kenney.nl/      | pasto
+# IA: <herramienta> | —                | IA (sin copyright)| —                      | jugador_*
+# Fulano de Tal     | Pampa Tileset    | CC-BY 4.0        | https://opengameart...  | calden
+
+
+
+================================================================================
+ (fin — agregá tus filas arriba de esta línea)
+================================================================================
