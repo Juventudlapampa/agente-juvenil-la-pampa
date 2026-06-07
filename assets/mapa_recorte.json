@@ -1,22 +1,18 @@
 {
   "_comentario": [
-    "Declará acá qué celda del spritesheet (fila, col, base 0) es cada pieza.",
-    "'nombre' = nombre EXACTO de la textura (ver assets/MANIFIESTO.md).",
-    "'tipo'   = 'tile' (sale a assets/tiles/, 16x16) o 'sprite' (assets/sprites/, 16x24).",
-    "El tile size, márgenes y el sheet se configuran ARRIBA de recortar.py.",
-    "Esto es un EJEMPLO: reemplazá las celdas por las de tu pack real.",
-    "Para un personaje completo declará sus 12 frames (jugador_<dir>_<0|1|2>)."
+    "Mapa de recorte para kenney_tiny-town/Tilemap/tilemap_packed.png (12x11 tiles de 16, sin spacing).",
+    "fila/col base 0. 'nombre' = nombre EXACTO de la textura (assets/MANIFIESTO.md).",
+    "'tipo' = 'tile' (assets/tiles/, 16x16) o 'sprite' (assets/sprites/, 16x24).",
+    "Indices identificados por analisis de color del sheet. Si un tile no queda como",
+    "esperabas, cambia fila/col y volve a correr 'node recortar.js'.",
+    "Para edificios/personajes: agrega celdas mirando el sheet (TILE size en recortar.js)."
   ],
   "celdas": [
-    { "fila": 0, "col": 0, "nombre": "pasto",       "tipo": "tile" },
-    { "fila": 0, "col": 1, "nombre": "tierra",      "tipo": "tile" },
-    { "fila": 0, "col": 2, "nombre": "vereda",      "tipo": "tile" },
-    { "fila": 1, "col": 0, "nombre": "calden",      "tipo": "tile" },
-    { "fila": 1, "col": 1, "nombre": "casa_pared",  "tipo": "tile" },
-    { "fila": 1, "col": 2, "nombre": "casa_techo",  "tipo": "tile" },
-
-    { "fila": 5, "col": 0, "nombre": "jugador_abajo_0",  "tipo": "sprite" },
-    { "fila": 5, "col": 1, "nombre": "jugador_abajo_1",  "tipo": "sprite" },
-    { "fila": 5, "col": 2, "nombre": "jugador_abajo_2",  "tipo": "sprite" }
+    { "fila": 0, "col": 0, "nombre": "pasto",  "tipo": "tile" },
+    { "fila": 1, "col": 0, "nombre": "tierra", "tipo": "tile" },
+    { "fila": 1, "col": 1, "nombre": "vereda", "tipo": "tile" },
+    { "fila": 4, "col": 0, "nombre": "agua",   "tipo": "tile" },
+    { "fila": 0, "col": 9, "nombre": "arado",  "tipo": "tile" },
+    { "fila": 0, "col": 4, "nombre": "calden", "tipo": "tile" }
   ]
 }
