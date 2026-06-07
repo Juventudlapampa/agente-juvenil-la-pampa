@@ -1128,6 +1128,59 @@ AJ.SmokeTest = (function () {
           return true;
         });
       }
+      // N6: robustez de la capa narrativa-temporal (bordes + persistencia round-trip).
+      if (AJ.CONFIG.origenJugador && AJ.Gestion.Temporadas && AJ.Gestion.Anio && AJ.Gestion.Regiones) {
+        check('N6: robustez — orígenes+recarga, fin temporada+mudanza, año, finde a mitad+recarga, misiones x región', () => {
+          const E = AJ.Gestion.Estado, D = AJ.Gestion.Datos, O = AJ.Gestion.Origen,
+            T = AJ.Gestion.Temporadas, An = AJ.Gestion.Anio, R = AJ.Gestion.Regiones, C = AJ.Gestion.Ciclo;
+          const roundtrip = (est) => JSON.parse(JSON.stringify(est)); // simula guardar+recargar (localStorage)
+          // (1) cada origen reparte y PERSISTE tras recargar
+          for (let i = 0; i < D.ORIGENES.length; i++) {
+            const o = D.ORIGENES[i];
+            const est = {}; E.asegurar(est, D.puebloInicial().id); O.elegir(est, o.id);
+            const rl = roundtrip(est); E.asegurar(rl, null); const ep = E.actual(rl);
+            if (ep.origen !== o.id) return 'origen ' + o.id + ' no persistió';
+            const k0 = Object.keys(o.medidores)[0];
+            if (ep.medidores[k0] !== E.clampMedidor(k0, o.medidores[k0])) return 'medidor de ' + o.id + ' no persistió';
+          }
+          // (2) finde a mitad + recarga conserva finde/sub/findePrep
+          {
+            const est = {}; E.asegurar(est, D.puebloInicial().id);
+            const ep = E.actual(est); ep.fase = 'gestion'; T.asegurar(ep);
+            ep.finde = 5; ep.sub = 'ejecucion'; ep.findePrep = 1;
+            const rl = roundtrip(est); E.asegurar(rl, null); const ep2 = E.actual(rl); T.asegurar(ep2);
+            if (ep2.finde !== 5 || ep2.sub !== 'ejecucion' || ep2.findePrep !== 1) return 'finde a mitad no persistió';
+          }
+          // (3) terminar temporada + mudanza (hereda experiencia)
+          {
+            const est = {}; E.asegurar(est, D.puebloInicial().id);
+            const ep = E.actual(est); ep.fase = 'gestion'; T.asegurar(ep);
+            let g = 0; while (g++ < 40) { if (T.avanzarFinde(est).cerrado) break; }
+            if (ep.fase !== 'cerrado' || !ep.perfil) return 'no cerró la temporada';
+            const otros = C.pueblosDisponibles(est);
+            if (!otros.length) return 'sin pueblos para mudarse';
+            const nuevo = C.mudarse(est, otros[0].id);
+            if (!nuevo || est.gestion.actual !== otros[0].id) return 'mudanza falló';
+            if ((est.gestion.experiencia.mudanzas || 0) < 1) return 'no contó la mudanza';
+          }
+          // (4) pasar de temporada del año reinicia el reloj de findes
+          {
+            const est = {}; E.asegurar(est, D.puebloInicial().id);
+            const ep = E.actual(est); ep.fase = 'gestion'; T.asegurar(ep); ep.finde = 8;
+            const idAntes = An.temporadaActual(est).id;
+            An.avanzarTemporada(est);
+            if (An.temporadaActual(est).id === idAntes) return 'no avanzó la temporada del año';
+            if (E.actual(est).finde !== 1) return 'no reinició el reloj al pasar de temporada';
+          }
+          // (5) cada región direccional mapea a una zona con misiones válidas
+          for (let j = 0; j < Object.keys(R.REGION_ZONA).length; j++) {
+            const reg = Object.keys(R.REGION_ZONA)[j];
+            const zona = R.ZONAS[R.REGION_ZONA[reg]];
+            if (!zona || !zona.misiones || !zona.misiones.length) return 'región ' + reg + ' sin misiones';
+          }
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';
