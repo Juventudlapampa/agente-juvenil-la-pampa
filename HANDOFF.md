@@ -5,6 +5,18 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Pasada de cobertura y coherencia (novena noche) — EN CURSO
+
+Baseline al arrancar (verificado en vivo, `AJ.VerificarAssets` + smoke):
+- **Cobertura: 15% (25/170).** Smoke Pueblo 1 **128/128 PASS**.
+- **Tiles en procedural (13):** vereda, junco, arado, monumento, cultivo_0..3, moneda,
+  exclamacion, check, mesa_crafteo, brujula_flecha.
+- **Sprites en procedural (132):** todos los personajes (jugador + 10 NPCs) — sigue sin
+  haber pack de personajes en `raw/`.
+Objetivo de esta pasada: maximizar cobertura buscando equivalentes en el roguelike
+(entorno, ~1700 piezas) SIN forzar tiles feos; unificar look; auditoría automática del
+arte; andamiaje de contenido sensible; robustez + cierre. (Detalle por fase: abajo.)
+
 ## Vestir el juego con arte Kenney (octava noche) — FASES 1–3 + 5, FASE 4 pendiente
 
 Objetivo: vestir el juego con arte CC0 de Kenney por el pipeline Node, maximizando

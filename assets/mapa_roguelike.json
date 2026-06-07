@@ -3,10 +3,14 @@
     "Mapa de recorte para kenney_roguelike-rpg-pack/Spritesheet/roguelikeSheet_transparent.png",
     "Tiles de 16 con 1px de spacing -> correr con: ESPACIADO=1 MAPA=assets/mapa_roguelike.json",
     "fila/col base 0 (stride 17). Solo lo que NO tiene equivalente en Tiny Town.",
-    "agua = agua abierta cian; plaza = piso de piedra. El resto sigue procedural."
+    "Indices identificados con vistas ampliadas + grilla por cuadrante (novena noche).",
+    "arado/cultivos/junco/exclamacion/check/brujula: SIN equivalente claro -> procedural."
   ],
   "celdas": [
-    { "fila": 1, "col": 1, "nombre": "agua",  "tipo": "tile" },
-    { "fila": 1, "col": 7, "nombre": "plaza", "tipo": "tile" }
+    { "fila": 1,  "col": 1,  "nombre": "agua",         "tipo": "tile" },
+    { "fila": 1,  "col": 7,  "nombre": "plaza",        "tipo": "tile" },
+    { "fila": 2,  "col": 5,  "nombre": "vereda",       "tipo": "tile" },
+    { "fila": 10, "col": 45, "nombre": "moneda",       "tipo": "tile" },
+    { "fila": 0,  "col": 15, "nombre": "mesa_crafteo", "tipo": "tile" }
   ]
 }
