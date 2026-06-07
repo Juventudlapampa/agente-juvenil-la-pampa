@@ -54,16 +54,30 @@ banco de abajo está VACÍO: se completa a medida que entran PNGs reales.
   Ver /assets/MANIFIESTO.md para la lista completa de piezas y sus nombres exactos.
 
 ================================================================================
- BANCO DE CRÉDITOS  (vacío — completar)
+ BANCO DE CRÉDITOS  (arte CC0 de Kenney, recoloreado a DawnBringer 32)
 ================================================================================
+
+# Todo el arte de abajo es CC0 (dominio público): no exige atribución, pero la
+# anotamos por respeto y trazabilidad. Recoloreado a la paleta única del juego
+# (assets/paleta.hex, DawnBringer 32) con el pipeline Node (recolorear/recortar.js).
+# El resto del juego (personajes, UI, cultivos, iconos) sigue dibujado por código.
 
 # autor | titulo | licencia | url | pieza
 # ---------------------------------------------------------------------------
-# (ejemplos del formato, borrá o reemplazá por filas reales:)
-# Kenney            | Tiny Town        | CC0              | https://kenney.nl/      | pasto
-# IA: <herramienta> | —                | IA (sin copyright)| —                      | jugador_*
-# Fulano de Tal     | Pampa Tileset    | CC-BY 4.0        | https://opengameart...  | calden
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | pasto
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | tierra
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | calden
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | casa_pared, casa_techo, casa_ventana, casa_puerta
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | iglesia_pared, iglesia_techo, iglesia_ventana, iglesia_puerta
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | muni_pared, muni_techo, muni_ventana, muni_puerta
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | juventud_pared, juventud_techo, juventud_ventana, juventud_puerta
+Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | almacen_pared, almacen_techo, almacen_ventana, almacen_puerta
+Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | agua
+Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | plaza
 
+# --- Packs presentes en assets/raw/ aún NO cableados (pendiente FASE 4 — UI/táctil) ---
+# Kenney | Pixel UI Pack       | CC0 | https://kenney.nl/assets/pixel-ui-pack       | (diálogo/cuaderno/menús)
+# Kenney | Mobile Controls     | CC0 | https://kenney.nl/assets/mobile-controls    | (d-pad/joystick/botones táctiles)
 
 
 ================================================================================

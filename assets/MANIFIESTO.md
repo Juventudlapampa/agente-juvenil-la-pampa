@@ -8,9 +8,13 @@
 > - `código` = hoy se dibuja por código (procedural). El juego se ve igual sin PNG.
 > - `PNG` = ya hay un archivo real en `/assets/...` **y** está listado en `assets/manifest.js`.
 >
-> **Hoy TODO está en `código`** (el manifiesto arranca vacío). Para reemplazar una
-> pieza: poné el PNG con el nombre exacto en la carpeta indicada, sumá el nombre a
-> `assets/manifest.js` y recargá. Ver `assets/README.md` y `ARTE.md`.
+> **Estado actual (octava noche): 25/170 piezas en `PNG`** (arte Kenney CC0 → DB32).
+> En `PNG`: pasto, tierra, calden, los 20 tiles de edificios (casa/iglesia/muni/
+> juventud/almacén × pared/techo/ventana/puerta), agua y plaza. **El resto sigue en
+> `código`** — sobre todo los **132 sprites de personajes** (no hay pack de personajes
+> en `raw/`). Número vivo: `AJ.VerificarAssets.correr()`. Para reemplazar una pieza:
+> poné el PNG con el nombre exacto en la carpeta indicada, sumá el nombre a
+> `assets/manifest.js` (o re-corré `recortar.js`) y recargá. Ver `ARTE.md`.
 >
 > Nombre de archivo = `<nombre de textura>.png` (sin mayúsculas, sin espacios).
 

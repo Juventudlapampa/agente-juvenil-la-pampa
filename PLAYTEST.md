@@ -169,6 +169,53 @@
 
 ---
 
+## Arte Kenney (revisión visual — criterio humano)
+
+Se "vistió" parte del juego con arte CC0 de Kenney (recoloreado a DawnBringer 32
+por el pipeline Node). El arte **no automatizable** es justo si *queda bien*. Mirá
+en pantalla y decidí. Si algo no te gusta, **borralo de `assets/tiles/`** (o sacalo
+del mapa y re-corré `recortar.js`) y vuelve solo al procedural — no rompe nada.
+
+**Lo que SÍ se mapeó (mirá que calce):**
+- **Edificios** (casa / iglesia / municipalidad / casa de juventud / almacén):
+  techo+pared+ventana+puerta. Madera (techo rojo) para casa/juventud/almacén;
+  piedra (techo azul) para iglesia/muni. ¿Se leen como esos edificios? ¿La muni y
+  la casa de juventud se distinguen lo suficiente (hoy reusan tiles: muni=piedra,
+  juventud=madera, igual que iglesia/casa)? Si querés diferenciarlas, hay que
+  elegir otros tiles del sheet.
+- **calden**: es un **arbusto redondo** de Tiny Town (1 tile). No es un caldén
+  pampeano real; Tiny Town no tiene un árbol de 1 tile mejor. ¿Pasa o preferís el
+  procedural?
+- **tierra / pasto**: dirt sólido y pasto. OK.
+- **agua**: agua cian del roguelike (viste la aguada). Tiene una piedrita en una
+  esquina (del tile original). ¿Molesta al repetirse o suma textura?
+- **plaza**: piso de piedra gris del roguelike. ¿Se lee como plaza?
+
+**Lo que quedó PROCEDURAL (no había equivalente claro en los packs bajados):**
+- **PERSONAJES (jugador + 10 NPCs).** Es el 78% del inventario de arte (132/170).
+  Los packs en `assets/raw/` son de **entorno/UI**: NINGUNO trae personajes con 4
+  direcciones + frames de caminata. Tiny Town tiene 1 pose de frente; el roguelike
+  no trae personajes (falta su `roguelikeChar`). Mantenerlos procedurales además
+  **preserva las 4 variantes de color del creador de agente** y las animaciones.
+  → Para vestir personajes hay que **bajar un pack de personajes** (p. ej. Kenney
+  "Tiny Dungeon/Town Characters" o "roguelikeChar") y re-correr el pipeline.
+- **Cultivos (cultivo_0..3), moneda, mesa_crafteo, exclamación, check, junco,
+  monumento, arado, vereda:** sin equivalente claro (o el sistema no usa PNG, como
+  el inventario de items). Siguen por código.
+- **UI y controles táctiles (FASE 4 pendiente):** los packs `pixel-ui` y
+  `mobile-controls` ESTÁN en `raw/`, pero (a) la UI del juego se dibuja procedural
+  (Phaser.Graphics) y los táctiles son HTML/CSS — cablearlos es reescribir código
+  de UI con riesgo de romper el input; (b) sus PNG son de 4-bit y el recolorador
+  (8-bit) los saltea. Se dejó para una sesión dedicada **con tu ojo** (el look de
+  UI es criterio visual). No mueve el % de cobertura (que mide tiles+sprites).
+
+**Cobertura de arte hoy:** `AJ.VerificarAssets.correr()` → **15% (25/170)**.
+Topeada por los personajes (sin pack). Con un pack de personajes saltaría a ~90%+.
+
+---
+
 ### Cómo apagar cualquier cosa que no te guste
 Todos los sistemas tienen un flag en `js/config.js`. Poné en `false` el que no
 quieras (`juice`, `sonido`, `uiPulida`, etc.) y el juego sigue andando sin esa parte.
+**Arte:** para volver al procedural de una pieza, borrá su PNG de `assets/tiles/`
+(o `assets/sprites/`) y re-corré `node recortar.js` para regenerar el manifest.

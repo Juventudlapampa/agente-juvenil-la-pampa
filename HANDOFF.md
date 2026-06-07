@@ -5,6 +5,47 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Vestir el juego con arte Kenney (octava noche) — FASES 1–3 + 5, FASE 4 pendiente
+
+Objetivo: vestir el juego con arte CC0 de Kenney por el pipeline Node, maximizando
+cobertura sin romper nada. **`paleta.hex` confirmada intacta = DawnBringer 32** (32
+líneas, sin comentarios). Estado por fase:
+
+- **FASE 1 (edificios y terreno) — HECHA, commit `522229b`.** Mirando los sheets con
+  vistas ampliadas + grilla, se mapearon de Tiny Town: pasto, tierra, calden (arbusto
+  1-tile), y los **20 tiles de los 5 edificios** (casa/iglesia/muni/juventud/almacén ×
+  pared/techo/ventana/puerta). Madera (techo rojo) para casa/juventud/almacén; piedra
+  (techo azul) para iglesia/muni. **Corrigió el mapeo errado de la 7ª noche**: agua (era
+  un techo azul), arado (copa de árbol), vereda (poste de cerca) → vuelven a procedural.
+  Verificado EN PANTALLA (muestreo de color): cada edificio renderiza techo≠pared con el
+  color correcto y **0% de pasto** en las filas → calzan sin huecos.
+- **FASE 2 (personajes) — SIN CAMBIOS (documentado).** **Ningún pack en `raw/` trae
+  personajes con 4 direcciones + caminata.** Tiny Town tiene 1 pose de frente; el
+  roguelike es solo entorno (falta su `roguelikeChar`). Jugador + 10 NPCs (132 sprites =
+  **78% del inventario**) siguen procedurales — lo que además preserva las 4 variantes de
+  color del creador de agente y las animaciones. Sin commit (no hubo arte que mapear).
+- **FASE 3 (cultivos/objetos) — PARCIAL, commit `50196ef`.** Del roguelike (entorno) se
+  mapearon **agua** (cian, viste la aguada) y **plaza** (piso de piedra). Se extendió
+  `recortar.js` para recortar otros sheets via env (`SHEET`/`ESPACIADO`/`MARGEN`/`MAPA`)
+  + `assets/mapa_roguelike.json` (16px tile, 1px spacing). Cultivos, moneda, mesa_crafteo,
+  exclamación, check: sin equivalente claro → procedurales. (El inventario de items del
+  juego no usa PNG, así que las herramientas/llave/cofre de Tiny Town no tienen destino.)
+- **FASE 4 (UI y táctil) — PENDIENTE (no se tocó, a propósito).** Packs `pixel-ui` +
+  `mobile-controls` están en `raw/` pero: (a) la UI del juego se dibuja **procedural
+  (Phaser.Graphics)** y los táctiles son **HTML/CSS** → cablearlos es reescribir código de
+  UI con riesgo de romper el input táctil; (b) los PNG de UI son **4-bit** y el recolorador
+  (8-bit) los saltea (habría que extender el codec). Como **no mueve el % de cobertura**
+  (mide tiles+sprites) y el look de UI es **criterio visual**, se dejó para una sesión
+  dedicada con ojo humano. Pasos sugeridos en ARTE.md / PLAYTEST.md.
+- **FASE 5 (cobertura + créditos) — HECHA.** Cobertura: **15% (25/170)** —
+  `AJ.VerificarAssets.correr()`. Topeada por los personajes (sin pack); con un pack de
+  personajes saltaría a ~90%+. **CREDITS.txt** completo: Tiny Town + Roguelike/RPG (CC0,
+  kenney.nl), con los 4 packs anotados. Docs actualizadas (ARTE, PLAYTEST, MANIFIESTO, este).
+
+**Smoke Pueblo 1: 128/128 PASS** tras cada fase. Fallback procedural intacto. Sin remote
+(push = humano). **Lo más valioso a futuro: bajar un pack de personajes Kenney** (el mayor
+salto de cobertura) y la FASE 4 de UI.
+
 ## Conversión a 16×16 nativo ×2 (séptima noche) — CERRADA
 
 Decisión tomada: arte CC0 estilo Kenney 16×16 → render de 32×32 a **16-nativo escalado ×2**

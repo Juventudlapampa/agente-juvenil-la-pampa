@@ -93,3 +93,31 @@ fallback procedural sigue cubriendo todo lo no provisto.
 > — cada generador saltea las claves que ya existen. Por eso el orden real "cargo los
 > PNG del manifiesto → relleno lo que falta con procedural" es seguro: rellenar nunca
 > pisa ni rompe un PNG ya cargado. El smoke lo verifica en cada arranque.
+
+## Estado de cobertura (arte Kenney CC0 → DawnBringer 32)
+
+Corré `AJ.VerificarAssets.correr()` en consola para el número vivo. Hoy: **15% (25/170)**.
+
+**Mapeado (25 tiles):**
+- *Tiny Town* (`mapa_recorte.json`, `node recortar.js`): pasto, tierra, calden, y los
+  20 tiles de edificios (casa/iglesia/muni/juventud/almacén × pared/techo/ventana/puerta).
+- *Roguelike/RPG* (`mapa_roguelike.json`): agua, plaza. Como ese sheet usa tiles de 16
+  con **1px de spacing**, se corre con override de env:
+  ```
+  SHEET="assets/raw/kenney_roguelike-rpg-pack/Spritesheet/roguelikeSheet_transparent.png" \
+  ESPACIADO=1 MAPA="assets/mapa_roguelike.json" node recortar.js
+  ```
+  (recortar.js lee `SHEET`/`ESPACIADO`/`MARGEN`/`MAPA` de env; sin env = Tiny Town.)
+
+**NO mapeado (sigue procedural) y por qué:**
+- **Personajes (jugador + 10 NPCs = 132 sprites, 78% del inventario):** ningún pack en
+  `assets/raw/` trae personajes con 4 direcciones + caminata (son packs de entorno/UI).
+  → bajar un pack de personajes Kenney (`roguelikeChar`, "Tiny Town Characters", etc.),
+  recortar a **16×24**, nombres `jugador_<dir>_<f>` / `npc_<x>_<dir>_<f>`. El jugador
+  conviene dejarlo procedural igual: el creador de agente lo recolorea (4 variantes).
+- **cultivo_0..3, moneda, mesa_crafteo, exclamacion, check, junco, monumento, arado,
+  vereda:** sin equivalente claro en los packs, o el subsistema no usa PNG.
+- **UI / táctil (FASE 4):** packs `pixel-ui` + `mobile-controls` presentes pero (a) la UI
+  es procedural (Phaser.Graphics) y los táctiles HTML/CSS → cablear = reescribir UI; (b)
+  sus PNG son 4-bit y el recolorador (8-bit) los saltea (habría que extender el codec).
+  No pasa por la capa de arte (no mueve el % de cobertura). Pendiente, con revisión visual.

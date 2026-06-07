@@ -845,8 +845,13 @@ AJ.SmokeTest = (function () {
         if (!AJ.Art || typeof AJ.Art.preparar !== 'function') return 'sin preparar()';
         const man = AJ.ASSET_MANIFEST;
         if (!man || !Array.isArray(man.tiles) || !Array.isArray(man.sprites)) return 'manifiesto inválido';
-        // Con manifiesto vacío, todo cae a procedural: las texturas base deben existir.
-        const claves = ['pasto', 'tierra', 'agua', 'calden', 'jugador_abajo_0', 'npc_cura_abajo_0', 'moneda'];
+        // Sea por PNG (capa de arte) o por procedural, las texturas deben existir.
+        // Incluye el arte Kenney mapeado (edificios + agua/plaza) para confirmar que
+        // el juego abre con el arte nuevo sin crashear; cada una tiene fallback procedural.
+        const claves = ['pasto', 'tierra', 'agua', 'plaza', 'calden', 'jugador_abajo_0',
+          'npc_cura_abajo_0', 'moneda',
+          'casa_techo', 'casa_pared', 'casa_puerta', 'casa_ventana',
+          'iglesia_techo', 'muni_pared', 'juventud_techo', 'almacen_puerta'];
         const faltan = claves.filter((c) => !escena.textures.exists(c));
         return faltan.length === 0 ? true : 'faltan texturas: ' + faltan.join(',');
       });
