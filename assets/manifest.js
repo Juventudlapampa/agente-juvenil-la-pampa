@@ -7,6 +7,6 @@
  * ===================================================================== */
 window.AJ = window.AJ || {};
 AJ.ASSET_MANIFEST = {
-  tiles: ['agua', 'arado', 'calden', 'pasto', 'tierra', 'vereda'],
+  tiles: ['almacen_pared', 'almacen_puerta', 'almacen_techo', 'almacen_ventana', 'calden', 'casa_pared', 'casa_puerta', 'casa_techo', 'casa_ventana', 'iglesia_pared', 'iglesia_puerta', 'iglesia_techo', 'iglesia_ventana', 'juventud_pared', 'juventud_puerta', 'juventud_techo', 'juventud_ventana', 'muni_pared', 'muni_puerta', 'muni_techo', 'muni_ventana', 'pasto', 'tierra'],
   sprites: [],
 };

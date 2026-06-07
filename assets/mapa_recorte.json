@@ -3,16 +3,37 @@
     "Mapa de recorte para kenney_tiny-town/Tilemap/tilemap_packed.png (12x11 tiles de 16, sin spacing).",
     "fila/col base 0. 'nombre' = nombre EXACTO de la textura (assets/MANIFIESTO.md).",
     "'tipo' = 'tile' (assets/tiles/, 16x16) o 'sprite' (assets/sprites/, 16x24).",
-    "Indices identificados por analisis de color del sheet. Si un tile no queda como",
-    "esperabas, cambia fila/col y volve a correr 'node recortar.js'.",
-    "Para edificios/personajes: agrega celdas mirando el sheet (TILE size en recortar.js)."
+    "Indices identificados MIRANDO el sheet (vista ampliada). Tiny Town no tiene agua/cultivos:",
+    "esos quedan procedurales. Edificios: techo rojo (madera) / techo azul (piedra)."
   ],
   "celdas": [
     { "fila": 0, "col": 0, "nombre": "pasto",  "tipo": "tile" },
-    { "fila": 1, "col": 0, "nombre": "tierra", "tipo": "tile" },
-    { "fila": 1, "col": 1, "nombre": "vereda", "tipo": "tile" },
-    { "fila": 4, "col": 0, "nombre": "agua",   "tipo": "tile" },
-    { "fila": 0, "col": 9, "nombre": "arado",  "tipo": "tile" },
-    { "fila": 0, "col": 4, "nombre": "calden", "tipo": "tile" }
+    { "fila": 2, "col": 1, "nombre": "tierra", "tipo": "tile" },
+    { "fila": 0, "col": 5, "nombre": "calden", "tipo": "tile" },
+
+    { "fila": 5, "col": 5, "nombre": "casa_techo",   "tipo": "tile" },
+    { "fila": 6, "col": 0, "nombre": "casa_pared",   "tipo": "tile" },
+    { "fila": 7, "col": 0, "nombre": "casa_ventana", "tipo": "tile" },
+    { "fila": 7, "col": 1, "nombre": "casa_puerta",  "tipo": "tile" },
+
+    { "fila": 5, "col": 1, "nombre": "iglesia_techo",   "tipo": "tile" },
+    { "fila": 6, "col": 4, "nombre": "iglesia_pared",   "tipo": "tile" },
+    { "fila": 7, "col": 4, "nombre": "iglesia_ventana", "tipo": "tile" },
+    { "fila": 7, "col": 5, "nombre": "iglesia_puerta",  "tipo": "tile" },
+
+    { "fila": 5, "col": 1, "nombre": "muni_techo",   "tipo": "tile" },
+    { "fila": 6, "col": 4, "nombre": "muni_pared",   "tipo": "tile" },
+    { "fila": 7, "col": 4, "nombre": "muni_ventana", "tipo": "tile" },
+    { "fila": 7, "col": 5, "nombre": "muni_puerta",  "tipo": "tile" },
+
+    { "fila": 5, "col": 5, "nombre": "juventud_techo",   "tipo": "tile" },
+    { "fila": 6, "col": 0, "nombre": "juventud_pared",   "tipo": "tile" },
+    { "fila": 7, "col": 0, "nombre": "juventud_ventana", "tipo": "tile" },
+    { "fila": 7, "col": 1, "nombre": "juventud_puerta",  "tipo": "tile" },
+
+    { "fila": 5, "col": 5, "nombre": "almacen_techo",   "tipo": "tile" },
+    { "fila": 6, "col": 0, "nombre": "almacen_pared",   "tipo": "tile" },
+    { "fila": 7, "col": 0, "nombre": "almacen_ventana", "tipo": "tile" },
+    { "fila": 7, "col": 1, "nombre": "almacen_puerta",  "tipo": "tile" }
   ]
 }
