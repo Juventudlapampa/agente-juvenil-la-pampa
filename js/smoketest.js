@@ -839,21 +839,26 @@ AJ.SmokeTest = (function () {
       });
     }
 
-    // 29. F2: capa de arte (PNG con fallback procedural)
+    // 29. F2: capa de arte (PNG con fallback procedural) — bordes de robustez del arte.
     if (AJ.CONFIG.capaArte) {
-      check('Capa de arte: preparar() + manifiesto + fallback procedural', () => {
+      check('Capa de arte: manifiesto cargado + fallback procedural cubre el resto', () => {
         if (!AJ.Art || typeof AJ.Art.preparar !== 'function') return 'sin preparar()';
         const man = AJ.ASSET_MANIFEST;
         if (!man || !Array.isArray(man.tiles) || !Array.isArray(man.sprites)) return 'manifiesto inválido';
-        // Sea por PNG (capa de arte) o por procedural, las texturas deben existir.
-        // Incluye el arte Kenney mapeado (edificios + agua/plaza) para confirmar que
-        // el juego abre con el arte nuevo sin crashear; cada una tiene fallback procedural.
-        const claves = ['pasto', 'tierra', 'agua', 'plaza', 'calden', 'jugador_abajo_0',
-          'npc_cura_abajo_0', 'moneda',
-          'casa_techo', 'casa_pared', 'casa_puerta', 'casa_ventana',
-          'iglesia_techo', 'muni_pared', 'juventud_techo', 'almacen_puerta'];
-        const faltan = claves.filter((c) => !escena.textures.exists(c));
-        return faltan.length === 0 ? true : 'faltan texturas: ' + faltan.join(',');
+        // (a) ASSETS CARGADOS: todo lo listado en el manifiesto resolvió a textura
+        //     (si un PNG no cargara, faltaría acá). Hoy son los tiles Kenney mapeados.
+        const faltanMan = man.tiles.concat(man.sprites).filter((c) => !escena.textures.exists(c));
+        if (faltanMan.length) return 'manifiesto sin textura (¿no cargó el PNG?): ' + faltanMan.slice(0, 6).join(',');
+        // (b) FALLBACK CUANDO FALTA UN PNG: nombres del inventario que NO están en el
+        //     manifiesto deben existir igual, generados por el procedural (generarTodo).
+        const procedurales = ['junco', 'arado', 'monumento', 'cultivo_0', 'cultivo_3', 'exclamacion', 'check'];
+        const faltanProc = procedurales.filter((c) => !escena.textures.exists(c));
+        if (faltanProc.length) return 'fallback procedural no cubrió: ' + faltanProc.join(',');
+        // (c) Personajes: el manifiesto de sprites está vacío ⇒ todos vienen del procedural.
+        const sprites = ['jugador_abajo_0', 'jugador_der_2', 'npc_cura_abajo_0', 'npc_intendenta_izq_1'];
+        const faltanSpr = sprites.filter((c) => !escena.textures.exists(c));
+        if (faltanSpr.length) return 'sprites procedurales faltan: ' + faltanSpr.join(',');
+        return true;
       });
     }
 

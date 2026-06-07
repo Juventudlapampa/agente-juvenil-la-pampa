@@ -22,10 +22,12 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 - **Arte procedural con capa de PNG opcional** (`js/art.js`, `Phaser.Graphics` +
   `generateTexture`). Sonido también procedural (Web Audio, `js/sonido.js`). Hay una
   **capa de arte** (`CONFIG.capaArte`) que carga PNG reales si existen y cae al
-  procedural si no. **Hoy 25/170 piezas son PNG** (arte Kenney CC0 recoloreado a DB32:
-  terreno + 5 edificios + agua/plaza); el resto (sobre todo los 132 sprites de
-  personajes) sigue por código. Pipeline Node: `recolorear.js`/`recortar.js`
-  (`README_PIPELINE.md`). Cobertura/estado: `ARTE.md`, `CREDITS.txt`, `AJ.VerificarAssets.correr()`.
+  procedural si no. **Hoy 28/170 piezas son PNG** (arte Kenney CC0 recoloreado a DB32:
+  terreno + 5 edificios + agua/plaza/vereda/moneda/mesa_crafteo); el resto (sobre todo los
+  132 sprites de personajes — falta un pack de personajes) sigue por código. Pipeline Node:
+  `recolorear.js`/`recortar.js` (`README_PIPELINE.md`). Auditoría de lo que necesita ojo
+  humano: `node auditar_arte.js` → `AUDITORIA_ARTE.md`. Cobertura/estado: `ARTE.md`,
+  `CREDITS.txt`, `PLAYTEST.md`, `AJ.VerificarAssets.correr()`.
 - **Render 16-nativo ×2 (look GBA):** las texturas son **16×16** (tiles) y **16×24**
   (personajes), mostradas ×2 con `setDisplaySize` (nearest-neighbor, `pixelArt:true`) →
   32 px en pantalla. **La grilla/colisión/cámara siguen en 32 px de pantalla** (no se

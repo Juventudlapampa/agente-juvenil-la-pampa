@@ -5,17 +5,40 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
-## Pasada de cobertura y coherencia (novena noche) — EN CURSO
+## Pasada de cobertura y coherencia (novena noche) — CERRADA
 
-Baseline al arrancar (verificado en vivo, `AJ.VerificarAssets` + smoke):
-- **Cobertura: 15% (25/170).** Smoke Pueblo 1 **128/128 PASS**.
-- **Tiles en procedural (13):** vereda, junco, arado, monumento, cultivo_0..3, moneda,
-  exclamacion, check, mesa_crafteo, brujula_flecha.
-- **Sprites en procedural (132):** todos los personajes (jugador + 10 NPCs) — sigue sin
-  haber pack de personajes en `raw/`.
-Objetivo de esta pasada: maximizar cobertura buscando equivalentes en el roguelike
-(entorno, ~1700 piezas) SIN forzar tiles feos; unificar look; auditoría automática del
-arte; andamiaje de contenido sensible; robustez + cierre. (Detalle por fase: abajo.)
+Baseline: **15% (25/170)**, smoke 128/128. Cierre: **16% (28/170)**, smoke **128/128 PASS**.
+`paleta.hex` intacta = DawnBringer 32. Fallback procedural siempre válido. Sin remote
+(push = humano). Resultado por fase:
+
+- **FASE A (maximizar cobertura) — HECHA, commit `3ee7bc8`.** Barrido por 4 cuadrantes del
+  sheet roguelike (~1700 piezas, todo ENTORNO) con vistas ampliadas + grilla. Mapeados y
+  **verificados adversarialmente** (workflow: panel de 3 lentes, 3/3 c/u): **vereda**
+  (ladrillo), **moneda** (oro), **mesa_crafteo** (yunque). **Dropeado** `monumento` (la
+  estatua dio panel 0/3 — lee como caja/pileta). Confirmado de nuevo: el roguelike **no
+  tiene personajes**. Siguen procedurales: junco, arado (coherencia con cultivos),
+  cultivo_0..3, monumento, exclamacion, check, brujula_flecha. 25→28 tiles.
+- **FASE B (coherencia visual) — HECHA, commit `b048db5`.** Workflow de 3 lentes sobre los
+  28 tiles. **Paleta limpia** (0 px fuera de paleta). Marcas de DISEÑO (no color → NO se
+  tocaron, anotadas en PLAYTEST para criterio humano): `agua` (cian brillante/liso vs
+  pueblo apagado) y `calden`/`moneda`/`mesa_crafteo` (estilo roguelike más detallado que
+  el plano de Tiny Town).
+- **FASE C (auditoría automática) — HECHA, commit `b8ddcd7`.** `node auditar_arte.js` →
+  `AUDITORIA_ARTE.md`: 0 fuera de paleta, 0 semi-alpha, 0 suelos con agujero; embarrados
+  `moneda` (77%) y `calden` (24%) listados (no tocados); 10 tiles + 132 sprites sin PNG con
+  su nota. Reusa el codec/paleta de `recolorear.js`.
+- **FASE D (andamiaje sensible) — HECHA, commit `9100409`.** El motor ya tenía
+  `registrarSensibles()` (valida + fuerza `fuente:'sensible'`), `BANCO_SENSIBLE=[]`, y el
+  smoke ya verifica banco vacío + genéricos sin tema sensible. Agregado stub turnkey
+  `js/gestion/contenido_sensible.js` (vacío, con plantilla) cableado en index.html. **Cero**
+  dilemas sensibles autogenerados.
+- **FASE E (robustez + cierre) — HECHA (este commit).** Smoke #29 ampliado: (a) todo el
+  manifiesto resolvió a textura, (b) fallback procedural cubre lo no mapeado, (c) sprites
+  procedurales presentes. Docs al día: CLAUDE, ARTE, CREDITS, PLAYTEST (lista consolidada
+  de criterio visual humano + 16%), este HANDOFF.
+
+**FASE 4 (UI/táctil) sigue pendiente** (misma razón que la octava noche: UI procedural +
+assets 4-bit; es criterio visual). **Mayor salto futuro: bajar un pack de personajes.**
 
 ## Vestir el juego con arte Kenney (octava noche) — FASES 1–3 + 5, FASE 4 pendiente
 

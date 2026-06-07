@@ -96,27 +96,31 @@ fallback procedural sigue cubriendo todo lo no provisto.
 
 ## Estado de cobertura (arte Kenney CC0 → DawnBringer 32)
 
-Corré `AJ.VerificarAssets.correr()` en consola para el número vivo. Hoy: **15% (25/170)**.
+Corré `AJ.VerificarAssets.correr()` en consola para el número vivo. Hoy: **16% (28/170)**.
+Auditoría detallada de lo que necesita ojo humano: `node auditar_arte.js` → `AUDITORIA_ARTE.md`.
 
-**Mapeado (25 tiles):**
+**Mapeado (28 tiles):**
 - *Tiny Town* (`mapa_recorte.json`, `node recortar.js`): pasto, tierra, calden, y los
   20 tiles de edificios (casa/iglesia/muni/juventud/almacén × pared/techo/ventana/puerta).
-- *Roguelike/RPG* (`mapa_roguelike.json`): agua, plaza. Como ese sheet usa tiles de 16
-  con **1px de spacing**, se corre con override de env:
+- *Roguelike/RPG* (`mapa_roguelike.json`): agua, plaza, **vereda** (ladrillo), **moneda**
+  (oro), **mesa_crafteo** (yunque). Ese sheet usa tiles de 16 con **1px de spacing**, así
+  que se corre con override de env:
   ```
   SHEET="assets/raw/kenney_roguelike-rpg-pack/Spritesheet/roguelikeSheet_transparent.png" \
   ESPACIADO=1 MAPA="assets/mapa_roguelike.json" node recortar.js
   ```
   (recortar.js lee `SHEET`/`ESPACIADO`/`MARGEN`/`MAPA` de env; sin env = Tiny Town.)
 
-**NO mapeado (sigue procedural) y por qué:**
+**NO mapeado (sigue procedural) y por qué** (ver `AUDITORIA_ARTE.md` para el detalle):
 - **Personajes (jugador + 10 NPCs = 132 sprites, 78% del inventario):** ningún pack en
   `assets/raw/` trae personajes con 4 direcciones + caminata (son packs de entorno/UI).
   → bajar un pack de personajes Kenney (`roguelikeChar`, "Tiny Town Characters", etc.),
   recortar a **16×24**, nombres `jugador_<dir>_<f>` / `npc_<x>_<dir>_<f>`. El jugador
   conviene dejarlo procedural igual: el creador de agente lo recolorea (4 variantes).
-- **cultivo_0..3, moneda, mesa_crafteo, exclamacion, check, junco, monumento, arado,
-  vereda:** sin equivalente claro en los packs, o el subsistema no usa PNG.
+- **cultivo_0..3** (no hay cultivos en etapas), **arado** (hay tierra pero se deja
+  procedural por coherencia con los cultivos procedurales), **monumento** (la estatua del
+  roguelike no calzó: panel adversarial 0/3), **junco**, **exclamacion**, **check**,
+  **brujula_flecha** (UI 32×28, tamaño especial): sin equivalente claro.
 - **UI / táctil (FASE 4):** packs `pixel-ui` + `mobile-controls` presentes pero (a) la UI
   es procedural (Phaser.Graphics) y los táctiles HTML/CSS → cablear = reescribir UI; (b)
   sus PNG son 4-bit y el recolorador (8-bit) los saltea (habría que extender el codec).

@@ -74,6 +74,9 @@ Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town        
 Kenney | Tiny Town            | CC0 | https://kenney.nl/assets/tiny-town          | almacen_pared, almacen_techo, almacen_ventana, almacen_puerta
 Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | agua
 Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | plaza
+Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | vereda
+Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | moneda
+Kenney | Roguelike/RPG pack   | CC0 | https://kenney.nl/assets/roguelike-rpg-pack | mesa_crafteo
 
 # --- Packs presentes en assets/raw/ aún NO cableados (pendiente FASE 4 — UI/táctil) ---
 # Kenney | Pixel UI Pack       | CC0 | https://kenney.nl/assets/pixel-ui-pack       | (diálogo/cuaderno/menús)
