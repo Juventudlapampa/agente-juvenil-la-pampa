@@ -323,6 +323,13 @@ AJ.Gestion.CicloUI = (function () {
     if (findes && e.fase === 'gestion') {
       T.asegurar(e);
       sub = 'Finde ' + e.finde + '/' + e.totalFindes + ' · ' + (e.sub === 'ejecucion' ? 'El finde' : 'Semana de preparación');
+      // N4: con el modo anual, el subtítulo lleva la temporada del año + el clímax.
+      const An = AJ.Gestion.Anio;
+      if (An && An.activo && An.activo()) {
+        const ta = An.temporadaActual(estado);
+        sub = ta.nombre + (An.esClimax(estado) ? ' ⭐' : '') + ' · ' + sub;
+        if (An.esFaro(estado, e)) sub += ' · ' + ta.faro;
+      }
     } else if (findes && e.fase === 'cerrado') {
       sub = 'Temporada cerrada';
     } else {
@@ -528,6 +535,12 @@ AJ.Gestion.CicloUI = (function () {
       // LA SEMANA: preparación (gratis, capada) + jugar el finde.
       const rest = T.prepRestantes(e);
       cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'Semana de preparación — Finde ' + e.finde + '/' + e.totalFindes));
+      // N4: clima de la temporada del año (verano / laburo / invierno / segunda mitad).
+      const An = AJ.Gestion.Anio;
+      if (An && An.activo && An.activo()) {
+        const ta = An.temporadaActual(estado);
+        cuerpo.appendChild(_el('p', 'gestion-hint', '🗓️ ' + ta.nombre + ' (' + ta.meses + '): ' + ta.clima));
+      }
       if (rest > 0) {
         cuerpo.appendChild(_el('p', 'gestion-hint', 'Armás el finde (' + rest + ' gestiones esta semana):'));
         T.PREP.forEach((p) => {
@@ -542,7 +555,14 @@ AJ.Gestion.CicloUI = (function () {
       return;
     }
     // EL FINDE: ejecución. Resolver una actividad o un dilema AVANZA el finde.
-    cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'El finde — elegí qué se hace'));
+    const An2 = AJ.Gestion.Anio;
+    if (An2 && An2.activo && An2.activo() && An2.esFaro(estado, e)) {
+      const ta2 = An2.temporadaActual(estado);
+      cuerpo.appendChild(_el('p', 'gestion-paso-tit', '⭐ ' + ta2.faro + ' — el finde que define el año'));
+      cuerpo.appendChild(_el('p', 'gestion-hint', 'Acá se cobran o se lucen las decisiones de toda la temporada. Jugátela.'));
+    } else {
+      cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'El finde — elegí qué se hace'));
+    }
     const dilemas = M ? M.elegibles(estado).slice(0, 2) : [];
     dilemas.forEach((d) => {
       const pro = D.problematica(d.problematica);
@@ -581,14 +601,29 @@ AJ.Gestion.CicloUI = (function () {
 
   function renderFindeCierre(cuerpo, e) {
     const p = e.perfil || C.calcularPerfil(e);
-    cuerpo.appendChild(_el('p', 'gestion-paso-tit', 'Cierre de la temporada (' + (e.totalFindes || 12) + ' findes)'));
+    const An = AJ.Gestion.Anio;
+    const anual = !!(An && An.activo && An.activo());
+    let titulo = 'Cierre de la temporada (' + (e.totalFindes || 12) + ' findes)';
+    if (anual) {
+      const ta = An.temporadaActual(estado);
+      titulo = 'Cierre de ' + ta.nombre + (ta.climax ? ' — balance del año ⭐' : '');
+    }
+    cuerpo.appendChild(_el('p', 'gestion-paso-tit', titulo));
     const card = _el('div', 'gestion-perfil');
     card.appendChild(_el('div', 'gestion-perfil-tit', p.titulo));
     card.appendChild(_el('div', 'gestion-perfil-desc', p.desc));
     cuerpo.appendChild(card);
-    _btn(cuerpo, 'Seguir otra temporada acá', 'Profundizás en el mismo pueblo (conservás medidores)', () => {
-      AJ.Gestion.Temporadas.nuevaTemporada(estado); _sonido('click'); _guardar(); render();
-    });
+    if (anual) {
+      // N4: avanzar a la temporada siguiente del año (verano→laburo→invierno→segunda→…).
+      const sig = An.siguiente(estado);
+      _btn(cuerpo, 'Seguir el año → ' + sig.nombre, sig.meses + ' · ' + sig.clima.slice(0, 56) + '…', () => {
+        An.avanzarTemporada(estado); _sonido('click'); _guardar(); render();
+      });
+    } else {
+      _btn(cuerpo, 'Seguir otra temporada acá', 'Profundizás en el mismo pueblo (conservás medidores)', () => {
+        AJ.Gestion.Temporadas.nuevaTemporada(estado); _sonido('click'); _guardar(); render();
+      });
+    }
     renderMudanza(cuerpo, 'Mudarte a otro pueblo / región y empezar otra temporada');
   }
 

@@ -1077,6 +1077,29 @@ AJ.SmokeTest = (function () {
           return true;
         });
       }
+      // N4: año de 4 temporadas + Mes de las Juventudes (clímax).
+      if (AJ.CONFIG.modoAnual && AJ.Gestion.Anio) {
+        check('N4: año de 4 temporadas — avanza en orden, clímax en segunda, faro=último finde', () => {
+          const An = AJ.Gestion.Anio, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos, T = AJ.Gestion.Temporadas;
+          if (!An.activo()) return 'Anio no activo';
+          if (An.TEMPORADAS.length !== 4) return 'temporadas=' + An.TEMPORADAS.length;
+          const est = {}; E.asegurar(est, D.puebloInicial().id);
+          const a = An.estadoAnio(est);
+          if (a.idx !== 0 || An.temporadaActual(est).id !== 'verano') return 'no arranca en verano';
+          if (An.esClimax(est)) return 'verano no es clímax';
+          const ids = ['verano'];
+          for (let i = 0; i < 4; i++) { An.avanzarTemporada(est); ids.push(An.temporadaActual(est).id); }
+          if (ids.join(',') !== 'verano,laburo,invierno,segunda,verano') return 'ciclo mal: ' + ids.join(',');
+          if (An.estadoAnio(est).anio !== 2) return 'no sumó año al volver a verano';
+          a.idx = 3; // segunda mitad
+          if (!An.esClimax(est)) return 'segunda no es clímax';
+          const ep = E.actual(est); T.asegurar(ep); ep.finde = ep.totalFindes;
+          if (!An.esFaro(est, ep)) return 'faro no detectado en el último finde';
+          ep.finde = 1;
+          if (An.esFaro(est, ep)) return 'faro no debería estar en el finde 1';
+          return true;
+        });
+      }
       check('G1: estado de gestión se crea, conserva forma y clampa medidores', () => {
         const E = AJ.Gestion && AJ.Gestion.Estado, D = AJ.Gestion.Datos;
         if (!E) return 'sin Gestion.Estado';
