@@ -20,14 +20,21 @@ const R = require('./recolorear.js');
 
 // ---------------------- CONFIG (editá esto) -------------------------------
 const ASSETS = R.ASSETS;
-// Spritesheet a recortar (Tiny Town "packed": 12×11 tiles de 16, sin spacing):
-const SHEET = path.join(ASSETS, 'raw', 'kenney_tiny-town', 'Tilemap', 'tilemap_packed.png');
+// Spritesheet a recortar. Por defecto Tiny Town "packed" (12×11 de 16, sin spacing).
+// Se puede overridear por env para recortar OTROS sheets sin editar el archivo:
+//   SHEET=ruta.png ESPACIADO=1 MAPA=assets/mapa_roguelike.json node recortar.js
+// (roguelike usa tiles de 16 con 1px de spacing -> ESPACIADO=1).
+const SHEET = process.env.SHEET
+  ? path.resolve(process.env.SHEET)
+  : path.join(ASSETS, 'raw', 'kenney_tiny-town', 'Tilemap', 'tilemap_packed.png');
 const TILE_W = 16;
 const TILE_H = 16;      // para personajes (sheet de gente): 24
-const MARGEN = 0;       // px de borde externo del sheet
-const ESPACIADO = 0;    // px entre celdas (la versión "packed" usa 0; "tilemap.png" usa 1)
+const MARGEN = process.env.MARGEN != null ? parseInt(process.env.MARGEN, 10) : 0;
+const ESPACIADO = process.env.ESPACIADO != null ? parseInt(process.env.ESPACIADO, 10) : 0;
 const RECOLOREAR = true;
-const MAPA_PATH = path.join(ASSETS, 'mapa_recorte.json');
+const MAPA_PATH = process.env.MAPA
+  ? path.resolve(process.env.MAPA)
+  : path.join(ASSETS, 'mapa_recorte.json');
 // --------------------------------------------------------------------------
 
 function recortarCelda(img, x0, y0, w, h) {
