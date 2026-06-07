@@ -57,6 +57,10 @@ AJ.CONFIG = {
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
+  // Verificador de cobertura de arte (js/verificar_assets.js). OFF por defecto:
+  // probar PNGs inexistentes genera 404s en consola. Prendelo (o llamá a mano
+  // AJ.VerificarAssets.correr()) cuando empieces a meter PNGs en /assets.
+  verificarAssets: false,
 
   // --- Parámetros de mundo ---
   TILE: 32,            // tamaño de tile en px

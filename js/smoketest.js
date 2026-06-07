@@ -1520,6 +1520,22 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 40. Verificador de assets (inventario sincrónico; no prueba archivos acá).
+    check('Verificador de assets: inventario completo (38 tiles + 132 sprites = 170)', () => {
+      const V = AJ.VerificarAssets;
+      if (!V || typeof V.inventario !== 'function') return 'sin VerificarAssets';
+      const inv = V.inventario();
+      if (inv.tiles.length !== 38) return 'tiles=' + inv.tiles.length + ' (esperaba 38)';
+      if (inv.sprites.length !== 132) return 'sprites=' + inv.sprites.length + ' (esperaba 132)';
+      if (inv.todos.length !== 170) return 'total=' + inv.todos.length + ' (esperaba 170)';
+      // piezas clave presentes en el inventario, con la ruta correcta
+      const tieneTile = (n) => inv.tiles.some((p) => p.nombre === n && p.ruta === 'assets/tiles/' + n + '.png');
+      const tieneSpr = (n) => inv.sprites.some((p) => p.nombre === n && p.ruta === 'assets/sprites/' + n + '.png');
+      if (!tieneTile('pasto') || !tieneTile('mesa_crafteo') || !tieneTile('brujula_flecha')) return 'faltan tiles clave';
+      if (!tieneSpr('jugador_abajo_0') || !tieneSpr('npc_partera_der_2')) return 'faltan sprites clave';
+      return true;
+    });
+
     // Restaurar el estado que pudieron tocar las pruebas mutadoras.
     try {
       if (snap && escena && escena.estado) {
