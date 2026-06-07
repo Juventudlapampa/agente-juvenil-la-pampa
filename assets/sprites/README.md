@@ -1,7 +1,7 @@
-# assets/sprites/ — Personajes (32 × 48 px)
+# assets/sprites/ — Personajes (16 × 24 px, se ven ×2 = 32 × 48 en pantalla)
 
-Poné acá los PNG de **personajes** (Agente y vecinos). **Cada archivo: 32 × 48 px,
-un solo frame por archivo.**
+Poné acá los PNG de **personajes** (Agente y vecinos). **Cada archivo: 16 × 24 px,
+un solo frame por archivo** (render 16-nativo; el juego lo escala ×2).
 
 ## Anatomía de un personaje
 - **4 direcciones:** `abajo`, `arriba`, `izq`, `der`.

@@ -5,12 +5,21 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
-## Estado que encontró la conversión a 16×16 (séptima noche)
+## Conversión a 16×16 nativo ×2 (séptima noche) — CERRADA
 
-Verificado: smoke **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**, árbol
-limpio (último commit `e9f995f`), sin remote. Decisión tomada: arte CC0 estilo Kenney
-16×16 → pasar el render de 32×32 a **16×16 nativo escalado ×2** (32 px en pantalla),
-look GBA. Objetivo de la noche: convertir el render base sin romper colisiones/cámara/UI.
+Decisión tomada: arte CC0 estilo Kenney 16×16 → render de 32×32 a **16-nativo escalado ×2**
+(look GBA). **Hecho y verificado** (commit `bd90f3e`):
+- **`art.js`** redibujado a 16×16 (tiles) y 16×24 (personaje/NPCs); iconos 16×16. Cada objeto
+  del mundo se muestra ×2 con **`setDisplaySize`** (Pueblo `_dibujarMapa`, jugador, NPCs, cultivos,
+  mesa de crafteo 16×16). La marca "!" pasó de escala 0.7 a 1.4. `brujula_flecha` queda 32×28 (UI).
+- **Decisión clave (D48):** NO se zoomeó la cámara (habría duplicado toda la UI Phaser). Se
+  mantuvo grilla/colisión/cámara/UI en **32 px de pantalla** y sólo se achicaron las texturas a 16.
+  Robusto a cualquier tamaño de PNG real; un Kenney 16×16 entra directo.
+- Verificado: jugador 16×24 nativo / 32×48 en pantalla; camina, choca, cámara sigue; escena
+  renderiza bien; Modo Gestión y todo lo demás OK; verificador de assets sin crashear. Docs al día
+  (ARTE.md, MANIFIESTO, READMEs de /assets, CLAUDE, DECISIONES D48).
+- Smoke: **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**, consola limpia. Sin remote
+  (push = humano).
 
 ## Arte: el repo está LISTO para recibir PNGs (el arte es trabajo HUMANO + Cowork)
 

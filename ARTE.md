@@ -4,6 +4,11 @@ El juego genera **todo el arte por código** (cero descargas). Pero está
 **listo para artistas**: podés reemplazar cualquier textura por un PNG real sin
 tocar el código del juego. Esto es la **Capa de Arte** (`CONFIG.capaArte`).
 
+> **Render 16×16 nativo, escala ×2 (look GBA).** El arte es **16 × 16 px** (tiles) y
+> **16 × 24 px** (personajes), y se muestra **escalado ×2** (nearest-neighbor,
+> `pixelArt:true`) → 32 × 32 / 32 × 48 en pantalla. Por eso los PNG van a **16×16 /
+> 16×24** (entran packs CC0 estilo Kenney directo). El juego los escala ×2 solo.
+
 ## La idea (carga en dos pasos)
 
 Para cada textura, el juego hace:
@@ -22,8 +27,8 @@ Así, lo que tengas en PNG manda; lo que falte sigue siendo procedural. Nada se 
 ## Cómo agregar un PNG (3 pasos)
 
 1. Guardá el PNG con el **nombre EXACTO** de la textura (ver lista abajo):
-   - **Tiles** → `assets/tiles/<nombre>.png` — **32 × 32 px**
-   - **Sprites** → `assets/sprites/<nombre>.png` — **32 × 48 px** (un frame por archivo)
+   - **Tiles** → `assets/tiles/<nombre>.png` — **16 × 16 px** (se muestra ×2 = 32 en pantalla)
+   - **Sprites** → `assets/sprites/<nombre>.png` — **16 × 24 px** (un frame por archivo; ×2 = 32 × 48)
 2. Agregá ese `<nombre>` al array correcto en `assets/manifest.js`
    (`tiles` o `sprites`).
 3. Recargá. El juego levanta tu PNG; el resto sigue procedural.
@@ -32,13 +37,18 @@ No hace falta tocar ningún `.js` del juego.
 
 ## Dimensiones y convención
 
-- **Tiles: 32 × 32 px.** Tipo 16 bits, pixel-art. Sin transparencia salvo que el
-  tile la necesite.
-- **Personaje / NPCs: 32 × 48 px**, un PNG **por frame**.
+> Todo es **16-nativo** y se ve **×2** en pantalla (nearest-neighbor). Internamente las
+> texturas son chiquitas (16); cada objeto del mundo se escala ×2 con `setDisplaySize`,
+> así que un tile sigue ocupando 32 px visibles. La grilla/colisión/cámara siguen en 32
+> px de pantalla (no cambian): sólo cambia la resolución del arte.
+
+- **Tiles: 16 × 16 px.** Pixel-art ~16 bits. Sin transparencia salvo que el tile la necesite.
+- **Personaje / NPCs: 16 × 24 px**, un PNG **por frame**.
   - 4 direcciones: `abajo`, `arriba`, `izq`, `der`.
   - 3 frames por dirección: `0` (quieto), `1` y `2` (pasos de caminata).
   - Nombre = `jugador_<dir>_<frame>` (p. ej. `jugador_abajo_0`).
   - Los pies del personaje van cerca de la base del lienzo (origen 0.5, 0.75).
+- **Excepción:** `brujula_flecha` es un icono de UI de código (**32 × 28**), no se convirtió.
 
 ## Paleta recomendada
 

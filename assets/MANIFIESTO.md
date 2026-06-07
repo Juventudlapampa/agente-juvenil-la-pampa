@@ -14,18 +14,22 @@
 >
 > Nombre de archivo = `<nombre de textura>.png` (sin mayúsculas, sin espacios).
 
+> **Render 16-nativo ×2 (look GBA):** los PNG van a **16×16** (tiles) y **16×24**
+> (personajes); el juego los muestra escalados ×2 (nearest-neighbor) → 32×32 / 32×48 en
+> pantalla. Mantené el tamaño nativo chico (16). Ver `ARTE.md`.
+
 ## Resumen
 
-| Grupo | Piezas | Carpeta | Dimensión |
+| Grupo | Piezas | Carpeta | Dimensión (nativa) |
 |---|---|---|---|
-| Tiles | 37 | `/assets/tiles/` | 32 × 32 px |
-| Especiales | 1 | `/assets/tiles/` | 32 × 28 px (¡no 32×32!) |
-| Sprites (personaje + NPCs) | 132 | `/assets/sprites/` | 32 × 48 px (1 frame por archivo) |
+| Tiles | 37 | `/assets/tiles/` | 16 × 16 px (se ve ×2 = 32) |
+| Especiales | 1 | `/assets/tiles/` | 32 × 28 px (icono UI, NO se convirtió) |
+| Sprites (personaje + NPCs) | 132 | `/assets/sprites/` | 16 × 24 px (1 frame por archivo; ×2 = 32×48) |
 | **TOTAL** | **170** | | |
 
 ---
 
-## Tiles — `/assets/tiles/` · 32 × 32 px
+## Tiles — `/assets/tiles/` · 16 × 16 px (se ven ×2 = 32 en pantalla)
 
 | PNG esperado | Estado | Genera | Nota |
 |---|---|---|---|
@@ -65,7 +69,7 @@
 | `moneda.png` | código | art.js | Icono UI. |
 | `exclamacion.png` | código | art.js | Icono "!" sobre el NPC. |
 | `check.png` | código | art.js | Icono de misión cumplida. |
-| `mesa_crafteo.png` | código | **crafteo.js** | ⚠️ Ver discrepancia (1). 32×32, reemplazable igual. |
+| `mesa_crafteo.png` | código | **crafteo.js** | ⚠️ Ver discrepancia (1). 16×16, reemplazable igual. |
 
 ## Especiales — `/assets/tiles/` · dimensión propia
 
@@ -75,7 +79,7 @@
 
 ---
 
-## Sprites — `/assets/sprites/` · 32 × 48 px (un frame por archivo)
+## Sprites — `/assets/sprites/` · 16 × 24 px (un frame por archivo; ×2 = 32×48)
 
 Patrón por personaje: **`<base>_<dir>_<frame>.png`**, con
 `<dir>` ∈ {`abajo`, `arriba`, `izq`, `der`} y `<frame>` ∈ {`0`, `1`, `2`}
@@ -111,7 +115,7 @@ jugador_der_0.png     jugador_der_1.png     jugador_der_2.png
 
 1. **`mesa_crafteo`** — ARTE.md lo lista entre los tiles, dando a entender que lo
    genera `art.js`. **No lo genera art.js**: lo genera `js/crafteo.js`
-   (`_generarTexturas`, 32×32, con `if (textures.exists) return`). Igual es
+   (`_generarTexturas`, 16×16, con `if (textures.exists) return`). Igual es
    reemplazable: la capa de arte (`preparar`, en `preload`) carga el PNG **antes**
    de que crafteo lo genere (en `create`), y el guard hace que el PNG mande.
 2. **`brujula_flecha`** — ARTE.md lo lista entre los tiles (implicando 32×32). En

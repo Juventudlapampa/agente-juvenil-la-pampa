@@ -10,17 +10,17 @@ rompe** si está incompleto.
   ├── README.md          ← este archivo (cómo meter un PNG)
   ├── MANIFIESTO.md      ← lista COMPLETA de las 170 piezas (nombre exacto + estado)
   ├── manifest.js        ← acá listás los PNG que agregaste (lo lee el juego)
-  ├── tiles/             ← PNG de tiles  (32 × 32 px)   + su README.md
-  └── sprites/           ← PNG de personajes (32 × 48)  + su README.md
+  ├── tiles/             ← PNG de tiles  (16 × 16 px, se ven ×2)   + su README.md
+  └── sprites/           ← PNG de personajes (16 × 24, ×2)  + su README.md
 ```
 
 ## Meter un PNG — 3 pasos
 
 1. **Nombre EXACTO + carpeta correcta.** El archivo se llama igual que la textura,
    en minúsculas y sin espacios, con `.png`. La carpeta depende del tipo:
-   - **Tiles** → `assets/tiles/<nombre>.png` — **32 × 32 px**
-   - **Sprites** (personaje/NPCs) → `assets/sprites/<nombre>.png` — **32 × 48 px**
-     (un frame por archivo; ver patrón abajo)
+   - **Tiles** → `assets/tiles/<nombre>.png` — **16 × 16 px** (se ve ×2 = 32 en pantalla)
+   - **Sprites** (personaje/NPCs) → `assets/sprites/<nombre>.png` — **16 × 24 px**
+     (un frame por archivo; ×2 = 32×48; ver patrón abajo)
 
    La lista completa de nombres está en **`MANIFIESTO.md`**. Ejemplos:
    `pasto`, `casa_techo`, `calden`, `jugador_abajo_0`, `npc_cura_der_2`.
@@ -42,13 +42,17 @@ No hace falta tocar ningún `.js` del juego.
 
 ## Dimensiones y patrón de nombres
 
-- **Tiles: 32 × 32 px.** Pixel-art ~16 bits.
-- **Sprites: 32 × 48 px**, **un PNG por frame**. Patrón `<base>_<dir>_<frame>`:
+> Render **16-nativo ×2** (look GBA): el arte es chico (16) y el juego lo escala ×2
+> con nearest-neighbor. Un tile sigue ocupando 32 px visibles.
+
+- **Tiles: 16 × 16 px.** Pixel-art ~16 bits.
+- **Sprites: 16 × 24 px**, **un PNG por frame**. Patrón `<base>_<dir>_<frame>`:
   - `<dir>` ∈ `abajo`, `arriba`, `izq`, `der`
   - `<frame>` ∈ `0` (quieto), `1`, `2` (pasos)
   - → 12 archivos por personaje. Ej.: `jugador_abajo_0.png` … `jugador_der_2.png`.
   - Los pies van cerca de la base del lienzo (el sprite se ancla en 0.5, 0.75).
-- **Caso especial:** `brujula_flecha` es **32 × 28** (no 32×32). Va en `tiles/`.
+- **Caso especial:** `brujula_flecha` es un icono de UI de código (**32 × 28**, no se
+  convirtió a 16). Va en `tiles/` si lo reemplazás.
 
 ## Una sola paleta (clave para que combine)
 
@@ -58,7 +62,7 @@ todo a UNA paleta única**. Recomendada: **"Resurrect 64"** (Lospec):
 ~32–64 colores tipo SNES). No es obligatorio, pero mezclar paletas se nota feo.
 
 - Conseguí los assets, abrilos en tu editor (Aseprite, Photopea, GIMP) y aplicá la
-  **misma paleta** a todos antes de guardarlos. Mantené el tamaño exacto (32×32 / 32×48).
+  **misma paleta** a todos antes de guardarlos. Mantené el tamaño exacto (16×16 / 16×24).
 - Si reemplazás de a poco, priorizá **grupos coherentes** (todos los tiles de
   edificio, o un personaje completo) para que no quede mitad y mitad.
 

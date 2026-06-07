@@ -1,6 +1,7 @@
-# assets/tiles/ — Tiles (32 × 32 px)
+# assets/tiles/ — Tiles (16 × 16 px, se ven ×2 = 32 en pantalla)
 
-Poné acá los PNG de **tiles** del mundo. **Cada archivo: exactamente 32 × 32 px.**
+Poné acá los PNG de **tiles** del mundo. **Cada archivo: exactamente 16 × 16 px**
+(render 16-nativo; el juego lo escala ×2 con nearest-neighbor → 32 px visibles).
 
 ## Cómo usar
 1. Guardá el PNG con el **nombre EXACTO** de la textura (ver lista). Ej: `pasto.png`.
@@ -9,7 +10,7 @@ Poné acá los PNG de **tiles** del mundo. **Cada archivo: exactamente 32 × 32 
 
 Lo que NO pongas acá sigue generándose por código (no se rompe nada).
 
-## Nombres de tile (32×32)
+## Nombres de tile (16×16)
 Terreno y naturaleza:
 ```
 pasto  tierra  vereda  agua  junco  arado  calden  plaza  monumento

@@ -30,8 +30,8 @@ AJ.VerificarAssets = (function () {
     'juventud_pared', 'juventud_techo', 'juventud_ventana', 'juventud_puerta',
     'almacen_pared', 'almacen_techo', 'almacen_ventana', 'almacen_puerta',
     'moneda', 'exclamacion', 'check',
-    'mesa_crafteo',      // lo genera crafteo.js (32×32)
-    'brujula_flecha',    // lo genera brujula.js (32×28, dimensión especial)
+    'mesa_crafteo',      // lo genera crafteo.js (16×16)
+    'brujula_flecha',    // lo genera brujula.js (32×28, icono UI; NO se convirtió a 16)
   ];
 
   const SPRITE_BASES = [

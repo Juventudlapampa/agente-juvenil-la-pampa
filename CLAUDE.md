@@ -21,7 +21,11 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
   anda en GitHub Pages igual.
 - **Arte 100% generado por código** (`js/art.js` con `Phaser.Graphics` +
   `generateTexture`). **Cero descargas de assets.** Sonido también es procedural
-  (Web Audio, `js/sonido.js`). Para reemplazar por PNG reales: ver cabecera de art.js.
+  (Web Audio, `js/sonido.js`). Para reemplazar por PNG reales: ver `ARTE.md`.
+- **Render 16-nativo ×2 (look GBA):** las texturas son **16×16** (tiles) y **16×24**
+  (personajes), mostradas ×2 con `setDisplaySize` (nearest-neighbor, `pixelArt:true`) →
+  32 px en pantalla. **La grilla/colisión/cámara siguen en 32 px de pantalla** (no se
+  zoomea la cámara: eso duplicaría toda la UI Phaser). PNG CC0 16×16 (Kenney) entran directo.
 - **Sin apuestas ni azar con plata** (pedido firme; la economía es determinística).
 - **Guardado** en `localStorage` (`js/guardado.js`), con fallback a memoria.
 

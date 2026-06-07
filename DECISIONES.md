@@ -524,6 +524,31 @@ confirmados**, todos corregidos (verificado con checks de regresión):
 - Smoke al cierre (con fixes + 3 checks de regresión): **El pueblo 126/126, Colonia 127/127, El
   Puesto 117/117 PASS**, sin errores de consola.
 
+### D48 — Render 16-nativo ×2 vía `setDisplaySize`, NO zoom de cámara
+**Por qué:** se decidió arte CC0 estilo Kenney **16×16**, así que el render pasó de 32×32 a **16
+nativo escalado ×2** (look GBA). Había dos formas:
+- **(A) Zoom de cámara ×2 + grilla interna a 16.** El camino "natural", pero en Phaser el zoom de
+  cámara escala **TODO** lo que renderiza esa cámara, **incluida la UI con `scrollFactor(0)`**: HUD,
+  diálogo, Cuaderno, Registro, Progreso, brújula, menús, paneles de accesibilidad/créditos/afinidad…
+  Todo se duplicaría y la UI quedaría rota/desalineada. Arreglarlo exige una **cámara de UI aparte**
+  con listas de "ignore" por objeto en ~15 sistemas → cirugía enorme y riesgosa.
+- **(B, elegida) Texturas 16-nativas + `setDisplaySize` por objeto del mundo; grilla/colisión/
+  cámara/UI quedan en 32 px de pantalla.** `art.js` dibuja a 16×16 / 16×24; cada objeto del mundo
+  (tiles en `_dibujarMapa`, jugador, NPCs, cultivos, mesa) se muestra con `setDisplaySize` a su
+  tamaño de pantalla (32/48). Con `pixelArt:true` (NEAREST) + `roundPixels`, escalar ×2 es crujiente.
+- **Ventajas de (B):** colisiones, cámara, movimiento, velocidad y **toda la UI Phaser** quedan
+  intactas (cero cambios) → respeta la REGLA DE ORO. `setDisplaySize(32,32)` es **robusto a cualquier
+  tamaño de PNG real** (un 16×16, un 32×32, etc., caen igual a 32 px). Un PNG CC0 16×16 (Kenney) entra
+  directo. La "grilla interna a 16" del pedido se reinterpreta: lo que importa para el drop-in de PNGs
+  es que **el arte sea 16-nativo**, y eso se cumple; la grilla lógica sigue siendo 40×30 tiles.
+- **Detalles:** `brujula_flecha` (icono UI de código) se dejó en 32×28 (no es un tile/sprite Kenney).
+  El check F5 del smoke leía `getPixel(16,28)` del sprite (fuera de rango en 16×24) → movido a (8,13)
+  = camisa. `art.js` exporta `TW/TH/PW/PH` (16/16/16/24).
+- Verificado: textura jugador 16×24 nativa / 32×48 en pantalla, pasto 16/32; el jugador camina, choca,
+  la cámara sigue; frame con escena variada (19 colores, no garabato); el Modo Gestión y todo lo demás
+  siguen andando; el verificador de assets no crashea. **El pueblo 128/128, Colonia 129/129, El Puesto
+  119/119 PASS**, consola limpia.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.
