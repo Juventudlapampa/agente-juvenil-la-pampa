@@ -5,6 +5,21 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Capa Narrativa-Temporal del Modo Gestión (décima noche) — EN CURSO
+
+Baseline: smoke Pueblo 1 **128/128 PASS**, 5 medidores, Modo Gestión G1–G7 completo.
+Objetivo: capa narrativa-temporal aditiva sobre el Modo Gestión (sin reescribir RPG ni
+motor): **origen del jugador** (reparte medidores), **Mesa Provincial** (arranque narrativo),
+**reloj de findes por temporada** (12 findes = 1 temporada; envuelve el ciclo G5),
+**temporadas + Mes de las Juventudes** (modo anual), **misiones por región** (zonas
+productivas). Todo detrás de flags nuevos, try/catch, commit por fase. (Detalle por fase: abajo.)
+
+Mapas de partida (verificados por agentes): el HUD de medidores ITERA `D.MEDIDORES` (un 6º
+medidor aparece solo); estado en `estado.gestion` separado del RPG; `ciclo.js` expone
+`Ciclo`/`Actividades`/`CicloUI`; el smoke hardcodea `MEDIDORES.length===5`, `acciones===3`,
+`dia===30` (a actualizar con cuidado). Las regiones del GDD son DIRECCIONALES (no productivas):
+se agrega una capa de zonas productivas para N5.
+
 ## Pasada de cobertura y coherencia (novena noche) — CERRADA
 
 Baseline: **15% (25/170)**, smoke 128/128. Cierre: **16% (28/170)**, smoke **128/128 PASS**.

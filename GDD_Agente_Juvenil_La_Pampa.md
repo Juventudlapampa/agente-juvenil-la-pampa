@@ -53,6 +53,97 @@ La mudanza es el selector de dificultad: de un nivel 1 que dominaste a un nivel 
 
 ---
 
+## 2.bis — CAPA NARRATIVA-TEMPORAL (origen, Mesa, findes, temporadas, regiones)
+
+> Capa **aditiva** sobre el loop macro: le pone un *antes* (de dónde venís), un *arriba*
+> (la provincia que te respalda), un *reloj* (findes y temporadas) y un *territorio* (regiones
+> que cambian la partida). Todo detrás de flags nuevos, sin tocar el RPG ni el motor de gestión.
+> Implementada en las FASES N1–N6 (ver §12 ROADMAP).
+
+### A. Origen del jugador — cómo llegaste a la Agencia  *(CONFIG.origenJugador, FASE N1)*
+
+Antes de arrancar, elegís **cómo llegaste a estar a cargo de la Agencia Juvenil**. Eso reparte
+tus medidores de inicio (es el "selector de dificultad blando" del comienzo, complementa al recon).
+Las 5 configuraciones:
+
+1. **Por mérito entre los jóvenes.** Te eligieron los pibes. → Agencia y Convicción altas;
+   Confianza (del intendente) baja.
+2. **Te conoce el intendente.** Llegás por arriba. → Confianza alta; Vínculo con los pibes bajo.
+3. **No había más, tenías perfil.** Comodín. → Todo medio.
+4. **Convocado de urgencia** (el anterior se mudó / se fue a estudiar). Modo bombero. → Menos
+   tiempo (un finde menos en la temporada) y todo a medias.
+5. **Vení­s del barrio / militancia social** (5ª variante): venís de organizar la murga/el club/
+   el merendero. → Carisma y Vínculo con los pibes altos; Recursos bajos (no tenés caja propia).
+
+**Reconciliación con los medidores que ya existen** (no se duplican): *fuerza de la Agencia* →
+`agencia`; *confianza del intendente* y *recursos* → `confianza` (el medidor "Confianza / Recursos"
+los combina); *vínculo con los pibes* → `conocimiento` (cercanía/lectura de la juventud);
+*integridad* → `conviccion`. Falta una sola aptitud: **convencer/persuadir**, que se agrega como
+**6º medidor `carisma`** (0–100, "Carisma / Persuasión") — alimenta las tiradas de persuasión.
+El HUD ya itera los medidores, así que el 6º aparece solo. (El smoke se actualiza de 5 a 6.)
+
+### B. Arranque narrativo — la Mesa Provincial  *(CONFIG.mesaProvincial, FASE N2)*
+
+La partida abre con el jugador **viajando a la Mesa Provincial de Agentes Juveniles** (la Hoja de
+Ruta hecha escena: tutorial disfrazado). En la Mesa recibe **herramientas, ideas, líneas de
+trabajo y contactos** (genérico y reskinable, sin programas ni marcas reales). Al volver, aparece
+en **su localidad** y arranca el reloj. La Mesa queda como un **lugar visitable** — el "mundo de
+arriba" (provincia, recursos, respaldo) al que se vuelve entre temporadas o cuando hace falta
+destrabar algo. Es la cara institucional del juego, sin bajada política.
+
+### C. Reloj de fines de semana por temporada  *(CONFIG.relojTemporadas, FASE N3)*
+
+La unidad de tiempo deja de ser el día plano y pasa a ser el **fin de semana de activación**
+(viernes/sábado/domingo). **Una TEMPORADA = 90 días = 12 findes.** Dos ritmos:
+
+- **La semana = PREPARACIÓN.** Conseguir permisos, hablar con la escuela, juntar a la Agencia,
+  gestionar recursos. Acciones de bajo costo que preparan el finde (no "gastan" el finde).
+- **El finde = EJECUCIÓN.** Se hace la actividad; se resuelven dilemas/tiradas. Avanza el reloj.
+
+**Partida núcleo = UNA temporada (12 findes).** El **recon inicial sigue igual** (leer el pueblo);
+lo que cambia es que el *cuerpo* de la temporada corre por findes en vez de por días 6–30. Al
+cerrar los 12 findes: **perfil de gestor de la temporada** + opción de **mudarse de región** o
+**seguir en el mismo pueblo** profundizando. Envuelve el ciclo G5 (no lo reemplaza: con el flag
+off, G5 sigue corriendo por días como hasta ahora).
+
+### D. Las cuatro temporadas y el Mes de las Juventudes  *(CONFIG.modoAnual, FASE N4)*
+
+Modo largo desbloqueable: el **año completo** son 4 temporadas encadenadas, cada una con su clima:
+
+| Temporada | Meses | Clima de juego |
+|---|---|---|
+| **Verano / vacaciones** | dic–feb | Colonias, pileta, aire libre. **Sin escuela** (el Vínculo escolar pesa menos). |
+| **Laburo fuerte** | mar–jun | Escuela activa, Agencia a full. La temporada "de fondo". |
+| **Receso de invierno** | jul | Actividades **bajo techo**; ritmo más bajo. |
+| **Segunda mitad** | ago–nov | Sube la energía hacia el **clímax**. |
+
+**SEPTIEMBRE = MES DE LAS JUVENTUDES = temporada alta / CLÍMAX.** Es el finde-faro donde *todo se
+juega*: las decisiones del año se cobran o se lucen acá. El año entero orienta el juego a **llegar
+bien parado a septiembre**. (Si N4 no pasa el smoke, queda en flag false + ROADMAP; N3 alcanza
+para la partida núcleo de una temporada.)
+
+### E. Regiones que cambian las misiones  *(CONFIG.misionesPorRegion, FASE N5)*
+
+Cada **región** genera un **set distinto** de misiones, recursos y actividades — no es decorado.
+Las misiones siguen siendo **plantillas reskinables y genéricas** (sin marcas/programas reales);
+lo que cambia por región es el **sabor**, los **recursos** disponibles y **qué comunidades/temas**
+aparecen. Las **zonas productivas** (capa nueva, reconciliada con las 9 regiones direccionales del
+Apéndice B vía un campo `zona` por pueblo):
+
+| Zona | Sabor / recursos / temas |
+|---|---|
+| **Este cerealero** | Comercio, más comunidades, **eventos de cosecha**; feria joven de emprendimientos. |
+| **Caldenal** (monte) | Patrimonio, identidad, **comunidades dispersas**; circuito naturaleza + cultura. |
+| **Oeste árido** | **Agua escasa**, puesteros aislados; misiones ligadas al recurso hídrico — el **Atuel en clave EDUCATIVA y apartidaria** (aprender del agua, no militar una postura). |
+| **Salinas** | Zona minera; **eventos de cosecha de sal**; logística dura. |
+| **Cuenca del Colorado / Sur** | Oasis de riego, **energía**; producción y trabajo joven. |
+| **Hub Centro (capitales)** | Las **10 comunidades activas**, modo **integración** (actividades-puente). |
+
+La **mudanza entre temporadas** cambia de región → cambia el tipo de partida (qué se puede hacer,
+qué comunidades hay, qué eventos caen). Reskinable: la bajada local se agrega por fuera del código.
+
+---
+
 ## 3. ONBOARDING CANÓNICO — ARMAR LA AGENCIA
 
 > Esto NO se inventa: son los cuatro pasos de la **Hoja de Ruta Juvenil** que escribió la Subsecretaría,
