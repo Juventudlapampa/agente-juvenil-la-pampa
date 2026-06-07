@@ -190,6 +190,23 @@ del mapa y re-corré `recortar.js`) y vuelve solo al procedural — no rompe nad
 - **agua**: agua cian del roguelike (viste la aguada). Tiene una piedrita en una
   esquina (del tile original). ¿Molesta al repetirse o suma textura?
 - **plaza**: piso de piedra gris del roguelike. ¿Se lee como plaza?
+- **vereda** (novena noche): ladrillo marrón del roguelike. ¿Pega como vereda/camino?
+- **moneda** (novena noche): monedas de oro del roguelike (ícono de plata/pickups).
+- **mesa_crafteo** (novena noche): un **yunque** del roguelike (estación de oficios).
+
+**Coherencia visual — criterio humano (panel automático novena noche):**
+Un panel de 3 lentes revisó el set completo. **Paleta: limpia** (todo DB32, cero
+embarrado fuera de paleta). Marcas de DISEÑO (no de color → NO se tocaron, decidí vos):
+- **agua**: el cian es el tile más **brillante y liso** del set; al lado de tierras/
+  maderas apagadas "saltea". ¿Te gusta el contraste (look Pokémon) o lo querés más
+  apagado? (volver a procedural = agua más oscura; o elegir otro tile de agua).
+- **calden / moneda / mesa_crafteo**: vienen del **roguelike**, que tiene outline más
+  oscuro y sombreado más fino que el estilo **plano y chunky** de Tiny Town (edificios/
+  pasto/tierra). ¿La mezcla molesta o pasa? Si molesta, hay que buscar equivalentes
+  en Tiny Town o dibujarlos a mano.
+- **moneda y calden** salieron "embarrados" en la auditoría (original lejos de DB32:
+  77% y 24%): igual leen bien (panel 3/3), pero mirá si el oro/verde te convencen.
+  Ver `AUDITORIA_ARTE.md` (lo genera `node auditar_arte.js`).
 
 **Lo que quedó PROCEDURAL (no había equivalente claro en los packs bajados):**
 - **PERSONAJES (jugador + 10 NPCs).** Es el 78% del inventario de arte (132/170).
@@ -199,9 +216,11 @@ del mapa y re-corré `recortar.js`) y vuelve solo al procedural — no rompe nad
   **preserva las 4 variantes de color del creador de agente** y las animaciones.
   → Para vestir personajes hay que **bajar un pack de personajes** (p. ej. Kenney
   "Tiny Dungeon/Town Characters" o "roguelikeChar") y re-correr el pipeline.
-- **Cultivos (cultivo_0..3), moneda, mesa_crafteo, exclamación, check, junco,
-  monumento, arado, vereda:** sin equivalente claro (o el sistema no usa PNG, como
-  el inventario de items). Siguen por código.
+- **cultivo_0..3** (no hay cultivos en etapas), **arado** (hay tierra, pero se deja
+  procedural por **coherencia** con los cultivos procedurales: plot vacío y plantado
+  deben matchear), **monumento** (la estatua del roguelike no calzó: panel 0/3),
+  **junco**, **exclamación**, **check**, **brujula_flecha** (UI 32×28, tamaño especial):
+  sin equivalente claro → siguen por código. Detalle y motivos: `AUDITORIA_ARTE.md`.
 - **UI y controles táctiles (FASE 4 pendiente):** los packs `pixel-ui` y
   `mobile-controls` ESTÁN en `raw/`, pero (a) la UI del juego se dibuja procedural
   (Phaser.Graphics) y los táctiles son HTML/CSS — cablearlos es reescribir código
@@ -209,7 +228,7 @@ del mapa y re-corré `recortar.js`) y vuelve solo al procedural — no rompe nad
   (8-bit) los saltea. Se dejó para una sesión dedicada **con tu ojo** (el look de
   UI es criterio visual). No mueve el % de cobertura (que mide tiles+sprites).
 
-**Cobertura de arte hoy:** `AJ.VerificarAssets.correr()` → **15% (25/170)**.
+**Cobertura de arte hoy:** `AJ.VerificarAssets.correr()` → **16% (28/170)**.
 Topeada por los personajes (sin pack). Con un pack de personajes saltaría a ~90%+.
 
 ---
