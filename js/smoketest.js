@@ -1901,6 +1901,57 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 43. O-cam: cámara cercana (resolución lógica reducida = más zoom, descubrimiento).
+    if (AJ.CONFIG.camaraCercana) {
+      check('O-cam: se ve una porción del mapa (12–16 tiles de ancho)', () => {
+        const tiles = escena.scale.width / AJ.CONFIG.TILE;
+        return (tiles >= 12 && tiles <= 16) ? true : 'tiles visibles = ' + tiles.toFixed(1);
+      });
+      check('O-cam: la resolución lógica = CONFIG.VISTA', () => {
+        const v = AJ.CONFIG.VISTA;
+        if (!v) return 'sin VISTA';
+        return (escena.scale.width === v.ancho && escena.scale.height === v.alto)
+          ? true : 'scale ' + escena.scale.width + 'x' + escena.scale.height + ' != VISTA';
+      });
+      check('O-cam: cámara clampeada a los bordes del mapa (bounds = mapa, sin vacío)', () => {
+        const cam = escena.cameras.main, T = AJ.CONFIG.TILE;
+        if (!cam.useBounds) return 'useBounds=false (no clampea)';
+        if (cam._bounds.width !== AJ.Mapa.ANCHO * T || cam._bounds.height !== AJ.Mapa.ALTO * T)
+          return 'bounds ' + cam._bounds.width + 'x' + cam._bounds.height + ' != mapa';
+        // El scroll actual (spawn) debe caer dentro de [0, max] (no muestra vacío).
+        const maxX = cam._bounds.width - escena.scale.width, maxY = cam._bounds.height - escena.scale.height;
+        if (cam.scrollX < -0.5 || cam.scrollX > maxX + 0.5 || cam.scrollY < -0.5 || cam.scrollY > maxY + 0.5)
+          return 'scroll fuera de rango: ' + Math.round(cam.scrollX) + ',' + Math.round(cam.scrollY);
+        return true;
+      });
+      check('O-cam: pixel art nítido (roundPixels) + cámara sigue al jugador', () => {
+        const cam = escena.cameras.main;
+        if (cam.roundPixels !== true) return 'roundPixels off';
+        if (cam._follow !== escena.jugador.sprite) return 'no sigue al jugador';
+        return true;
+      });
+      check('O-cam: la UI lee scale.width/height (HUD y diálogo dentro del viewport)', () => {
+        if (!escena.hud) return 'sin HUD';
+        if (escena.hud.x < 0 || escena.hud.x > escena.scale.width) return 'HUD fuera del viewport';
+        if (!(escena.dialogo && escena.dialogo.cont)) return 'sin diálogo';
+        return true;
+      });
+      if (AJ.Interiores) {
+        check('O-cam: los interiores entran en el viewport (se centran con la cámara cercana)', () => {
+          const T = AJ.CONFIG.TILE, vw = escena.scale.width, vh = escena.scale.height;
+          const tipos = Object.keys(AJ.Interiores.EDIF);
+          for (let i = 0; i < tipos.length; i++) {
+            const s = AJ.Interiores.construir(tipos[i], 1);
+            // Todas las plantillas actuales son cuartos chicos → caben y se centran.
+            // Si una futura no entra, Interior.js la SIGUE (este check avisa para verificarlo).
+            if (s.ancho * T > vw || s.alto * T > vh)
+              return tipos[i] + ' (' + (s.ancho * T) + 'x' + (s.alto * T) + ') > viewport ' + vw + 'x' + vh + ' (revisar follow)';
+          }
+          return true;
+        });
+      }
+    }
+
     // 40. Verificador de assets (inventario sincrónico; no prueba archivos acá).
     check('Verificador de assets: inventario completo (38 tiles + 132 sprites = 170)', () => {
       const V = AJ.VerificarAssets;
