@@ -24,6 +24,18 @@ AJ.Input = (function () {
   }
 
   // --- Teclado ---
+  // Si el foco está en un campo editable (input/textarea/select/contenteditable),
+  // el teclado del juego NO intercepta: así se puede tipear el nombre del Agente
+  // (letras w/a/s/d/e y espacio) sin que el juego se las "coma".
+  function enCampoEditable(e) {
+    const el = (e && e.target) || document.activeElement;
+    if (!el) return false;
+    const tag = (el.tagName || '').toUpperCase();
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return true;
+    if (el.isContentEditable) return true;
+    return false;
+  }
+
   function conectarTeclado() {
     const map = {
       ArrowUp: 'up', KeyW: 'up',
@@ -32,12 +44,14 @@ AJ.Input = (function () {
       ArrowRight: 'right', KeyD: 'right',
     };
     window.addEventListener('keydown', (e) => {
+      if (enCampoEditable(e)) return;
       if (map[e.code]) { setDir(map[e.code], true); e.preventDefault(); }
       if (e.code === 'Space' || e.code === 'KeyE' || e.code === 'Enter') {
         disparAccion(); e.preventDefault();
       }
     });
     window.addEventListener('keyup', (e) => {
+      if (enCampoEditable(e)) return;
       if (map[e.code]) { setDir(map[e.code], false); e.preventDefault(); }
     });
     // Soltar todo si la ventana pierde foco (evita "quedarse caminando").
