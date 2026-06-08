@@ -138,14 +138,17 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     piso.fillStyle(0x8a6b46, 1); piso.fillRect(0, 0, W, H);
     piso.fillStyle(0x7d5f3d, 1);
     for (let y = 0; y < H; y += 22) piso.fillRect(0, y, W, 3);
-    // Mesa grande ovalada en el centro.
-    const cx = W / 2, cy = H * 0.52;
+    // Mesa grande ovalada en el centro. Tamaño PROPORCIONAL a la pantalla para
+    // que se vea bien con la cámara cercana (448×336) y con 800×600 (flag off).
+    const cx = W / 2, cy = H * 0.50;
+    const mw = W * 0.62, mh = H * 0.42; // diámetros de la mesa
     const mesa = this.add.graphics().setDepth(5);
-    mesa.fillStyle(0x5b4029, 1); mesa.fillEllipse(cx, cy, 360, 180);
-    mesa.fillStyle(0x6e4f33, 1); mesa.fillEllipse(cx, cy, 320, 150);
-    mesa.lineStyle(3, 0x4a3422, 1); mesa.strokeEllipse(cx, cy, 360, 180);
-    // Mates sobre la mesa (detalle costumbrista).
-    [[-70, -10], [60, 8], [0, 20]].forEach(([dx, dy]) => {
+    mesa.fillStyle(0x5b4029, 1); mesa.fillEllipse(cx, cy, mw, mh);
+    mesa.fillStyle(0x6e4f33, 1); mesa.fillEllipse(cx, cy, mw * 0.88, mh * 0.83);
+    mesa.lineStyle(3, 0x4a3422, 1); mesa.strokeEllipse(cx, cy, mw, mh);
+    // Mates sobre la mesa (detalle costumbrista), proporcionales.
+    [[-0.2, -0.06], [0.16, 0.05], [0, 0.12]].forEach(([fx, fy]) => {
+      const dx = fx * mw, dy = fy * mh;
       mesa.fillStyle(0x3a6b3a, 1); mesa.fillCircle(cx + dx, cy + dy, 6);
       mesa.fillStyle(0xcfcabd, 1); mesa.fillRect(cx + dx + 3, cy + dy - 8, 2, 8);
     });
@@ -160,7 +163,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
       { tex: 'npc_puestero', ang: 2.5, etq: 'de la Colonia' },
     ];
     this._mesaSprites = [];
-    const rx = 210, ry = 120;
+    const rx = W * 0.34, ry = H * 0.30; // radio de la ronda de agentes (proporcional)
     sillas.forEach((s) => {
       const x = cx + Math.cos(s.ang) * rx;
       const y = cy + Math.sin(s.ang) * ry;
@@ -177,7 +180,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     });
 
     // Tu lugar (silla resaltada abajo, de frente a la mesa).
-    this._tuSillaXY = { x: cx, y: cy + ry + 36 };
+    this._tuSillaXY = { x: cx, y: Math.min(cy + ry + H * 0.10, H - 24) };
     const halo = this.add.graphics().setDepth(90);
     halo.fillStyle(0xf4cd60, 0.25); halo.fillCircle(this._tuSillaXY.x, this._tuSillaXY.y, 26);
     this._tuHalo = halo;

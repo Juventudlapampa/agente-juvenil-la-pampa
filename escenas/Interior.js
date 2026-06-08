@@ -57,9 +57,21 @@ AJ.EscenaInterior = class extends Phaser.Scene {
     }
     this.jugador = new AJ.Jugador(this, px, py, pdir);
 
-    // Cámara: la sala es chica → centrarla (sin scroll).
-    this.cameras.main.setBounds(0, 0, s.ancho * T, s.alto * T);
-    this.cameras.main.centerOn(s.ancho * T / 2, s.alto * T / 2);
+    // Cámara cercana (O-cam): con la resolución reducida los tiles ya se ven
+    // grandes. Si la sala entra ENTERA en el viewport (caso de todos los interiores
+    // actuales), la CENTRAMOS (framing limpio, sin margen feo). Si fuera más grande
+    // que la pantalla, seguimos al jugador con leve lerp y clamp a la sala.
+    const salaW = s.ancho * T, salaH = s.alto * T;
+    if (salaW <= this.scale.width && salaH <= this.scale.height) {
+      // Sala chica (todos los interiores actuales): centrar con margen de fondo
+      // simétrico. NO seteamos bounds: el clamp de Phaser impediría centrar (forzaría
+      // scroll ≥ 0 y la sala quedaría pegada arriba-izquierda).
+      this.cameras.main.centerOn(salaW / 2, salaH / 2);
+    } else {
+      // Sala más grande que la pantalla: seguir al jugador con lerp y clampear.
+      this.cameras.main.setBounds(0, 0, salaW, salaH);
+      this.cameras.main.startFollow(this.jugador.sprite, true, 0.15, 0.15);
+    }
     this.cameras.main.setRoundPixels(true);
 
     // NPCs del interior.

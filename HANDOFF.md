@@ -5,6 +5,27 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Cámara cercana estilo Pokémon/Stardew (duodécima noche) — EN CURSO
+
+**Estado de partida que encontró esta corrida (verificado, no asumido):**
+- Remote `Juventudlapampa/agente-juvenil-la-pampa`, Pages activo. Árbol limpio; último commit
+  `8922279`. Smoke en vivo: **Pueblo 1 147/147 PASS**, consola limpia. Resolución 800×600,
+  cámara zoom 1 (25 tiles de ancho visibles → demasiado, mata la exploración).
+
+**Objetivo:** cámara CERCANA (descubrimiento) + interactividad de mundo. **OJO:** la FASE 2
+del pedido (interactividad de mundo / `mundoInteractivo`: entrar a edificios, objetos, gente
+de interiores) **YA está implementada y verificada** desde la undécima noche (commit `4e014d4`).
+Así que el trabajo NUEVO es la **FASE 1 (cámara cercana)**, asegurando que también aplique a los
+interiores ya existentes; la FASE 2 se RE-VERIFICA con la cámara nueva (no se duplica).
+
+**Decisión de enfoque (cámara):** NO multi-cámara. Hay ~13 sistemas de UI con `setScrollFactor(0)`
+y **todos** leen `scene.scale.width/height`; un mundo zoomeado + UI fija por multi-cámara obligaría
+a tocar los 13 y mantener ignore-lists (alto riesgo, choca con "no rompas lo que anda"). En su
+lugar: **bajar la RESOLUCIÓN LÓGICA** del juego (cada tile ocupa más pantalla = zoom), gated por
+`CONFIG.camaraCercana`. Toda la UI se reacomoda sola (lee scale.width/height), el pixel art queda
+crisp (pixelArt + image-rendering:pixelated), y NO reaparece el problema de "UI duplicada" del D48.
+Los táctiles son DOM `position:fixed` → no se afectan (mobile cómodo).
+
 ## Apertura cinematográfica + Mundo interactivo (undécima noche) — CERRADA
 
 Dos capas **aditivas** detrás de flags (`aperturaCine`, `mundoInteractivo`), que REUSAN

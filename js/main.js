@@ -120,12 +120,18 @@ AJ.iniciarJuego = function () {
     // P3: estilo de UI pulida (gateado por flag; el CSS lee la clase del body).
     try { if (AJ.CONFIG.uiPulida) document.body.classList.add('ui-pulida'); } catch (e) {}
 
+    // Cámara cercana (O-cam): bajar la resolución LÓGICA hace que cada tile (32px)
+    // ocupe más pantalla → se ve una porción del mapa (zoom estilo Pokémon). Toda la
+    // UI lee scale.width/height, así que se reacomoda sola. Con el flag off → 800×600.
+    const cercana = !!(AJ.CONFIG && AJ.CONFIG.camaraCercana);
+    const vista = (cercana && AJ.CONFIG.VISTA) ? AJ.CONFIG.VISTA : { ancho: 800, alto: 600 };
     const config = {
       type: Phaser.AUTO,
       parent: 'juego',
-      width: 800,
-      height: 600,
-      pixelArt: true,
+      width: vista.ancho,
+      height: vista.alto,
+      pixelArt: true,       // nearest-neighbor, antialias off
+      roundPixels: true,    // posiciones a píxel entero → pixel art nítido con la cámara cercana
       backgroundColor: '#2d2a26',
       scale: {
         mode: Phaser.Scale.FIT,

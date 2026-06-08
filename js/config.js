@@ -65,6 +65,7 @@ AJ.CONFIG = {
   // Arrancan en false; pasan a true sólo al verificar con smoke + en pantalla.
   aperturaCine:     true,  // O1: apertura cinematográfica (colectivo→Mesa→avatar→vida previa→pueblo)
   mundoInteractivo: true,  // O2: entrar a edificios (interiores), objetos y gente interactiva
+  camaraCercana:    true,  // O-cam: cámara cercana estilo Pokémon/Stardew (resolución lógica reducida = más zoom)
 
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
@@ -72,6 +73,17 @@ AJ.CONFIG = {
   // probar PNGs inexistentes genera 404s en consola. Prendelo (o llamá a mano
   // AJ.VerificarAssets.correr()) cuando empieces a meter PNGs en /assets.
   verificarAssets: false,
+
+  // --- Cámara cercana (CONFIG.camaraCercana) — estilo Pokémon/Stardew ---
+  // Resolución LÓGICA del juego. Como cada tile mide 32 px de pantalla, MENOS
+  // resolución = MÁS zoom (se ve una porción del pueblo, no el mapa entero) →
+  // exploración/descubrimiento. 448×336 ≈ **14×10.5 tiles** visibles (vs 25×18.75
+  // a 800×600). Se mantiene 4:3 como el original (mismo letterboxing en mobile).
+  // El pixel art queda nítido: pixelArt + roundPixels + image-rendering:pixelated
+  // (nearest-neighbor, sin suavizado). Los táctiles/botones son DOM position:fixed,
+  // así que NO se afectan (mobile cómodo). Con el flag off → 800×600 (vista lejana).
+  // ⚠️ El valor exacto ("qué tan cerca se siente bien") es CRITERIO HUMANO → PLAYTEST.
+  VISTA: { ancho: 448, alto: 336 },
 
   // --- Parámetros de mundo ---
   TILE: 32,            // tamaño de tile en px
