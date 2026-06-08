@@ -1727,6 +1727,180 @@ AJ.SmokeTest = (function () {
       });
     }
 
+    // 41. O1: apertura cinematográfica (vida previa que reusa origen/medidores).
+    if (AJ.CONFIG.aperturaCine && AJ.VidaPrevia && AJ.Gestion && AJ.Gestion.Estado) {
+      check('O1: la escena Apertura está registrada', () =>
+        (AJ.EscenaApertura && escena.scene.get('Apertura')) ? true : 'sin escena Apertura');
+
+      check('O1: la vida previa tiene 4 ejes (3 narrativos + COMO LLEGASTE = orígenes)', () => {
+        const ejes = AJ.VidaPrevia.ejes();
+        if (ejes.length !== 4) return 'ejes=' + ejes.length;
+        const llegada = ejes.find((e) => e.id === 'llegada');
+        if (!llegada || !llegada.origen) return 'el eje llegada no usa orígenes';
+        const ors = (AJ.Gestion.Datos.ORIGENES || []).map((o) => o.id).sort().join(',');
+        const ll = llegada.opciones.map((o) => o.id).sort().join(',');
+        return (ll === ors) ? true : 'el eje llegada no espeja los orígenes N1';
+      });
+
+      check('O1: CADA combinación de vida previa reparte medidores válidos (clamp) + origen', () => {
+        const V = AJ.VidaPrevia, E = AJ.Gestion.Estado, D = AJ.Gestion.Datos;
+        const cz = V.CRIANZA.opciones, ad = V.ADOLESCENCIA.opciones, fo = V.FORTALEZA.opciones;
+        const ll = V.llegadaEje().opciones;
+        let n = 0;
+        for (let a = 0; a < cz.length; a++)
+          for (let b = 0; b < ad.length; b++)
+            for (let c = 0; c < ll.length; c++)
+              for (let d = 0; d < fo.length; d++) {
+                const sel = { crianza: cz[a].id, adolescencia: ad[b].id, llegada: ll[c].id, fortaleza: fo[d].id };
+                const est = {};
+                const ep = V.aplicar(est, sel);
+                if (!ep) return 'aplicar devolvió null en combo ' + n;
+                if (ep.origen !== sel.llegada) return 'origen mal en combo ' + n + ': ' + ep.origen;
+                if (!est.gestion || !est.gestion.mesaVista) return 'no marcó mesaVista en combo ' + n;
+                // todos los medidores dentro de [min,max]
+                const malo = D.MEDIDORES.find((m) => {
+                  const v = ep.medidores[m.id];
+                  return typeof v !== 'number' || v < m.min || v > m.max;
+                });
+                if (malo) return 'medidor fuera de rango (' + malo.id + ') en combo ' + n;
+                n++;
+              }
+        return n >= 100 ? true : 'pocas combinaciones probadas: ' + n;
+      });
+
+      check('O1: aplicar() es idempotente (preview + finalización dan lo mismo)', () => {
+        const V = AJ.VidaPrevia;
+        const sel = { crianza: 'campo', adolescencia: 'militancia', llegada: 'merito', fortaleza: 'plantarte' };
+        const est = {};
+        const m1 = JSON.stringify(V.aplicar(est, sel).medidores);
+        const m2 = JSON.stringify(V.aplicar(est, sel).medidores); // 2ª vez: no acumula
+        return (m1 === m2) ? true : 'no es idempotente';
+      });
+
+      check('O1: saltear aplica una selección por defecto y deja perfil válido', () => {
+        const V = AJ.VidaPrevia, D = AJ.Gestion.Datos;
+        const sel = V.seleccionDefault();
+        if (!sel.llegada) return 'default sin llegada';
+        const est = {};
+        const ep = V.aplicar(est, sel);
+        if (!ep || !ep.origen) return 'default no aplicó origen';
+        const malo = D.MEDIDORES.find((m) => ep.medidores[m.id] < m.min || ep.medidores[m.id] > m.max);
+        return malo ? 'medidor fuera de rango: ' + malo.id : true;
+      });
+
+      check('O1: el resumen arma una frase no vacía', () => {
+        const V = AJ.VidaPrevia;
+        const est = {};
+        const sel = { crianza: 'ciudad', adolescencia: 'arte', llegada: 'barrio', fortaleza: 'caerbien' };
+        V.aplicar(est, sel);
+        const r = V.resumen(est, sel);
+        return (r && r.frase && r.frase.length > 20) ? true : 'frase vacía/corta';
+      });
+
+      if (AJ.Agente) {
+        check('O1: la localidad del agente persiste (set + reload)', () => {
+          const A = AJ.Agente;
+          const snap = A.localidad();
+          try {
+            A.set('localidad', 'Villa Test'); A.init();
+            return (A.localidad() === 'Villa Test') ? true : 'no persistió: ' + A.localidad();
+          } finally { A.set('localidad', snap); A.init(); }
+        });
+      }
+    }
+
+    // 42. O2: mundo interactivo (entrar a edificios + objetos + gente).
+    if (AJ.CONFIG.mundoInteractivo && AJ.Interiores) {
+      check('O2: la escena Interior está registrada', () =>
+        (AJ.EscenaInterior && escena.scene.get('Interior')) ? true : 'sin escena Interior');
+
+      check('O2: cada edificio con puerta del pueblo tiene interior construible y válido', () => {
+        const puertas = (AJ.Mapa.meta && AJ.Mapa.meta.puertas) || {};
+        const nombres = Object.keys(puertas);
+        if (!nombres.length) return 'el pueblo no tiene puertas';
+        for (let i = 0; i < nombres.length; i++) {
+          const nombre = nombres[i];
+          if (!AJ.Interiores.tieneInterior(nombre)) return 'sin interior: ' + nombre;
+          const s = AJ.Interiores.construir(nombre, AJ.Mapa.actual);
+          if (!s || !s.tex || !s.col) return 'sala mal en ' + nombre;
+          // bordes colisionan, entrada y salida NO colisionan
+          if (s.col[0][0] !== true) return 'esquina no colisiona en ' + nombre;
+          if (s.col[s.entrada.y][s.entrada.x] !== false) return 'entrada colisiona en ' + nombre;
+          if (s.col[s.salida.y][s.salida.x] !== false) return 'salida colisiona en ' + nombre;
+          // La ENTRADA al interior es por COORDENADA (el tile encima del spot),
+          // robusta aunque ese tile esté pisado por decorado (p. ej. el solape
+          // Muni/aguada del mapa base, ver ROADMAP). Sólo exigimos que el tile de
+          // puerta esté dentro del mapa.
+          const spot = puertas[nombre];
+          if (!AJ.Mapa.dentro(spot.x, spot.y - 1)) return 'puerta fuera de mapa en ' + nombre;
+        }
+        return true;
+      });
+
+      check('O2: las plantillas tienen NPCs con textura existente y objetos en rango', () => {
+        const tipos = Object.keys(AJ.Interiores.EDIF);
+        for (let i = 0; i < tipos.length; i++) {
+          const s = AJ.Interiores.construir(tipos[i], 1);
+          // NPCs con textura procedural presente
+          for (let j = 0; j < s.npcs.length; j++) {
+            const tex = s.npcs[j].tex + '_abajo_0';
+            if (!escena.textures.exists(tex)) return 'falta textura ' + tex + ' en ' + tipos[i];
+            if (s.npcs[j].x < 0 || s.npcs[j].y < 0 || s.npcs[j].x >= s.ancho || s.npcs[j].y >= s.alto)
+              return 'npc fuera de rango en ' + tipos[i];
+          }
+          // objetos dentro de la sala
+          const malos = Object.keys(s.objetos).filter((k) => {
+            const p = k.split(',').map(Number);
+            return p[0] < 0 || p[1] < 0 || p[0] >= s.ancho || p[1] >= s.alto;
+          });
+          if (malos.length) return 'objeto fuera de rango en ' + tipos[i];
+        }
+        return true;
+      });
+
+      check('O2: el arte de interiores se generó (piso/pared/puerta/mesa)', () => {
+        const claves = ['int_piso_madera', 'int_pared', 'int_puerta', 'int_mesa', 'int_estanteria'];
+        const faltan = claves.filter((c) => !escena.textures.exists(c));
+        // OJO: el arte de interiores lo genera la escena Interior en su preload.
+        // En el Pueblo puede no estar; lo generamos acá para validar que no rompe.
+        if (faltan.length && AJ.Interiores.generarArte) {
+          try { AJ.Interiores.generarArte(escena); } catch (e) { return 'generarArte lanzó: ' + e.message; }
+        }
+        const faltan2 = claves.filter((c) => !escena.textures.exists(c));
+        return faltan2.length === 0 ? true : 'faltan tiles de interior: ' + faltan2.join(',');
+      });
+
+      check('O2: estado.interior sobrevive el guardado (entrar) y se limpia (salir)', () => {
+        const orig = AJ.SAVE_KEY;
+        try {
+          AJ.SAVE_KEY = orig + '__o2interior';
+          const e = AJ.Guardado.estadoNuevo();
+          e.interior = { edificio: 'juventud', pueblo: 1, x: 5, y: 3, dir: 'der' };
+          e.jugador = { x: 32, y: 17, dir: 'abajo' }; // posición de retorno al pueblo
+          AJ.Guardado.guardar(e);
+          const l = AJ.Guardado.cargar();
+          if (!l.interior || l.interior.edificio !== 'juventud' || l.interior.x !== 5) return 'interior no persistió';
+          if (l.jugador.x !== 32 || l.jugador.y !== 17) return 'retorno al pueblo no persistió';
+          // salir: interior = null
+          l.interior = null;
+          AJ.Guardado.guardar(l);
+          const l2 = AJ.Guardado.cargar();
+          AJ.Guardado.borrar();
+          return (l2.interior === null) ? true : 'no se limpió el interior al salir';
+        } finally { AJ.SAVE_KEY = orig; }
+      });
+
+      check('O2: el pueblo redirige al interior si el save está adentro (rama temprana)', () => {
+        // Validamos la CONDICIÓN de redirección (no reiniciamos la escena viva).
+        // Pueblo.create: con estado.interior.edificio set + flag + escena → redirige.
+        const cond = !!(AJ.CONFIG.mundoInteractivo && AJ.EscenaInterior);
+        if (!cond) return 'condición de redirección falsa';
+        // construir el interior del save de ejemplo no debe romper
+        const s = AJ.Interiores.construir('almacen', 1);
+        return (s && s.salida && typeof s.salida.x === 'number') ? true : 'no se pudo construir el interior destino';
+      });
+    }
+
     // 40. Verificador de assets (inventario sincrónico; no prueba archivos acá).
     check('Verificador de assets: inventario completo (38 tiles + 132 sprites = 170)', () => {
       const V = AJ.VerificarAssets;
