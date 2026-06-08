@@ -293,6 +293,27 @@ rompe, pero si "engancha" sólo lo decís jugando. Empezá una **partida nueva**
 > off, "Jugar" usa el creador clásico → pueblo. Con `mundoInteractivo` off, las puertas no
 > abren y todo queda como antes.
 
+## Cámara cercana (O-cam) — criterio humano
+
+Lo nuevo de esta corrida. La cámara ahora es **cercana** (se ve ~14 tiles, no el pueblo entero).
+Jugá un rato caminando por el pueblo y entrando a las casas, y decidí:
+
+- **¿El nivel de ZOOM se siente bien?** ¿14 tiles de ancho es la distancia justa, o querés ver
+  **más** (sensación más abierta) o **menos** (más íntimo/claustrofóbico)? Es un solo número:
+  `js/config.js` → `CONFIG.VISTA` (más chico = más zoom; p. ej. `416×312` ≈ 13 tiles, `512×384`
+  ≈ 16 tiles). Mantené 4:3.
+- **¿La EXPLORACIÓN engancha ahora?** Antes se veía todo de un vistazo; ahora descubrís el pueblo
+  caminando. ¿Da más ganas de recorrer, o se siente que "no ves lo suficiente" y molesta?
+- **¿El seguimiento de la cámara es cómodo?** ¿Sigue suave al caminar o notás tirones/temblor?
+  (el lerp está en `escenas/Pueblo.js` → `startFollow(..., 0.12, 0.12)`; subir el número = más
+  pegada/rápida, bajar = más suave/lenta).
+- **¿Entrar a las casas aporta** con la cámara cercana? ¿Los interiores se ven bien centrados?
+- **¿Se juega cómodo en CELULAR?** Probalo en el teléfono: ¿el personaje y el texto se ven a buen
+  tamaño?, ¿los botones táctiles quedan cómodos (no tapan nada importante)?, ¿la porción de mundo
+  visible alcanza para jugar sin marearse?
+
+> Apagable: `camaraCercana: false` en `js/config.js` vuelve a la cámara lejana (800×600) de antes.
+
 ### Cómo apagar cualquier cosa que no te guste
 Todos los sistemas tienen un flag en `js/config.js`. Poné en `false` el que no
 quieras (`juice`, `sonido`, `uiPulida`, etc.) y el juego sigue andando sin esa parte.

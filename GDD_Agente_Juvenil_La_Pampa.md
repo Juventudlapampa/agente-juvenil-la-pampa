@@ -193,6 +193,16 @@ El pueblo deja de ser sólo "caminable":
 > queda idéntico). El arte de interiores y del colectivo es procedural (placeholders; ver
 > `AUDITORIA_ARTE.md`). Con el flag off, las puertas no abren y el pueblo queda como antes.
 
+### C. Cámara cercana  *(CONFIG.camaraCercana, FASE O-cam)*
+
+La cámara es **cercana** (estilo Pokémon/Stardew): en pantalla se ve **una porción** del pueblo
+(~14×10.5 tiles), no el mapa entero. Esto da **descubrimiento**: el jugador va conociendo el
+pueblo a medida que camina. La cámara sigue al jugador con leve suavizado y se **clampea** a los
+bordes del mapa (nunca muestra vacío). Aplica a todas las escenas (pueblo, Colonia, El Puesto e
+interiores). Técnicamente NO se zoomea la cámara (rompería la UI fija): se baja la **resolución
+lógica** del juego (`CONFIG.VISTA`), así cada tile ocupa más pantalla y toda la UI se reacomoda
+sola. El pixel art queda nítido (nearest-neighbor). El nivel de zoom exacto es **criterio humano**.
+
 ---
 
 ## 3. ONBOARDING CANÓNICO — ARMAR LA AGENCIA

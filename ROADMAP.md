@@ -142,6 +142,14 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
 - [x] **O3 robustez**: +13 checks de smoke (cada combinación de vida previa, idempotencia, saltear,
       interiores construibles/round-trip). **Smoke Pueblo 1 147/147, Colonia 148/148, El Puesto 138/138 PASS** (+2 flags: aperturaCine/mundoInteractivo).
 
+#### Cámara cercana (O-cam) — CERRADA (duodécima noche)
+- [x] **O-cam `camaraCercana`**: cámara cercana estilo Pokémon/Stardew vía **resolución lógica
+      reducida** (`CONFIG.VISTA = 448×336` ≈ 14×10.5 tiles visibles), NO `camera.setZoom` (ver D52).
+      Sigue al jugador con clamp a bordes (sin vacío); interiores chicos centrados; pixel art
+      nítido (pixelArt + roundPixels); mobile OK (FIT + táctiles DOM). El mundo interactivo
+      (O2) se RE-verificó con la cámara nueva. +6 checks de smoke. **Pueblo 1 153/153, Colonia
+      154/154, El Puesto 144/144 PASS.** El nivel de zoom exacto es criterio humano (PLAYTEST).
+
 ##### O — ideas diferidas (opcional)
 - **Misiones desde interiores:** hoy los NPCs de interior dan sabor/info; se podrían atar al sistema
   de misiones/afinidad (cuidando los checks de coherencia de cadena del smoke).

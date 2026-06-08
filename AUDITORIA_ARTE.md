@@ -211,3 +211,10 @@ Generadas inline (no en `art.js`):
   los muebles (mesa/estantería/mostrador/cama) y los pisos, para que los interiores tengan la
   misma calidez que el exterior. Si se dibujan como PNG, sumarlos a `assets/manifest.js` con esas
   claves y cargarlos en `Interior.preload` (mismo patrón que la capa de arte F2).
+
+### O-cam — Cámara cercana (duodécima noche)
+La cámara cercana (`CONFIG.camaraCercana`, ~14 tiles visibles) **no agrega arte**, pero **acerca
+la lente**: los placeholders procedurales (interiores, colectivo, ruta) ahora se ven MÁS GRANDES
+en pantalla, así que cualquier mejora de arte rinde más. **Prioridad de dibujo sugerida con la
+cámara nueva:** (1) muebles de interior (mesa/estantería/mostrador/cama) y pisos; (2) el colectivo
+y el paisaje de ruta de la apertura. No cambió el inventario (sigue 170 piezas medibles).

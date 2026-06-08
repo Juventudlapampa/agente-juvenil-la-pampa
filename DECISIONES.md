@@ -607,6 +607,30 @@ vida previa → pueblo) sin inventar un segundo sistema de identidad ni de medid
 - **Persistencia:** `estado.interior = {edificio,pueblo,x,y,dir}`. Al bootear, el Pueblo **redirige**
   al Interior si el save está adentro (recargar adentro = seguís adentro). Verificado el round-trip.
 
+### D52 — Cámara cercana (O-cam): resolución lógica reducida, NO `camera.setZoom`
+**Por qué:** se quería una cámara cercana estilo Pokémon/Stardew (ver una porción del pueblo,
+no todo de un vistazo) para que haya descubrimiento. La vía obvia (`camera.setZoom(2)`) está
+**vedada por D48**: zoomea TODO lo que renderiza la cámara, incluida la UI con `setScrollFactor(0)`
+(diálogo, HUD, reloj, paneles…), que quedaría gigante y mal posicionada.
+- **Multi-cámara descartado:** la alternativa "limpia" (cámara de mundo zoomeada + cámara de UI
+  a zoom 1) obligaba a asignar a la cámara de UI los **~13 sistemas** que usan `scrollFactor(0)`
+  y mantener `ignore()`-lists a medida que crean objetos (lazy). Alto riesgo, invasivo → choca
+  con "no rompas lo que anda".
+- **Elegido — bajar la RESOLUCIÓN LÓGICA** (`CONFIG.VISTA = 448×336`, gated por `camaraCercana`):
+  como cada tile mide 32px de pantalla, menos resolución = cada tile ocupa más → se ven ~14 tiles
+  de ancho (zoom efectivo ~1.8× respecto de 800×600). **Toda la UI lee `scale.width/height`**, así
+  que se reacomoda sola sin tocar ningún archivo de UI. NO reaparece el problema de D48 (la UI vive
+  en el mismo espacio lógico reducido y escala uniforme con FIT). Pixel art nítido con
+  `pixelArt` + `roundPixels` + `image-rendering:pixelated` (nearest-neighbor).
+- **Bordes:** el Pueblo ya hacía `setBounds(mapa)` + `startFollow(lerp 0.12)` → clampea (sin
+  vacío). Los interiores: si la sala entra en el viewport (todas hoy) se **centran** (sin bounds,
+  porque el clamp impediría centrar); si fuera más grande, `setBounds` + follow.
+- **Mobile:** la resolución lógica es fija; `Scale.FIT` adapta el canvas a cualquier pantalla; los
+  táctiles/botones son DOM `position:fixed` → no se afectan. El valor exacto (qué tan cerca se
+  siente bien) es **criterio humano** (PLAYTEST). Con el flag off, vuelve a 800×600 (cero regresión).
+- Verificado en pantalla: 14×10.5 tiles, follow centrado, **clamp en las 4 esquinas** (scroll 0,0 y
+  832,624), interior centrado (scroll −16,−24). Smoke Pueblo 1 **153/153**, Colonia 154, Puesto 144.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

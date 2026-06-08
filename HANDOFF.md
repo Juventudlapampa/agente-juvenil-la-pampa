@@ -5,26 +5,31 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
-## Cámara cercana estilo Pokémon/Stardew (duodécima noche) — EN CURSO
+## Cámara cercana estilo Pokémon/Stardew (duodécima noche) — CERRADA
 
-**Estado de partida que encontró esta corrida (verificado, no asumido):**
-- Remote `Juventudlapampa/agente-juvenil-la-pampa`, Pages activo. Árbol limpio; último commit
-  `8922279`. Smoke en vivo: **Pueblo 1 147/147 PASS**, consola limpia. Resolución 800×600,
-  cámara zoom 1 (25 tiles de ancho visibles → demasiado, mata la exploración).
+Cámara cercana (descubrimiento) + re-verificación del mundo interactivo. **OJO:** la "FASE 2"
+del pedido (interactividad de mundo / `mundoInteractivo`) **ya estaba implementada** desde la
+undécima noche (commit `4e014d4`); esta corrida la **re-verificó con la cámara nueva** (no se
+duplicó nada). Cierre: **Pueblo 1 153/153, Colonia 154/154, El Puesto 144/144 PASS**, consola
+limpia. **35 flags en true.** Resultado por fase:
 
-**Objetivo:** cámara CERCANA (descubrimiento) + interactividad de mundo. **OJO:** la FASE 2
-del pedido (interactividad de mundo / `mundoInteractivo`: entrar a edificios, objetos, gente
-de interiores) **YA está implementada y verificada** desde la undécima noche (commit `4e014d4`).
-Así que el trabajo NUEVO es la **FASE 1 (cámara cercana)**, asegurando que también aplique a los
-interiores ya existentes; la FASE 2 se RE-VERIFICA con la cámara nueva (no se duplica).
+- **O-cam — Cámara cercana (commit `b78e3dd`).** En vez de zoomear la cámara (rompía la UI
+  `scrollFactor(0)`, ver D48/D52), se **baja la RESOLUCIÓN LÓGICA** del juego: cada tile de 32px
+  ocupa más pantalla → se ve **14×10.5 tiles** (vs 25×18.75 a 800×600), hay descubrimiento. Flag
+  `camaraCercana` + constante `VISTA {448×336}` (documentada/tunable). Toda la UI lee
+  `scale.width/height` → se reacomoda sola (cero cambios en los ~13 sistemas de UI). Interiores:
+  cámara adaptativa (centra el cuarto chico; sigue al jugador si fuera más grande). `Apertura`:
+  layout de la Mesa proporcional. Verificado en pantalla: 14 tiles visibles, follow centrado,
+  **clamp en las 4 esquinas** (sin vacío), interior centrado, pixel art nítido.
+- **Mundo interactivo (re-verificado, sin cambios).** Entrar a la Casa de la Juventud → hablar
+  con NPC → mirar objeto → salir por el felpudo → save limpio, todo OK con la cámara cercana.
+- **O-cam robustez (commit `0ca4e78`).** +6 checks de smoke (porción visible, VISTA, clamp a
+  bordes, roundPixels+follow, UI dentro del viewport, interiores que entran). 147→153 en Pueblo 1.
 
-**Decisión de enfoque (cámara):** NO multi-cámara. Hay ~13 sistemas de UI con `setScrollFactor(0)`
-y **todos** leen `scene.scale.width/height`; un mundo zoomeado + UI fija por multi-cámara obligaría
-a tocar los 13 y mantener ignore-lists (alto riesgo, choca con "no rompas lo que anda"). En su
-lugar: **bajar la RESOLUCIÓN LÓGICA** del juego (cada tile ocupa más pantalla = zoom), gated por
-`CONFIG.camaraCercana`. Toda la UI se reacomoda sola (lee scale.width/height), el pixel art queda
-crisp (pixelArt + image-rendering:pixelated), y NO reaparece el problema de "UI duplicada" del D48.
-Los táctiles son DOM `position:fixed` → no se afectan (mobile cómodo).
+**Notas de integración (para la próxima sesión):** el "zoom" es la resolución lógica
+(`CONFIG.VISTA`), NO `camera.setZoom` (eso rompería la UI; ver D52). El valor exacto de cuántos
+tiles mostrar es criterio HUMANO (PLAYTEST). Mobile: la resolución lógica es fija (FIT adapta el
+canvas a cualquier pantalla); los táctiles son DOM `position:fixed`, no se afectan.
 
 ## Apertura cinematográfica + Mundo interactivo (undécima noche) — CERRADA
 

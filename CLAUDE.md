@@ -87,9 +87,10 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `misionesPorRegion` | **N5**: cada zona productiva con su set de misiones/recursos |
 | `aperturaCine` | **O1**: apertura cinematográfica (colectivo→Mesa→avatar→vida previa→pueblo) |
 | `mundoInteractivo` | **O2**: entrar a edificios (interiores), objetos y gente interactiva |
+| `camaraCercana` | **O-cam**: cámara cercana estilo Pokémon/Stardew (resolución lógica reducida = más zoom) |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 147/147, Colonia 148/148, El Puesto 138/138 PASS**. 34 flags en true.
+Hoy: **Pueblo 1 153/153, Colonia 154/154, El Puesto 144/144 PASS**. 35 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
@@ -131,6 +132,15 @@ Dos capas nuevas, detrás de flags, que **reusan** lo existente (no duplican sis
   adentro: el Pueblo redirige al Interior al bootear). El monumento y los carteles del pueblo
   también responden. **Colisión del jugador enchufable:** `AJ.Jugador` usa
   `this.scene.esColisionMapa` si la escena lo provee (el Interior sí; el Pueblo no → idéntico).
+- **O-cam `camaraCercana`** (`js/config.js` + `js/main.js`): cámara cercana estilo Pokémon/
+  Stardew. **No** se usa `camera.setZoom` (zoomearía toda la UI `scrollFactor(0)` → ver D48/D52);
+  en su lugar se baja la **resolución lógica** del juego a `CONFIG.VISTA` (`448×336` ≈ **14×10.5
+  tiles** visibles). Cada tile de 32px ocupa más pantalla = se ve una porción del mapa
+  (descubrimiento), no el pueblo entero. Toda la UI lee `scale.width/height` → se reacomoda sola.
+  Pixel art nítido (`pixelArt` + `roundPixels` + `image-rendering:pixelated`). El Pueblo
+  sigue al jugador con clamp a bordes (sin vacío); los interiores chicos se centran. Mobile:
+  la resolución lógica es fija (FIT adapta el canvas); los táctiles son DOM (no se afectan). Con
+  el flag off → `800×600` (vista lejana de antes). El valor exacto es criterio humano (PLAYTEST).
 
 ## Estructura
 
