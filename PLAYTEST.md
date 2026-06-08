@@ -262,6 +262,37 @@ no rompe, no que "se sienta bien"). Entrá al Modo Gestión (tecla **G** o botó
 > y el Modo Gestión vuelve al ciclo de 30 días de antes. **Contenido sensible sigue a mano**
 > (no se autogeneró nada). El balance fino de los nuevos números es criterio humano.
 
+## Apertura cinematográfica + Mundo interactivo (O1–O2) — criterio humano
+
+Esto es **lo nuevo de esta corrida** y es PURO feel: la corrida verificó que funciona y no
+rompe, pero si "engancha" sólo lo decís jugando. Empezá una **partida nueva** ("Jugar"):
+
+- **¿La APERTURA engancha?** Mirá la secuencia entera: colectivo (parallax) → Mesa → crear
+  avatar → vida previa → charla de cierre → tu pueblo. ¿El **ritmo de la intro** es el justo,
+  o se hace larga / corta? ¿El viaje en colectivo dura bien (hoy ~7s o tap para saltar)? ¿El
+  botón **"Saltear intro"** está donde tiene que estar? Probá **saltearla** entera y ver que
+  igual arrancás bien.
+- **¿La VIDA PREVIA se siente significativa?** Los 4 ejes (crianza / adolescencia / cómo
+  llegaste / fortaleza). ¿Las opciones se sienten distintas y "tuyas"? ¿El **resumen** ("Sos
+  alguien que…") cierra bien? ¿Las elecciones se NOTAN después en los medidores del Modo
+  Gestión, o el efecto es muy sutil? (los deltas están en `js/vida_previa.js`; "cómo llegaste"
+  reusa los orígenes N1). ¿Falta/sobra algún eje?
+- **¿La MESA y el tono?** Los 6 agentes de otras localidades, el mate, el "no estás solo/a".
+  ¿El texto suena a La Pampa, canchero pero sin gallegadas? ¿El **tutorial** del cierre alcanza
+  para entender qué hacer, o conviene reforzarlo?
+- **¿Aporta ENTRAR a las casas/edificios?** Entrá a la Casa de la Juventud, el almacén, la
+  Muni, la iglesia y un par de casas (interactuá de frente a la puerta con **E**). ¿Da
+  sensación de "mundo vivo"? ¿Los interiores se ven bien o muy placeholder? ¿Los NPCs de
+  adentro y los objetos (radio, mural, estantería, monumento) suman o son de relleno?
+  ¿La cámara/centrado del interior se ve bien?
+- **Arte (placeholder):** el colectivo, la ruta y los interiores son **procedurales** (ver
+  `AUDITORIA_ARTE.md` → apéndice O1/O2). ¿Cuáles vale la pena DIBUJAR primero? (el colectivo
+  y los muebles de interior son los candidatos más obvios).
+
+> Aditivo y apagable: `aperturaCine` y `mundoInteractivo` en `js/config.js`. Con `aperturaCine`
+> off, "Jugar" usa el creador clásico → pueblo. Con `mundoInteractivo` off, las puertas no
+> abren y todo queda como antes.
+
 ### Cómo apagar cualquier cosa que no te guste
 Todos los sistemas tienen un flag en `js/config.js`. Poné en `false` el que no
 quieras (`juice`, `sonido`, `uiPulida`, etc.) y el juego sigue andando sin esa parte.

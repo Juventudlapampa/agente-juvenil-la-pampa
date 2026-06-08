@@ -573,6 +573,40 @@ un *reloj* (findes/temporadas) y un *territorio* (regiones), **sin reescribir** 
 - Verificado: smoke Pueblo 1 **134/134 PASS**; **save/reload REAL** del navegador conserva origen,
   Mesa, finde a mitad, temporada del año y zona; el menú renderiza el estado cargado sin crashear.
 
+### D50 — Apertura cinematográfica (O1): ENVOLVER, no duplicar
+**Por qué:** rehacer la primera escena como secuencia guionada (colectivo → Mesa → avatar →
+vida previa → pueblo) sin inventar un segundo sistema de identidad ni de medidores.
+- **Reuso total:** el creador es `AJ.Agente.abrirCreador` (con una opción nueva
+  `conLocalidad`, aditiva); el reparto de medidores es la vida previa, cuyo eje "cómo llegaste"
+  **son los orígenes N1** (`AJ.Gestion.Origen.elegir`, absolutos) y los otros 3 ejes
+  (crianza/adolescencia/fortaleza) son **deltas narrativos** vía `aplicarImpacto` (clamp). La
+  apertura marca `estado.gestion.mesaVista` para que la Mesa N2 **no se repita** al entrar a gestión.
+- **`aplicar()` IDEMPOTENTE:** la UI muestra un preview del perfil en el resumen (aplica) y la
+  finalización aplica de nuevo; para que los deltas relativos **no se acumulen**, `aplicar`
+  resetea los medidores a su base y limpia el origen antes de recomponer. (Bug encontrado y
+  corregido durante la verificación: agencia 14 en vez de 11 → ahora estable.)
+- **Salteable de verdad:** un `_saltear()` cierra cualquier overlay, aplica una **selección por
+  defecto** si no se eligió, y desemboca en un perfil válido. El smoke prueba las **300**
+  combinaciones de vida previa (clamp + origen + mesaVista) y la idempotencia.
+- **Arte procedural** del colectivo/ruta/caldenes/postes generado en la propia escena (no toca
+  `art.js` ni su inventario → cobertura sigue 170). Con `aperturaCine` off, "Jugar" usa el flujo
+  clásico (creador F1 → Pueblo): cero regresión.
+
+### D51 — Mundo interactivo (O2): colisión enchufable + interiores como escena aparte
+**Por qué:** entrar a edificios sin reescribir el RPG del pueblo ni `AJ.Mapa`.
+- **Colisión enchufable (1 línea):** `AJ.Jugador._puedeIr` usa `this.scene.esColisionMapa(tx,ty)`
+  **si la escena lo define**, si no `AJ.Mapa.esColision` (default). El Pueblo no lo define →
+  idéntico a siempre; el Interior provee el suyo (matriz de la sala). Cero refactor, cero riesgo.
+- **Interiores como datos + escena:** `AJ.Interiores.construir(edificio,pueblo)` arma la sala
+  (plantillas oficina/local/casa/iglesia) con su **arte procedural propio** (16×16; NO se suma al
+  inventario de `art.js`, así el smoke de cobertura sigue en 170). `escenas/Interior.js` la
+  renderiza, reusa `AJ.NPC`/`AJ.Dialogo`, y la **salida** (felpudo) vuelve al pueblo en la puerta.
+- **Entrada por COORDENADA, no por textura:** se entra interactuando frente al tile de la puerta
+  (calculado desde `meta.puertas`), robusto al solape Muni/aguada del mapa base (ese tile se ve
+  junco, pero entrar funciona igual). El monumento y los carteles también responden.
+- **Persistencia:** `estado.interior = {edificio,pueblo,x,y,dir}`. Al bootear, el Pueblo **redirige**
+  al Interior si el save está adentro (recargar adentro = seguís adentro). Verificado el round-trip.
+
 ### D1 — Sin módulos ES (`import`/`export`); namespace global `AJ`
 **Por qué:** el requisito "abre con doble clic y funciona" (protocolo `file://`)
 choca con los módulos ES: Chrome/Firefox bloquean `import` por CORS en `file://`.

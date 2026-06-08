@@ -5,7 +5,38 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
-## Apertura cinematográfica + Mundo interactivo (undécima noche) — EN CURSO
+## Apertura cinematográfica + Mundo interactivo (undécima noche) — CERRADA
+
+Dos capas **aditivas** detrás de flags (`aperturaCine`, `mundoInteractivo`), que REUSAN
+origen/medidores/creador (no duplican sistemas). **Push después de cada fase** (hay remote).
+Cierre: **Pueblo 1 147/147, Colonia 148/148, El Puesto 138/138 PASS**, consola limpia. **34
+flags en true.** Resultado por fase:
+
+- **O1 — Apertura cinematográfica (commit `c3ca756`).** `escenas/Apertura.js` (máquina de
+  estados) + `js/vida_previa.js`. Colectivo con parallax procedural → Mesa de 6 agentes
+  (diálogo, reusa `AJ.Dialogo`) → creador de avatar con **localidad** (reusa
+  `AJ.Agente.abrirCreador` + `opts.conLocalidad`) → **vida previa Mount & Blade** (4 ejes;
+  "cómo llegaste" = orígenes N1, los otros 3 deltas narrativos) → cierre/tutorial → Pueblo.
+  Salteable. `aplicar()` idempotente; marca `mesaVista`. Verificado en pantalla: corre
+  completa, medidores correctos (probadas las 300 combinaciones), desemboca bien.
+- **O2 — Mundo interactivo (commit `4e014d4`).** `escenas/Interior.js` + `js/interiores.js`.
+  Entrar a edificios (plantillas oficina/local/casa/iglesia, arte procedural propio que NO
+  toca el inventario → cobertura sigue 170), objetos interactivos (monumento/carteles/radio/
+  mural/estanterías), NPCs de interior con el diálogo existente, salida por felpudo. Guarda
+  `estado.interior`; recargar adentro redirige al Interior. Colisión del jugador enchufable
+  (`this.scene.esColisionMapa`; el Pueblo no lo define → idéntico). Verificado en pantalla:
+  entrar/hablar/mirar/salir y round-trip de save adentro del almacén restaura la posición.
+- **O3 — Robustez (commit `d4dc6e4`).** +13 checks de smoke (cada combinación de vida previa,
+  idempotencia, saltear, interiores construibles/round-trip). 134→147 en Pueblo 1.
+
+**Notas de integración (para la próxima sesión):** la entrada a edificios es por COORDENADA
+(robusta al solape Muni/aguada del mapa base; ese tile de puerta se ve junco pero entrar
+funciona — ver ROADMAP "Bug latente"). El arte del colectivo/ruta/interiores es procedural
+(placeholders; lo dibujable está anotado en AUDITORIA_ARTE.md). Lo que necesita ojo HUMANO
+(¿engancha la intro?, ¿la vida previa se siente significativa?, ¿aporta entrar a las casas?,
+¿el ritmo de la intro es el justo?) está en PLAYTEST.md.
+
+## Apertura cinematográfica + Mundo interactivo (undécima noche) — estado de partida que encontró
 
 **Estado de partida que encontró esta corrida (verificado, no asumido):**
 - **Remote configurado** (¡por fin!): `Juventudlapampa/agente-juvenil-la-pampa`, GitHub

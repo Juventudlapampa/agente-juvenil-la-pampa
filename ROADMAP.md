@@ -127,6 +127,28 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
       (Atuel apartidario).
 - [x] **N6 robustez**: bordes + **save/reload real** verificado. **Smoke Pueblo 1 134/134 PASS** (+5 flags nuevos: origenJugador/mesaProvincial/relojTemporadas/modoAnual/misionesPorRegion).
 
+#### Apertura cinematográfica + Mundo interactivo (O1–O3) — CERRADA (undécima noche)
+> Aditiva, detrás de flags; reusa origen/medidores/creador (no duplica sistemas). Ver GDD §2.ter.
+- [x] **O1 `aperturaCine`**: arranque guionado salteable — colectivo (parallax procedural) → Mesa
+      de Agentes (6 agentes + diálogo) → creador de avatar (nombre/pronombre/variante + **localidad**)
+      → **vida previa estilo Mount & Blade** (4 ejes; "cómo llegaste" = orígenes N1, los otros 3 son
+      deltas narrativos) → charla de cierre/tutorial → tu localidad. `aplicar()` idempotente; marca
+      `mesaVista` para no repetir la Mesa. `escenas/Apertura.js` + `js/vida_previa.js`.
+- [x] **O2 `mundoInteractivo`**: entrar a edificios (`escenas/Interior.js` + `js/interiores.js`,
+      plantillas oficina/local/casa/iglesia con arte procedural propio), objetos interactivos
+      (monumento/carteles/estanterías/radio/mural), NPCs de interior con el diálogo existente.
+      Guarda `estado.interior` (recargar adentro = seguís adentro). Colisión del jugador enchufable
+      (`this.scene.esColisionMapa`). Entrada por COORDENADA (robusta al solape Muni/aguada).
+- [x] **O3 robustez**: +13 checks de smoke (cada combinación de vida previa, idempotencia, saltear,
+      interiores construibles/round-trip). **Smoke Pueblo 1 147/147, Colonia 148/148, El Puesto 138/138 PASS** (+2 flags: aperturaCine/mundoInteractivo).
+
+##### O — ideas diferidas (opcional)
+- **Misiones desde interiores:** hoy los NPCs de interior dan sabor/info; se podrían atar al sistema
+  de misiones/afinidad (cuidando los checks de coherencia de cadena del smoke).
+- **Más interiores con identidad:** una plantilla por edificio clave en vez de reusar "casa".
+- **Arte real** del colectivo/ruta/interiores (hoy procedural; ver `AUDITORIA_ARTE.md`).
+- **Saltear el colectivo con animación de bajada** (hoy salta directo a la Mesa).
+
 #### Pendiente — trabajo HUMANO (no automatizable)
 - [ ] **Contenido sensible** (salud mental, consumos, violencias, bullying): redacción + revisión
       humana en `CONTENIDO_SENSIBLE.md` (banco vacío; el motor lo soporta vía `registrarSensibles`).
@@ -166,6 +188,10 @@ Estado de fases y trabajo bolt-on diseñado para sumarse sin reescribir.
   runtime (`AJ.Rutinas._asegurarWalkable` reubica a cualquier NPC sobre un tile
   que colisiona). Arreglo de fondo pendiente: en `mapa.js`, mover la puerta/spot
   de la Muni a un lado caminable o correr la aguada un par de tiles.
+  - **Nota O2 (interiores):** el junco de la aguada también pisa el TILE de la puerta
+    de la Muni (cosmético: se ve junco en vez de puerta). Entrar igual FUNCIONA porque
+    la detección es por coordenada, no por textura. El arreglo de fondo (mover la aguada)
+    saneará de paso este detalle visual.
 
 ## Futuras noches (bolt-on previsto)
 

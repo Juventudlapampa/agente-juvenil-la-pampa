@@ -144,6 +144,57 @@ qué comunidades hay, qué eventos caen). Reskinable: la bajada local se agrega 
 
 ---
 
+## 2.ter — APERTURA CINEMATOGRÁFICA Y MUNDO INTERACTIVO (O1–O2)
+
+Capa de **presentación y exploración**, aditiva y detrás de flags. No agrega mecánicas de
+gestión nuevas: **reusa** el creador (F1), el origen (N1) y los medidores (G1), y le da al RPG
+del pueblo una capa de "mundo vivo".
+
+### A. Apertura cinematográfica  *(CONFIG.aperturaCine, FASE O1)*
+
+El botón **"Jugar"** ya no cae directo al pueblo: arranca una **secuencia guionada** (salteable
+en cualquier momento con un botón/tecla):
+
+1. **Viaje en colectivo** — el agente viaja por una ruta pampeana; paisaje lateral con parallax
+   (campo, caldenes, postes, ruta, cielo amplio). Dura unos segundos o se saltea con tap/tecla.
+2. **Bajada y transición** — fundido a negro y aparición en la Mesa.
+3. **La Mesa de Agentes** — vista de una mesa con varios agentes juveniles de distintas
+   localidades (ficticias). Diálogo de bienvenida cálido y costumbrista; un par se presentan.
+4. **Enfoque en vos → crear avatar** — se dispara el **creador existente** (nombre, pronombre,
+   variante visual) **+ de qué localidad sos** (campo nuevo, opcional).
+5. **Vida previa (estilo Mount & Blade)** — 4 ejes encadenados que construyen tu pasado y
+   definen tu **perfil inicial**: *crianza* (pueblo chico / ciudad / campo), *adolescencia*
+   (deporte / estudio / centro de estudiantes / laburo / arte), **cómo llegaste a la Agencia**
+   (= los **orígenes N1**: mérito / intendente / comodín / urgencia / barrio) y *fortaleza*
+   personal. **Cómo llegaste** fija la distribución de medidores (absoluta, reusa N1); los otros
+   3 ejes son **matices narrativos** (deltas, clampeados). Cierra con un resumen "Sos alguien que…".
+6. **Charla de cierre / tutorial** — la Mesa te entrega la caja de herramientas (las 5 líneas de
+   trabajo, el dado, la Mesa como respaldo) y un fundido te deja en tu localidad: empieza el juego.
+
+> Reusa, no duplica: la apertura **es** la Mesa N2 (marca `mesaVista`) y reparte los medidores
+> con el sistema de origen N1. Con el flag off, "Jugar" usa el creador clásico → pueblo.
+
+### B. Mundo interactivo  *(CONFIG.mundoInteractivo, FASE O2)*
+
+El pueblo deja de ser sólo "caminable":
+
+- **Entrar a edificios** — interactuar frente a la puerta de un edificio clave (Casa de la
+  Juventud, almacén, Municipalidad, iglesia, casas) abre una escena de **interior** (con fundido).
+  Hay **plantillas reusables** (oficina / local / casa / iglesia). Adentro: una **salida** (felpudo)
+  que devuelve al pueblo en la puerta correcta. El juego **recuerda** en qué interior estás
+  (recargar adentro = seguís adentro).
+- **Objetos interactivos** — el monumento, los carteles, las estanterías, la radio comunitaria,
+  el mural de proyectos, etc., responden con una descripción costumbrista.
+- **Gente de interiores** — NPCs propios de cada interior (el secretario de la Muni, los pibes de
+  la Casa de la Juventud, Don Pedro en el almacén, el Padre en la iglesia, vecinos en las casas)
+  con el **sistema de diálogo existente**; dan sabor e información.
+
+> Aditivo: la colisión del jugador es enchufable (el interior usa su propia matriz; el pueblo
+> queda idéntico). El arte de interiores y del colectivo es procedural (placeholders; ver
+> `AUDITORIA_ARTE.md`). Con el flag off, las puertas no abren y el pueblo queda como antes.
+
+---
+
 ## 3. ONBOARDING CANÓNICO — ARMAR LA AGENCIA
 
 > Esto NO se inventa: son los cuatro pasos de la **Hoja de Ruta Juvenil** que escribió la Subsecretaría,

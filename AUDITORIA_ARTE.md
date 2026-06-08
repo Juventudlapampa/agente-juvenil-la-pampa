@@ -182,3 +182,32 @@ Los 132 sprites (jugador + 10 NPCs × 4 dirs × 3 frames) siguen procedurales: *
 - `npc_partera_der_2`
 
 </details>
+
+---
+
+## Apéndice manual — arte procedural nuevo (O1/O2, undécima noche)
+
+> Esta parte NO la genera `auditar_arte.js` (audita sólo los PNG de `/assets`). Son texturas
+> generadas **en código, en la propia escena**, fuera del inventario de 170. Acá queda anotado
+> qué se generó procedural y qué conviene DIBUJAR a futuro (decisión visual humana).
+
+### O1 — Apertura cinematográfica (`escenas/Apertura.js`, `_generarArteApertura`)
+Generadas inline (no en `art.js`):
+- `ap_calden` (96×64) — silueta de caldén para el parallax (tiled = árboles espaciados). 👀 placeholder.
+- `ap_poste` (48×48) — poste de alambrado con dos hilos. 👀 placeholder.
+- `ap_ruta` (48×40) — banda de ruta de tierra (da sensación de movimiento). 👀 placeholder.
+- El **colectivo** (marco/ventanilla/asiento) y el **cielo/campo/sol** se dibujan con `Graphics`
+  directo (sin textura). 👀 lo más "pampeano" a dibujar bien: **el colectivo/micro** y un paisaje
+  de ruta lateral (caldenes, postes, cielo amplio) con más carácter.
+- La **Mesa de Agentes** usa los sprites `npc_*` existentes (procedurales) alrededor de una mesa
+  ovalada dibujada con `Graphics`. 👀 podría ser una vista 3/4 ilustrada.
+
+### O2 — Interiores (`js/interiores.js`, `generarArte`)
+13 tiles 16×16 generados inline (no en `art.js` → cobertura sigue 170):
+- `int_piso_madera`, `int_piso_baldosa`, `int_pared`, `int_puerta` (felpudo de salida),
+  `int_mesa`, `int_silla`, `int_mostrador`, `int_estanteria`, `int_cama`, `int_planta`,
+  `int_radio`, `int_afiche`, `int_alfombra`.
+- Todos **placeholders** procedurales razonables (paleta acorde a DB32). 👀 candidatos a dibujar:
+  los muebles (mesa/estantería/mostrador/cama) y los pisos, para que los interiores tengan la
+  misma calidez que el exterior. Si se dibujan como PNG, sumarlos a `assets/manifest.js` con esas
+  claves y cargarlos en `Interior.preload` (mismo patrón que la capa de arte F2).

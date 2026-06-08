@@ -85,9 +85,11 @@ La Pampa, pero **genérico y reskinable** (sin marcas reales hard-codeadas).
 | `relojTemporadas` | **N3**: reloj de findes (1 temporada = 12 findes); envuelve G5 |
 | `modoAnual` | **N4**: 4 temporadas + Mes de las Juventudes (septiembre = clímax) |
 | `misionesPorRegion` | **N5**: cada zona productiva con su set de misiones/recursos |
+| `aperturaCine` | **O1**: apertura cinematográfica (colectivo→Mesa→avatar→vida previa→pueblo) |
+| `mundoInteractivo` | **O2**: entrar a edificios (interiores), objetos y gente interactiva |
 
 `dev: true` hace que el **smoke-test corra solo** al cargar la escena Pueblo.
-Hoy: **Pueblo 1 128/128, Colonia 129/129, El Puesto 119/119 PASS**. 32 flags en true.
+Hoy: **Pueblo 1 147/147, Colonia 148/148, El Puesto 138/138 PASS**. 34 flags en true.
 **Balance** (números de ritmo) centralizado en `AJ.CONFIG.BALANCE` — ver P5/PLAYTEST.
 Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
 
@@ -104,6 +106,31 @@ Joystick: `AJ.CONFIG.JOYSTICK` (radio + zona muerta).
   `meta.salidas` = tiles de viaje. `AJ.totalPueblos()` = 2 ó 3.
 - **Contenido (D1/D2) generado por un workflow** de agentes (escritores + crítico). Todo
   genérico, sin marcas/programas/nombres reales.
+
+## Apertura cinematográfica + Mundo interactivo (O1–O2) — aditivo
+
+Dos capas nuevas, detrás de flags, que **reusan** lo existente (no duplican sistemas):
+
+- **O1 `aperturaCine`** (`escenas/Apertura.js` + `js/vida_previa.js`): el botón "Jugar"
+  arranca una SECUENCIA guionada en vez de ir directo al Pueblo: **colectivo** (parallax
+  procedural) → **Mesa de Agentes** (diálogo de bienvenida, reusa `AJ.Dialogo`) → **creador
+  de avatar** (reusa `AJ.Agente.abrirCreador` con `opts.conLocalidad`) → **vida previa**
+  estilo Mount & Blade → **charla de cierre/tutorial** → tu localidad (Pueblo). Salteable en
+  cualquier fase (botón DOM + tecla/tap). La vida previa (`AJ.VidaPrevia`) tiene 4 ejes:
+  crianza / adolescencia / **cómo llegaste** / fortaleza. "Cómo llegaste" SON los **orígenes
+  N1** (`AJ.Gestion.Origen.elegir`, absolutos); los otros 3 son deltas narrativos
+  (`aplicarImpacto`, clamp). `aplicar()` es **idempotente** (resetea base antes de
+  recomponer). Marca `estado.gestion.mesaVista` para no repetir la Mesa N2 después.
+  Con el flag off, "Jugar" usa el flujo clásico (creador F1 → Pueblo).
+- **O2 `mundoInteractivo`** (`escenas/Interior.js` + `js/interiores.js`): las puertas de los
+  edificios son interactivas (interactuar de frente → escena **Interior** con fundido). Hay
+  **plantillas reusables** (oficina/local/casa/iglesia) con arte procedural propio (16×16, NO
+  toca el inventario de `art.js` → cobertura sigue 170). Adentro: NPCs (reusa `AJ.NPC`/
+  `AJ.Dialogo`), **objetos interactivos** (descripción), y una **salida** (felpudo) que vuelve
+  al pueblo en la puerta correcta. Se guarda `estado.interior` (recargar adentro = seguís
+  adentro: el Pueblo redirige al Interior al bootear). El monumento y los carteles del pueblo
+  también responden. **Colisión del jugador enchufable:** `AJ.Jugador` usa
+  `this.scene.esColisionMapa` si la escena lo provee (el Interior sí; el Pueblo no → idéntico).
 
 ## Estructura
 
@@ -147,10 +174,14 @@ js/gestion/mesa.js       N2: Mesa Provincial (arranque narrativo + visitable) (A
 js/gestion/temporadas.js N3: reloj de findes (1 temporada = 12 findes) — lógica (AJ.Gestion.Temporadas)
 js/gestion/anio.js       N4: 4 temporadas del año + Mes de las Juventudes (AJ.Gestion.Anio)
 js/gestion/regiones.js   N5: misiones por zona productiva (AJ.Gestion.Regiones); contenido validado por workflow
+js/vida_previa.js       Apertura O1: vida previa estilo Mount & Blade (reusa origen/medidores)
+js/interiores.js        Mundo interactivo O2: plantillas de interiores + arte procedural propio
 js/smoketest.js         Autotest de invariantes (corre en modo dev)
 js/main.js              Input unificado + arranque
 escenas/Titulo.js       Pantalla de título
+escenas/Apertura.js     Apertura O1: secuencia colectivo→Mesa→avatar→vida previa→pueblo (salteable)
 escenas/Pueblo.js       Escena principal (orquesta todos los sistemas)
+escenas/Interior.js     Mundo interactivo O2: interior de un edificio (entrar/salir, NPCs, objetos)
 escenas/Final.js        Pantalla de cierre
 CONTENIDO_SENSIBLE.md   Dilemas sensibles: estructura + plantilla, REVISIÓN HUMANA
 GDD_Agente_Juvenil_La_Pampa.md  Documento de diseño del Modo Gestión
