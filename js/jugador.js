@@ -65,7 +65,12 @@ AJ.Jugador = class {
     ];
     for (const [px, py] of esquinas) {
       const tx = Math.floor(px / T), ty = Math.floor(py / T);
-      if (AJ.Mapa.esColision(tx, ty)) return false;
+      // Mapa de colisión: por defecto el del pueblo (AJ.Mapa). Una escena puede
+      // proveer el suyo (p. ej. interiores) con esColisionMapa(tx,ty). Aditivo:
+      // el Pueblo no lo define, así sigue usando AJ.Mapa idéntico a siempre.
+      const colideMapa = this.scene.esColisionMapa
+        ? this.scene.esColisionMapa(tx, ty) : AJ.Mapa.esColision(tx, ty);
+      if (colideMapa) return false;
       // Colisión extra opcional (NPCs, objetos): la provee la escena.
       if (this.scene.esColisionExtra && this.scene.esColisionExtra(tx, ty)) return false;
     }

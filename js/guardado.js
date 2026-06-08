@@ -41,6 +41,7 @@ AJ.Guardado = (function () {
       registro: { vecinos: {}, pueblos: {} }, // Registro del Agente (D3)
       tiempoJugado: 0,     // segundos reales jugados (E1)
       gestion: {},         // estado del Modo Gestión por pueblo (G1; lo arma AJ.Gestion)
+      interior: null,      // si el jugador está dentro de un edificio (O2): { edificio, pueblo, x, y, dir }
     };
   }
 
@@ -84,6 +85,7 @@ AJ.Guardado = (function () {
           : { vecinos: {}, pueblos: {} },
         tiempoJugado: est.tiempoJugado || 0,
         gestion: (est.gestion && typeof est.gestion === 'object') ? est.gestion : {},
+        interior: (est.interior && typeof est.interior === 'object') ? est.interior : null,
       });
     } catch (e) {
       console.warn('[Guardado] Save corrupto, ignoro:', e);

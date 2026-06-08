@@ -131,7 +131,7 @@ AJ.iniciarJuego = function () {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
-      scene: [AJ.EscenaTitulo, AJ.EscenaApertura, AJ.EscenaPueblo, AJ.EscenaFinal]
+      scene: [AJ.EscenaTitulo, AJ.EscenaApertura, AJ.EscenaPueblo, AJ.EscenaInterior, AJ.EscenaFinal]
         .filter(Boolean),
     };
 

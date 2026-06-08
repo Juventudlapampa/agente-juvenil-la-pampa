@@ -49,6 +49,18 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     const T = AJ.CONFIG.TILE;
     const M = AJ.Mapa;
 
+    // O2: si el save dice que estábamos DENTRO de un edificio, ir directo al
+    // interior (sin armar el pueblo). Recarga estando adentro → seguís adentro.
+    if (AJ.CONFIG.mundoInteractivo && AJ.EscenaInterior && this.estado.interior &&
+        this.estado.interior.edificio) {
+      this.scene.start('Interior', {
+        edificio: this.estado.interior.edificio,
+        pueblo: this.estado.interior.pueblo || this.estado.mapaActual || 1,
+        restaurar: true,
+      });
+      return;
+    }
+
     // P1: la escena entra desde negro (no-op si juice está apagado).
     if (AJ.Juice) AJ.Juice.fadeIn(this);
 
@@ -382,6 +394,55 @@ AJ.EscenaPueblo = class extends Phaser.Scene {
     if (this.granja && this.granja.intentarInteractuar(frente.x, frente.y)) return;
     // Mesa de crafteo / juntar leña de caldenes.
     if (this.crafteo && this.crafteo.intentarInteractuar(frente.x, frente.y)) return;
+    // O2: entrar a un edificio (puerta al frente) u objeto del mundo interactivo.
+    if (AJ.CONFIG.mundoInteractivo) {
+      if (this._intentarEntrar(frente)) return;
+      if (this._objetoMundo(frente)) return;
+    }
+  }
+
+  // O2: ¿el tile de enfrente es la puerta de un edificio con interior? → entrar.
+  _intentarEntrar(frente) {
+    if (!AJ.Interiores || !AJ.EscenaInterior) return false;
+    const puertas = (AJ.Mapa.meta && AJ.Mapa.meta.puertas) || {};
+    for (const nombre in puertas) {
+      const spot = puertas[nombre];        // tile DEBAJO de la puerta (retorno)
+      const door = { x: spot.x, y: spot.y - 1 }; // el tile de la puerta misma
+      if (door.x === frente.x && door.y === frente.y && AJ.Interiores.tieneInterior(nombre)) {
+        this._entrar(nombre, spot);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  _entrar(nombre, spot) {
+    try {
+      const pueblo = this.estado.mapaActual || 1;
+      this.estado.interior = { edificio: nombre, pueblo: pueblo };
+      // Al volver del interior, aparecés en el tile debajo de la puerta.
+      this.estado.jugador = { x: spot.x, y: spot.y, dir: 'abajo' };
+      AJ.Guardado.guardar(this.estado);
+    } catch (e) { console.warn('[Pueblo] entrar', e); }
+    if (AJ.Sonido) { try { AJ.Sonido.viaje(); } catch (e) {} }
+    const data = { edificio: nombre, pueblo: this.estado.mapaActual || 1 };
+    if (AJ.Juice) AJ.Juice.irA(this, 'Interior', data);
+    else this.scene.start('Interior', data);
+  }
+
+  // O2: objetos del mundo (monumento, carteles) responden con una descripción.
+  _objetoMundo(frente) {
+    if (!this.dialogo) return false;
+    const M = AJ.Mapa;
+    const clave = (M.tex[frente.y] && M.tex[frente.y][frente.x]) || '';
+    if (clave === 'monumento') {
+      this.dialogo.mostrar('Monumento a los Pioneros',
+        ['Un busto de bronce gastado por el viento. Los que abrieron estos caminos a pala y caballo. El pueblo les debe la sombra de estos caldenes.']);
+      return true;
+    }
+    const cartel = (M.meta.carteles || []).find((c) => c.x === frente.x && c.y === frente.y);
+    if (cartel) { this.dialogo.mostrar('Cartel', ['«' + cartel.texto + '»']); return true; }
+    return false;
   }
 
   // FASE D: viaja al pueblo destino, llegando al punto indicado.
