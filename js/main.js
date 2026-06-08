@@ -131,7 +131,8 @@ AJ.iniciarJuego = function () {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
-      scene: [AJ.EscenaTitulo, AJ.EscenaPueblo, AJ.EscenaFinal],
+      scene: [AJ.EscenaTitulo, AJ.EscenaApertura, AJ.EscenaPueblo, AJ.EscenaFinal]
+        .filter(Boolean),
     };
 
     AJ.juego = new Phaser.Game(config);

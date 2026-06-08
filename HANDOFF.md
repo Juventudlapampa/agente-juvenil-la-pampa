@@ -5,6 +5,29 @@
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
 > ojo humano).
 
+## Apertura cinematográfica + Mundo interactivo (undécima noche) — EN CURSO
+
+**Estado de partida que encontró esta corrida (verificado, no asumido):**
+- **Remote configurado** (¡por fin!): `Juventudlapampa/agente-juvenil-la-pampa`, GitHub
+  Pages activo. **Push después de cada fase** (lo pide el usuario).
+- Árbol git limpio; último commit `817bdcb` (fix de teclado: el juego no intercepta al
+  tipear en inputs DOM, ver DECISIONES). **32 flags en true.**
+- Smoke en vivo (reload limpio, entrando al Pueblo): **Pueblo 1 134/134 PASS**, consola limpia.
+- Sin Python real (stub de Windows Store): server local con Node (`server-agente.js`).
+
+**Objetivo de la noche (2 entregas):**
+1. **Apertura cinematográfica** (`CONFIG.aperturaCine`): reemplazar el arranque por una
+   secuencia guionada — viaje en colectivo (parallax) → Mesa de Agentes → crear avatar
+   (nombre/pronombre/variante + localidad) → **vida previa estilo Mount & Blade** (3-4 ejes
+   que **reusan el sistema de origen/medidores** N1/G1, no inventan uno nuevo) → charla de
+   cierre/tutorial → tu localidad. Salteable.
+2. **Mundo interactivo** (`CONFIG.mundoInteractivo`): entrar a edificios (escena Interior con
+   plantillas reusables), objetos interactivos (carteles/monumento/estanterías), gente en
+   interiores con el sistema de diálogo existente. Guardado del interior actual.
+
+Reglas: aditivo, detrás de flags con try/catch + fallback; NO se reescribe el motor de
+gestión ni el RPG; namespace AJ, scripts clásicos; DawnBringer 32; pueblos ficticios.
+
 ## Capa Narrativa-Temporal del Modo Gestión (décima noche) — CERRADA
 
 Capa **aditiva** sobre el Modo Gestión (sin reescribir RPG ni motor G1–G7). Arranque:

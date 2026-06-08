@@ -61,6 +61,11 @@ AJ.CONFIG = {
   modoAnual:      true,  // N4: 4 temporadas + Mes de las Juventudes (modo largo)
   misionesPorRegion: true, // N5: cada zona productiva con su set de misiones/recursos
 
+  // --- Capa de Apertura + Mundo interactivo (undécima noche) ---
+  // Arrancan en false; pasan a true sólo al verificar con smoke + en pantalla.
+  aperturaCine:     true,  // O1: apertura cinematográfica (colectivo→Mesa→avatar→vida previa→pueblo)
+  mundoInteractivo: true,  // O2: entrar a edificios (interiores), objetos y gente interactiva
+
   // --- Modo desarrollo: corre el smoke-test y muestra logs ---
   dev: true,
   // Verificador de cobertura de arte (js/verificar_assets.js). OFF por defecto:

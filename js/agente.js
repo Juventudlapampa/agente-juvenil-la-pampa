@@ -35,6 +35,7 @@ AJ.Agente = (function () {
     if (typeof data.nombre !== 'string') data.nombre = '';
     if (['el', 'ella', 'elle'].indexOf(data.pronombre) < 0) data.pronombre = 'elle';
     if (typeof data.variante !== 'number' || data.variante < 0 || data.variante > 3) data.variante = 0;
+    if (typeof data.localidad !== 'string') data.localidad = ''; // capa narrativa: de dónde sos
     return data;
   }
   function _data() { if (!data) _cargar(); return data; }
@@ -43,6 +44,7 @@ AJ.Agente = (function () {
   function nombre() { return (_data().nombre || '').trim(); }
   function pronombre() { return _data().pronombre; }
   function variante() { return _data().variante; }
+  function localidad() { return (_data().localidad || '').trim(); }
   function set(k, v) { _data()[k] = v; _guardar(); }
 
   function colores() {
@@ -68,9 +70,10 @@ AJ.Agente = (function () {
   // --- Creador (overlay DOM) ------------------------------------------
   let overlay = null;
 
-  function abrirCreador(scene, onConfirm) {
+  function abrirCreador(scene, onConfirm, opts) {
     cerrarCreador();
     _cargar();
+    opts = opts || {};
     const ov = document.createElement('div');
     ov.id = 'creador-agente';
     ov.className = 'modal-dom';
@@ -79,7 +82,8 @@ AJ.Agente = (function () {
     panel.className = 'modal-panel';
     ov.appendChild(panel);
 
-    const h = document.createElement('h2'); h.textContent = 'Creá tu Agente'; panel.appendChild(h);
+    const h = document.createElement('h2'); h.textContent = opts.titulo || 'Creá tu Agente'; panel.appendChild(h);
+    if (opts.sub) { const ps = document.createElement('p'); ps.className = 'gestion-sub'; ps.textContent = opts.sub; panel.appendChild(ps); }
 
     // Nombre
     const lblN = document.createElement('label'); lblN.textContent = 'Nombre (máx. 12):'; panel.appendChild(lblN);
@@ -87,6 +91,16 @@ AJ.Agente = (function () {
     inp.type = 'text'; inp.maxLength = 12; inp.value = data.nombre || '';
     inp.placeholder = 'Agente'; inp.autocomplete = 'off'; inp.className = 'creador-input';
     panel.appendChild(inp);
+
+    // Localidad (de dónde sos) — sólo si se pide (capa narrativa F1/apertura).
+    let inpLoc = null;
+    if (opts.conLocalidad) {
+      const lblL = document.createElement('label'); lblL.textContent = '¿De qué localidad sos?'; panel.appendChild(lblL);
+      inpLoc = document.createElement('input');
+      inpLoc.type = 'text'; inpLoc.maxLength = 22; inpLoc.value = data.localidad || '';
+      inpLoc.placeholder = 'Tu pueblo'; inpLoc.autocomplete = 'off'; inpLoc.className = 'creador-input';
+      panel.appendChild(inpLoc);
+    }
 
     // Pronombre
     const lblP = document.createElement('label'); lblP.textContent = 'Pronombre:'; panel.appendChild(lblP);
@@ -119,15 +133,17 @@ AJ.Agente = (function () {
 
     // Acciones
     const filaB = document.createElement('div'); filaB.className = 'creador-fila acciones'; panel.appendChild(filaB);
-    const bVolver = document.createElement('button'); bVolver.type = 'button'; bVolver.textContent = 'Volver'; bVolver.className = 'creador-btn';
-    const bEmpezar = document.createElement('button'); bEmpezar.type = 'button'; bEmpezar.textContent = '¡Empezar!'; bEmpezar.className = 'creador-btn primario';
+    const bVolver = document.createElement('button'); bVolver.type = 'button'; bVolver.textContent = opts.volver || 'Volver'; bVolver.className = 'creador-btn';
+    const bEmpezar = document.createElement('button'); bEmpezar.type = 'button'; bEmpezar.textContent = opts.cta || '¡Empezar!'; bEmpezar.className = 'creador-btn primario';
+    if (opts.sinVolver) bVolver.style.display = 'none';
     filaB.appendChild(bVolver); filaB.appendChild(bEmpezar);
 
-    bVolver.addEventListener('click', () => { cerrarCreador(); });
+    bVolver.addEventListener('click', () => { cerrarCreador(); if (opts.onVolver) { try { opts.onVolver(); } catch (e) {} } });
     bEmpezar.addEventListener('click', () => {
       data.nombre = (inp.value || '').trim().slice(0, 12);
       data.pronombre = pron;
       data.variante = varSel;
+      if (inpLoc) data.localidad = (inpLoc.value || '').trim().slice(0, 22);
       _guardar();
       // Regenerar el sprite del jugador con la variante elegida: borrar las
       // texturas para que el preload del Pueblo las recree.
@@ -155,7 +171,7 @@ AJ.Agente = (function () {
   }
 
   return {
-    activo, init, nombre, pronombre, variante, set, colores, aplicarNombre,
+    activo, init, nombre, pronombre, variante, localidad, set, colores, aplicarNombre,
     abrirCreador, cerrarCreador, VARIANTES,
   };
 })();

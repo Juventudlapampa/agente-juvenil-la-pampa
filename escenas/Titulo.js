@@ -43,8 +43,18 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
 
     const hayGuardado = AJ.Guardado.existe();
 
-    // Botón JUGAR (nueva partida). F1: si hay creador de agente, elegir primero.
+    // Botón JUGAR (nueva partida).
+    // O1: con la apertura cinematográfica, "Jugar" arranca la SECUENCIA guionada
+    // (colectivo → Mesa → crear avatar → vida previa → tu localidad). El creador
+    // y el reparto de medidores viven adentro de esa apertura.
+    // Sin aperturaCine: flujo clásico (creador F1 → Pueblo).
     this._boton(W / 2, H * 0.58, 'Jugar', () => {
+      if (AJ.CONFIG.aperturaCine && AJ.EscenaApertura) {
+        try { AJ.Guardado.borrar(); } catch (e) {}
+        if (AJ.Juice) AJ.Juice.irA(this, 'Apertura', { nuevo: true });
+        else this.scene.start('Apertura', { nuevo: true });
+        return;
+      }
       const empezar = () => {
         try { AJ.Guardado.borrar(); } catch (e) {}
         if (AJ.Juice) AJ.Juice.irA(this, 'Pueblo', { nuevo: true });
