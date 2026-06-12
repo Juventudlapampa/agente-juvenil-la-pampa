@@ -60,7 +60,14 @@ banco de abajo está VACÍO: se completa a medida que entran PNGs reales.
 # Todo el arte de abajo es CC0 (dominio público): no exige atribución, pero la
 # anotamos por respeto y trazabilidad. Recoloreado a la paleta única del juego
 # (assets/paleta.hex, DawnBringer 32) con el pipeline Node (recolorear/recortar.js).
-# El resto del juego (personajes, UI, cultivos, iconos) sigue dibujado por código.
+# El resto del juego (personajes, cultivos, iconos) sigue dibujado por código.
+#
+# LOS 4 PACKS DE KENNEY usados/presentes en el proyecto (todos CC0, autor: Kenney):
+#   1. Tiny Town          — https://kenney.nl/assets/tiny-town
+#   2. Roguelike/RPG pack  — https://kenney.nl/assets/roguelike-rpg-pack
+#   3. Pixel UI Pack       — https://kenney.nl/assets/pixel-ui-pack
+#   4. Mobile Controls     — https://kenney.nl/assets/mobile-controls
+# (Kenney libera todo como CC0: https://kenney.nl/ — "Support us by donating".)
 
 # autor | titulo | licencia | url | pieza
 # ---------------------------------------------------------------------------

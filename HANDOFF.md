@@ -1,5 +1,16 @@
 # HANDOFF.md — Estado del proyecto entre sesiones
 
+## Subir cobertura de arte (undécima noche) — EN CURSO
+
+Baseline: smoke Pueblo 1 **134/134 PASS**, cobertura **16% (28/170)**. Procedurales: 10
+tiles (junco, arado, monumento, cultivo_0..3, exclamacion, check, brujula_flecha) + 132
+sprites de personajes. Sigue **sin pack de personajes** en `raw/` (los 4 packs son
+entorno/UI/controles) → los 132 sprites (78%) no tienen equivalente; el techo de cobertura
+es por tiles (máx 38). Objetivo: mapear los tiles que tengan equivalente decente en
+roguelike/tiny-town (cultivos+arado si hay granja; exclamacion/check si hay símbolos en
+pixel-ui; monumento si hay landmark limpio) y cablear la UI de Kenney (Pixel UI + Mobile
+Controls). Lo que no calce → procedural + AUDITORIA_ARTE.md. (Detalle al cierre.)
+
 > Documento de traspaso. La próxima sesión de Claude Code (o el humano) lee esto
 > + `CLAUDE.md` para saber dónde está parado el repo. Ver también `DECISIONES.md`
 > (por qué de cada cosa), `ROADMAP.md` (pendientes) y `PLAYTEST.md` (lo que necesita
