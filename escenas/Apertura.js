@@ -127,6 +127,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
 
   /* =================== 1.3 — LA MESA DE AGENTES ==================== */
   _faseMesa() {
+    if (this._fase === 'mesa') return;   // un tap/acción no re-dispara la fase
     this._fase = 'mesa';
     // Limpiar el colectivo.
     this._destruirColectivo();
@@ -142,16 +143,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     // que se vea bien con la cámara cercana (448×336) y con 800×600 (flag off).
     const cx = W / 2, cy = H * 0.50;
     const mw = W * 0.62, mh = H * 0.42; // diámetros de la mesa
-    const mesa = this.add.graphics().setDepth(5);
-    mesa.fillStyle(0x5b4029, 1); mesa.fillEllipse(cx, cy, mw, mh);
-    mesa.fillStyle(0x6e4f33, 1); mesa.fillEllipse(cx, cy, mw * 0.88, mh * 0.83);
-    mesa.lineStyle(3, 0x4a3422, 1); mesa.strokeEllipse(cx, cy, mw, mh);
-    // Mates sobre la mesa (detalle costumbrista), proporcionales.
-    [[-0.2, -0.06], [0.16, 0.05], [0, 0.12]].forEach(([fx, fy]) => {
-      const dx = fx * mw, dy = fy * mh;
-      mesa.fillStyle(0x3a6b3a, 1); mesa.fillCircle(cx + dx, cy + dy, 6);
-      mesa.fillStyle(0xcfcabd, 1); mesa.fillRect(cx + dx + 3, cy + dy - 8, 2, 8);
-    });
+    this._dibujarMesa(cx, cy, mw, mh);
 
     // Agentes alrededor (sprites NPC con cartelito de localidad ficticia).
     const sillas = [
@@ -167,6 +159,10 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     sillas.forEach((s) => {
       const x = cx + Math.cos(s.ang) * rx;
       const y = cy + Math.sin(s.ang) * ry;
+      // Sombrita de contacto bajo cada agente (los apoya en el piso).
+      const sm = this.add.graphics().setDepth(99 + y);
+      sm.fillStyle(0x000000, 0.16); sm.fillEllipse(x, y + 14, 26, 9);
+      this._mesaSprites.push(sm);
       if (this.textures.exists(s.tex + '_abajo_0')) {
         const sp = this.add.image(x, y - 12, s.tex + '_abajo_0')
           .setDisplaySize(AJ.CONFIG.JUGADOR_W, AJ.CONFIG.JUGADOR_H).setDepth(100 + y);
@@ -184,8 +180,10 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     const halo = this.add.graphics().setDepth(90);
     halo.fillStyle(0xf4cd60, 0.25); halo.fillCircle(this._tuSillaXY.x, this._tuSillaXY.y, 26);
     this._tuHalo = halo;
+    // Pulso suave del halo: que se note que ESE es tu lugar.
+    try { this.tweens.add({ targets: halo, alpha: 0.55, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' }); } catch (e) {}
 
-    // Diálogo de bienvenida (reusa AJ.Dialogo).
+    // Diálogo de bienvenida (reusa AJ.Dialogo). Al cerrar: enfoque en vos → creador.
     this.dialogo = new AJ.Dialogo(this);
     const bienvenida = [
       'La Mesa Provincial de Agentes Juveniles está reunida. Te corren la silla con una sonrisa.',
@@ -193,7 +191,109 @@ AJ.EscenaApertura = class extends Phaser.Scene {
       'El del Monte te cebá uno: «Soy de un puesto donde somos cuatro gatos locos, pero hacemos ruido. Vas a ver que no estás solo/a en esto.»',
       'La del Sur sonríe: «Antes de arrancar… contanos quién sos. Acá cada historia suma.»',
     ];
-    this.dialogo.mostrar('Mesa Provincial', bienvenida, () => this._faseCreador());
+    const mostrarBienvenida = () => {
+      if (this._bienvenidaVista || this._terminando) return;
+      this._bienvenidaVista = true;
+      this.dialogo.mostrar('Mesa Provincial', bienvenida,
+        () => this._enfocarEnVos(() => this._faseCreador()));
+    };
+
+    // Plano de apertura (momento clave): abrimos cerca de la mesa y SACAMOS la
+    // cámara hacia atrás para revelar toda la ronda. Termina en zoom 1.0 porque
+    // el diálogo es scrollFactor(0): un zoom ≠1 escalaría la UI (ver D48/D52 en
+    // CLAUDE.md). Sin cámara/efecto → muestra el diálogo directo.
+    if (this._camDisponible()) {
+      try {
+        this.cameras.main.setZoom(1.18);
+        this.cameras.main.zoomTo(1.0, 1300, 'Sine.easeOut', false, (cam, prog) => {
+          if (prog >= 1) mostrarBienvenida();
+        });
+        // Fallback por si el efecto no progresa (entorno sin requestAnimationFrame).
+        this.time.delayedCall(1500, mostrarBienvenida);
+      } catch (e) { mostrarBienvenida(); }
+    } else {
+      mostrarBienvenida();
+    }
+  }
+
+  // Dibuja la Mesa con profundidad: sombra proyectada en el piso, canto (grosor),
+  // tapa con vetas y brillo cenital, y AO contra el borde. Aditivo/cosmético.
+  _dibujarMesa(cx, cy, mw, mh) {
+    // Sombra proyectada en el piso (más ancha y desplazada hacia abajo).
+    const sombra = this.add.graphics().setDepth(3);
+    sombra.fillStyle(0x000000, 0.22); sombra.fillEllipse(cx, cy + mh * 0.16, mw * 1.06, mh * 0.92);
+    sombra.fillStyle(0x000000, 0.13); sombra.fillEllipse(cx, cy + mh * 0.24, mw * 1.16, mh * 0.66);
+
+    // Canto de la mesa: una "pollera" oscura bajo la tapa que asoma = grosor.
+    const grosor = Math.max(8, mh * 0.10);
+    const canto = this.add.graphics().setDepth(4);
+    canto.fillStyle(0x3f2c1c, 1); canto.fillEllipse(cx, cy + grosor, mw, mh);
+
+    // Tapa de la mesa.
+    const mesa = this.add.graphics().setDepth(5);
+    mesa.fillStyle(0x5b4029, 1); mesa.fillEllipse(cx, cy, mw, mh);            // borde madera oscura
+    mesa.fillStyle(0x6e4f33, 1); mesa.fillEllipse(cx, cy, mw * 0.9, mh * 0.86); // bisel interior
+    // Vetas (anillos concéntricos sutiles).
+    mesa.lineStyle(2, 0x5a4128, 0.65);
+    mesa.strokeEllipse(cx, cy, mw * 0.74, mh * 0.7);
+    mesa.strokeEllipse(cx, cy, mw * 0.52, mh * 0.5);
+    mesa.strokeEllipse(cx, cy, mw * 0.30, mh * 0.3);
+    // Brillo cenital (desplazado arriba-izquierda, como luz de techo).
+    mesa.fillStyle(0x7e5c3c, 0.55); mesa.fillEllipse(cx - mw * 0.10, cy - mh * 0.12, mw * 0.50, mh * 0.34);
+    mesa.fillStyle(0x8a663f, 0.30); mesa.fillEllipse(cx - mw * 0.13, cy - mh * 0.16, mw * 0.26, mh * 0.18);
+    // AO: sombra interior contra el borde (la tapa "cae" hacia el canto).
+    mesa.lineStyle(3, 0x3f2c1c, 0.5); mesa.strokeEllipse(cx, cy, mw * 0.97, mh * 0.95);
+    // Contorno final.
+    mesa.lineStyle(3, 0x4a3422, 1); mesa.strokeEllipse(cx, cy, mw, mh);
+
+    // Mates sobre la mesa (detalle costumbrista), con su sombrita proyectada.
+    [[-0.2, -0.06], [0.16, 0.05], [0, 0.12]].forEach(([fx, fy]) => {
+      const dx = fx * mw, dy = fy * mh;
+      mesa.fillStyle(0x000000, 0.18); mesa.fillEllipse(cx + dx + 2, cy + dy + 5, 14, 7); // sombra
+      mesa.fillStyle(0x2f5e2f, 1); mesa.fillCircle(cx + dx, cy + dy, 6);                  // mate
+      mesa.fillStyle(0x3a6b3a, 1); mesa.fillCircle(cx + dx - 1, cy + dy - 1, 4);          // luz del mate
+      mesa.fillStyle(0xcfcabd, 1); mesa.fillRect(cx + dx + 3, cy + dy - 8, 2, 8);         // bombilla
+    });
+
+    this._mesaGfx = [sombra, canto, mesa];
+  }
+
+  /* =================== CÁMARA (momentos clave) ==================== */
+  _camDisponible() {
+    try { return !!(this.cameras && this.cameras.main && typeof this.cameras.main.zoomTo === 'function'); }
+    catch (e) { return false; }
+  }
+
+  // Enfoque en vos: empuje suave hacia tu silla antes de abrir el creador.
+  // El creador es un overlay DOM que tapa la pantalla; el zoom se resetea al
+  // entrar al cierre (_camReset) para que el diálogo de cierre quede a zoom 1.
+  _enfocarEnVos(cb) {
+    const done = () => { if (cb) { try { cb(); } catch (e) {} } };
+    if (!this._camDisponible() || !this._tuSillaXY) { done(); return; }
+    try {
+      const W = this._W, H = this._H, z = 1.14;
+      const halfW = W / z / 2, halfH = H / z / 2;
+      // Clamp del centro para no mostrar piso vacío fuera del cuadro.
+      const tx = Math.max(halfW, Math.min(W - halfW, this._tuSillaXY.x));
+      const ty = Math.max(halfH, Math.min(H - halfH, this._tuSillaXY.y));
+      const cam = this.cameras.main;
+      cam.zoomTo(z, 480, 'Sine.easeInOut');
+      cam.pan(tx, ty, 480, 'Sine.easeInOut');
+      this.time.delayedCall(520, done);
+    } catch (e) { done(); }
+  }
+
+  // Resetea la cámara a zoom 1 y centrada (antes del diálogo de cierre, que es
+  // scrollFactor 0). Instantáneo: la pantalla viene tapada por el overlay DOM.
+  _camReset() {
+    if (!this._camDisponible()) return;
+    try {
+      const cam = this.cameras.main;
+      if (cam.panEffect && cam.panEffect.isRunning) cam.panEffect.reset();
+      if (cam.zoomEffect && cam.zoomEffect.isRunning) cam.zoomEffect.reset();
+      cam.setZoom(1);
+      cam.centerOn(this._W / 2, this._H / 2);
+    } catch (e) {}
   }
 
   /* =================== 1.4 — CREAR AVATAR ========================== */
@@ -229,6 +329,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
   /* =================== 1.6 — CHARLA DE CIERRE ===================== */
   _faseCierre() {
     this._fase = 'cierre';
+    this._camReset(); // volver a zoom 1 / centrado antes del diálogo (scrollFactor 0)
     const nom = (AJ.Agente && AJ.Agente.nombre && AJ.Agente.nombre()) || '';
     const loc = (AJ.Agente && AJ.Agente.localidad && AJ.Agente.localidad()) || 'tu pueblo';
     if (!this.dialogo) { try { this.dialogo = new AJ.Dialogo(this); } catch (e) {} }
