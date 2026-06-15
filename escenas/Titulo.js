@@ -31,15 +31,22 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
       g.fillCircle(x + 4, y - 34, 18 + (i % 2) * 4);
     });
 
-    // Título
-    this.add.text(W / 2, H * 0.22, 'AGENTE JUVENIL', {
+    // Título. Con la cámara cercana la resolución lógica es angosta (~448),
+    // así que escalamos los textos grandes para que entren sin cortarse a los
+    // costados (antes el título se clippeaba con CONFIG.camaraCercana).
+    const ajustar = (txt, maxFrac) => {
+      const max = W * (maxFrac || 0.92);
+      if (txt.width > max) txt.setScale(max / txt.width);
+      return txt;
+    };
+    ajustar(this.add.text(W / 2, H * 0.22, 'AGENTE JUVENIL', {
       fontFamily: 'Georgia, serif', fontSize: '52px', color: '#3a2c10',
       fontStyle: 'bold', stroke: '#fff3c4', strokeThickness: 6,
-    }).setOrigin(0.5);
-    this.add.text(W / 2, H * 0.33, 'La Pampa', {
+    }).setOrigin(0.5));
+    ajustar(this.add.text(W / 2, H * 0.33, 'La Pampa', {
       fontFamily: 'Georgia, serif', fontSize: '34px', color: '#8a4a2a',
       fontStyle: 'italic', stroke: '#ffffff', strokeThickness: 3,
-    }).setOrigin(0.5);
+    }).setOrigin(0.5));
 
     const hayGuardado = AJ.Guardado.existe();
 
@@ -89,10 +96,10 @@ AJ.EscenaTitulo = class extends Phaser.Scene {
     });
 
     // Pie de página
-    this.add.text(W / 2, H - 22,
+    ajustar(this.add.text(W / 2, H - 22,
       'Flechas/WASD · Espacio/E para interactuar · P para pausa',
       { fontFamily: 'monospace', fontSize: '13px', color: '#3a2c10' }
-    ).setOrigin(0.5);
+    ).setOrigin(0.5), 0.96);
   }
 
   _boton(x, y, texto, onClick) {

@@ -104,6 +104,7 @@ AJ.EscenaApertura = class extends Phaser.Scene {
   _busFrame() {
     const W = this._W, H = this._H;
     const g = this.add.graphics().setDepth(50);
+    this._busFrameGfx = g; // guardarlo para poder destruirlo al pasar a la Mesa
     const marco = 0x3a3026, marcoB = 0x2a2018, asiento = 0x5b4636;
     const b = 26; // grosor del marco
     g.fillStyle(marco, 1);
@@ -413,7 +414,8 @@ AJ.EscenaApertura = class extends Phaser.Scene {
     this.input.off('pointerdown', this._onTap, this);
     (this._capas || []).forEach((c) => { try { c.destroy(); } catch (e) {} });
     (this._capasFijas || []).forEach((c) => { try { c.destroy(); } catch (e) {} });
-    [this._cap, this._sub, this._busAvatar].forEach((o) => { try { o && o.destroy(); } catch (e) {} });
+    [this._cap, this._sub, this._busAvatar, this._busFrameGfx].forEach((o) => { try { o && o.destroy(); } catch (e) {} });
+    this._busFrameGfx = null;
     this._capas = []; this._capasFijas = [];
   }
 
